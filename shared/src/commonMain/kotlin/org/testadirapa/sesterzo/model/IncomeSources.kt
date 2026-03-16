@@ -1,15 +1,36 @@
 package org.testadirapa.sesterzo.model
 
-sealed interface IncomeSources : Versionable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
+sealed interface IncomeSources : SpaceData, Versionable {
+	val incomeId: String
+}
+
+@Serializable
 data class DecryptedIncomeSources(
-	override val id: String,
-	override val version: SemanticVersion,
-	val sources: Map<String, Amount>
-) : IncomeSources, DecryptedData
+	override val incomeId: String,
+	override val version: Int,
+	override val spaceId: String,
+	val sources: Map<String, Amount> = emptyMap()
+) : IncomeSources, DecryptedData {
 
+	@SerialName("_id")
+	override val id: String = "$incomeId-$version"
+
+}
+
+@Serializable
 data class EncryptedIncomeSources(
-	override val id: String,
-	override val version: SemanticVersion,
-	override val encryptedSelf: Base64String
-) : IncomeSources, EncryptedData
+	override val incomeId: String,
+	override val version: Int,
+	override val spaceId: String,
+	override val encryptedSelf: Base64String,
+	override val accessKeys: Set<AccessKey>
+) : IncomeSources, EncryptedData {
+
+	@SerialName("_id")
+	override val id: String = "$incomeId-$version"
+
+}

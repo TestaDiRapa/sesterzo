@@ -1,15 +1,36 @@
 package org.testadirapa.sesterzo.model
 
-sealed interface FixedExpenses : Versionable
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
+sealed interface FixedExpenses : Versionable, SpaceData {
+	val expensesId: String
+}
+
+@Serializable
 data class DecryptedFixedExpenses(
-	override val id: String,
-	override val version: SemanticVersion,
-	val fixedExpenses: Map<String, Amount>
-) : FixedExpenses, DecryptedData
+	override val expensesId: String,
+	override val version: Int,
+	override val spaceId: String,
+	val fixedExpenses: Map<String, Amount> = emptyMap()
+) : FixedExpenses, DecryptedData {
 
+	@SerialName("_id")
+	override val id: String = "$expensesId-$version"
+
+}
+
+@Serializable
 data class EncryptedFixedExpenses(
-	override val id: String,
-	override val version: SemanticVersion,
-	override val encryptedSelf: Base64String
-) : FixedExpenses, EncryptedData
+	override val expensesId: String,
+	override val version: Int,
+	override val spaceId: String,
+	override val encryptedSelf: Base64String,
+	override val accessKeys: Set<AccessKey>
+) : FixedExpenses, EncryptedData {
+
+	@SerialName("_id")
+	override val id: String = "$expensesId-$version"
+
+}

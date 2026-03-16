@@ -1,27 +1,45 @@
 package org.testadirapa.sesterzo.model
 
-sealed interface Budget : Identifiable {
-	val fixedExpensesReference: VersionableReference
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed interface Budget : SpaceData, Identifiable {
+	val year: Int
+	val month: Int
+	val expensesReference: VersionableReference
 	val incomeReference: VersionableReference
 	val savingsReference: VersionableReference
 }
 
+@Serializable
 data class DecryptedBudget(
-	override val id: String,
-	override val fixedExpensesReference: VersionableReference,
+	@SerialName("_id") override val id: String,
+	override val spaceId: String,
+	override val year: Int,
+	override val month: Int,
+	override val expensesReference: VersionableReference,
 	override val incomeReference: VersionableReference,
 	override val savingsReference: VersionableReference,
-	val expenses: Map<ExpenseKey, Amount>
+	val fixedExpenses: Map<String, Amount> = emptyMap(),
+	val income: Map<String, Amount> = emptyMap(),
+	val savings: Map<String, Amount> = emptyMap(),
+	val expenses: Map<ExpenseKey, Amount> = emptyMap()
 ) : Budget, DecryptedData {
 
 	data class ExpenseKey(val timestamp: Timestamp, val key: String)
 
 }
 
+@Serializable
 data class EncryptedBudget(
-	override val id: String,
-	override val fixedExpensesReference: VersionableReference,
+	@SerialName("_id") override val id: String,
+	override val spaceId: String,
+	override val year: Int,
+	override val month: Int,
+	override val expensesReference: VersionableReference,
 	override val incomeReference: VersionableReference,
 	override val savingsReference: VersionableReference,
-	override val encryptedSelf: Base64String
+	override val encryptedSelf: Base64String,
+	override val accessKeys: Set<AccessKey>
 ) : Budget, EncryptedData

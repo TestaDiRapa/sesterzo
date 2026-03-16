@@ -4,10 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class User(
+data class RecoveryData(
 	@SerialName("_id") val id: String,
-	val name: String,
-	val email: String,
-	val authenticationTokens: Map<String, AuthenticationToken> = emptyMap(),
-	val publicKey: Base64String? = null
+	val createdAt: Timestamp,
+	val expiresAt: Timestamp,
+	val encryptedKey: Base64String,
 )

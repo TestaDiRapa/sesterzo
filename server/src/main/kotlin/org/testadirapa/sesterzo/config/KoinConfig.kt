@@ -6,7 +6,9 @@ import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
 import org.testadirapa.sesterzo.components.mail.Mailer
+import org.testadirapa.sesterzo.components.mail.impl.HermesMailer
 import org.testadirapa.sesterzo.components.mail.MailerConfig
+import org.testadirapa.sesterzo.components.mail.impl.LocalMailer
 import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.components.mongodb.MongoDBCredentials
 import org.testadirapa.sesterzo.components.security.BCryptPasswordEncoder
@@ -23,7 +25,13 @@ fun applicationModules(
 	single<JWTManager> { JWTManager(jwtConfig) }
 	single<DBClient> { DBClient(dbCredentials) }
 	single<PasswordEncoder> { BCryptPasswordEncoder() }
-	single<Mailer> { Mailer(mailerConfig) }
+
+	single<Mailer> {
+		when (mailerConfig) {
+			is MailerConfig.HermesMailerConfig -> HermesMailer(mailerConfig)
+			MailerConfig.LocalMailerConfig -> LocalMailer()
+		}
+	}
 
 }
 

@@ -2,23 +2,25 @@ package org.testadirapa.sesterzo.components.mail
 
 import io.ktor.server.config.ApplicationConfig
 
-data class MailerConfig(
-	val homunculusUrl: String,
-	val hermesUrl: String,
-	val resetPasswordTemplateId: String,
-	val inviteTemplateId: String,
-	val alertTemplateId: String,
-	val reportTemplateId: String,
-) {
+sealed interface MailerConfig {
+
 	companion object {
 		fun fromConfig(config: ApplicationConfig) =
-			MailerConfig(
-				homunculusUrl = config.property("mailer.homunculusUrl").getString(),
-				hermesUrl = config.property("mailer.hermesUrl").getString(),
-				resetPasswordTemplateId = config.property("mailer.resetPasswordTemplateId").getString(),
-				inviteTemplateId = config.property("mailer.inviteTemplateId").getString(),
-				alertTemplateId = config.property("mailer.alertTemplateId").getString(),
-				reportTemplateId = config.property("mailer.reportTemplateId").getString(),
-			)
+			if (config.propertyOrNull("mailer.hermesUrl") != null) {
+				HermesMailerConfig(
+					hermesUrl = config.property("mailer.hermesUrl").getString(),
+					registrationTemplateId = config.property("mailer.registrationTemplateId").getString(),
+					tokenTemplateId = config.property("mailer.tokenTemplateId").getString(),
+				)
+			} else LocalMailerConfig
+
 	}
+
+	data class HermesMailerConfig(
+		val hermesUrl: String,
+		val registrationTemplateId: String,
+		val tokenTemplateId: String,
+	): MailerConfig
+
+	data object LocalMailerConfig : MailerConfig
 }

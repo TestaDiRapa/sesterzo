@@ -1,77 +1,22 @@
 package org.testadirapa.sesterzo.components.mail
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.Serializable
-import java.net.URLEncoder
+interface Mailer {
 
-class Mailer(
-	private val config: MailerConfig,
-) {
-	companion object {
-		@Serializable
-		private data class MailInput(
-			val id: String,
-			val email: String,
-			val attributes: Map<String, String>,
-		)
-	}
+	/**
+	 * Sends an email containing a short, temporary access token for login.
+	 *
+	 * @param email the email.
+	 * @param name the name of the user, for templating purposes.
+	 * @param token the token.
+	 */
+	suspend fun sendAccessTokenEmail(email: String, name: String, token: String)
 
-	private val httpClient =
-		HttpClient(OkHttp) {
-			install(ContentNegotiation) {
-				json()
-			}
-		}
-
-	suspend fun sendPasswordResetEmail(
-		email: String,
-		processId: String,
-	) {
-		httpClient.post("${config.hermesUrl}/v1/mail") {
-			contentType(ContentType.Application.Json)
-			setBody(
-				MailInput(
-					id = config.resetPasswordTemplateId,
-					email = email,
-					attributes =
-						mapOf(
-							"url" to config.homunculusUrl,
-							"email" to URLEncoder.encode(email, "UTF-8"),
-							"processId" to URLEncoder.encode(processId, "UTF-8"),
-						),
-				),
-			)
-		}
-	}
-
-	suspend fun sendInvitationEmail(
-		email: String,
-		tmpToken: String,
-		inviterName: String,
-	) {
-		httpClient.post("${config.hermesUrl}/v1/mail") {
-			contentType(ContentType.Application.Json)
-			setBody(
-				MailInput(
-					id = config.inviteTemplateId,
-					email = email,
-					attributes =
-						mapOf(
-							"url" to config.homunculusUrl,
-							"inviterName" to inviterName,
-							"email" to URLEncoder.encode(email, "UTF-8"),
-							"tmpToken" to URLEncoder.encode(tmpToken, "UTF-8"),
-						),
-				),
-			)
-		}
-	}
-
+	/**
+	 * Sends an email containing a short, temporary access token for the first-time registration.
+	 *
+	 * @param email the email.
+	 * @param name the name of the user, for templating purposes.
+	 * @param token the token.
+	 */
+	suspend fun sendRegistrationEmail(email: String, name: String, token: String)
 }

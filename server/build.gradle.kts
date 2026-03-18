@@ -23,16 +23,22 @@ dependencies {
 	implementation(libs.ktor.serverAuthJwt)
 	implementation(libs.ktor.serverRateLimiting)
 	implementation(libs.ktor.serverStatusPages)
+	implementation(libs.ktor.serverContentNegtiation)
 
-	implementation(libs.koin.ktor)
-	implementation(libs.koin.logger)
-	implementation(libs.mongo.client.coroutine)
-	implementation(libs.mongo.client.serialization)
-	implementation(libs.jbcrypt)
 	implementation(libs.ktor.clientCore)
 	implementation(libs.ktor.clientOkHttp)
 	implementation(libs.ktor.clientContentNegotiation)
 	implementation(libs.ktor.serialization)
+
+	implementation(libs.koin.ktor)
+	implementation(libs.koin.logger)
+
+	implementation(libs.mongo.client.coroutine)
+	implementation(libs.mongo.client.serialization)
+
+	implementation(libs.jbcrypt)
+	implementation(libs.caffeine)
+
 	testImplementation(libs.ktor.serverTestHost)
 	testImplementation(libs.kotlin.testJunit)
 }

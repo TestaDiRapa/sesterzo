@@ -17,6 +17,8 @@ koin = "4.2.0-RC2"
 logback = "1.5.32"
 material3 = "1.10.0-alpha05"
 kotlinx-serialization = "1.10.0"
+caffeine = "3.2.3"
+kryptom = "1.4.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -42,18 +44,21 @@ ktor-serverCors = { module = "io.ktor:ktor-server-cors-jvm", version.ref = "ktor
 ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
 ktor-serverAuthJwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" }
-ktor-serverRateLimiting = { module = "io.ktor:ktor-server-rate-limit", version.ref ="ktor"}
-ktor-serverStatusPages = { module = "io.ktor:ktor-server-status-pages", version.ref="ktor" }
+ktor-serverRateLimiting = { module = "io.ktor:ktor-server-rate-limit", version.ref = "ktor"}
+ktor-serverStatusPages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
+ktor-serverContentNegtiation = { module = "io.ktor:ktor-server-content-negotiation-jvm", version.ref="ktor" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref="koin" }
 koin-logger = { module = "io.insert-koin:koin-logger-slf4j", version.ref="koin" }
 mongo-client-coroutine = { module = "org.mongodb:mongodb-driver-kotlin-coroutine", version = "5.6.4" }
 mongo-client-serialization = { module = "org.mongodb:bson-kotlinx", version = "5.6.4" }
 jbcrypt = { module = "org.mindrot:jbcrypt", version = "0.4" }
-ktor-clientCore = { module = "io.ktor:ktor-client-core-jvm", version.ref="ktor" }
-ktor-clientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation-jvm", version.ref="ktor" }
-ktor-ClientOkHttp = { module = "io.ktor:ktor-client-okhttp", version.ref="ktor" }
-ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref="ktor" }
+ktor-clientCore = { module = "io.ktor:ktor-client-core-jvm", version.ref = "ktor" }
+ktor-clientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation-jvm", version.ref=  "ktor" }
+ktor-ClientOkHttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
+kryptom = { module = "com.icure.kryptom:kryptom", version.ref = "kryptom" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

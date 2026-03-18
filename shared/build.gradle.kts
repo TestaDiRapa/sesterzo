@@ -35,6 +35,7 @@ kotlin {
 	sourceSets {
 		commonMain.dependencies {
 			implementation(libs.kotlinx.serialization.json)
+			api(libs.kryptom)
 		}
 		commonTest.dependencies {
 			implementation(libs.kotlin.test)

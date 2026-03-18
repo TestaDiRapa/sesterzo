@@ -11,7 +11,7 @@ import org.koin.core.annotation.KoinInternalApi
 import org.koin.core.definition.Kind
 import org.koin.ktor.ext.getKoin
 import org.testadirapa.sesterzo.annotations.Index
-import org.testadirapa.sesterzo.dao.GenericDao
+import org.testadirapa.sesterzo.dao.GenericDAO
 import kotlin.reflect.full.functions
 import kotlin.reflect.full.isSubclassOf
 
@@ -26,8 +26,8 @@ val databaseInitializationPlugin =
 				val daoList = koin.instanceRegistry.instances.values
 					.map { it.beanDefinition }
 					.filter { it.kind == Kind.Singleton }
-					.filter { it.primaryType.isSubclassOf(GenericDao::class) }
-					.map { koin.get(clazz = it.primaryType, qualifier = null, parameters = null) as GenericDao<*> }
+					.filter { it.primaryType.isSubclassOf(GenericDAO::class) }
+					.map { koin.get(clazz = it.primaryType, qualifier = null, parameters = null) as GenericDAO<*> }
 
 				runBlocking {
 					daoList.forEach { dao ->
@@ -48,6 +48,6 @@ val databaseInitializationPlugin =
 
 
 
-fun Application.configureDao() {
+fun Application.configureDAO() {
 	install(databaseInitializationPlugin)
 }

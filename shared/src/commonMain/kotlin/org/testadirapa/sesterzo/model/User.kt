@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class User(
-	@SerialName("_id") val id: String,
+	@SerialName("_id") override val id: String,
 	val name: String,
 	val email: String,
 	val authenticationTokens: Map<String, AuthenticationToken> = emptyMap(),
 	val publicKey: Base64String? = null
-)
+) : Identifiable

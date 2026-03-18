@@ -20,7 +20,7 @@ fun Application.configureThrottling() {
 		}
 
 		register(RateLimitName(REGISTER_RATE_LIMIT_KEY)) {
-			rateLimiter(limit = 30, refillPeriod = 60.seconds)
+			rateLimiter(limit = 10, refillPeriod = 60.seconds)
 			requestKey { applicationCall ->
 				applicationCall.request.origin.remoteHost
 			}

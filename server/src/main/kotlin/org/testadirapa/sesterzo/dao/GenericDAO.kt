@@ -16,7 +16,7 @@ import kotlin.reflect.KProperty
 /**
  * Defines all the generic operations that a DAO should implement.
  */
-abstract class GenericDao<T : Identifiable>(
+abstract class GenericDAO<T : Identifiable>(
 	protected val client: DBClient,
 ) {
 	/**
@@ -78,7 +78,7 @@ abstract class GenericDao<T : Identifiable>(
 	 * @return the id of the entity, if successfully created.
 	 */
 	suspend fun save(entity: T): String =
-		collection.insertOne(entity).insertedId?.asString()?.value?.let { wrapIdentifier(it) }
+		collection.insertOne(entity).insertedId?.asString()?.value
 			?: throw IllegalStateException("There was an error while creating the entity.")
 
 	/**

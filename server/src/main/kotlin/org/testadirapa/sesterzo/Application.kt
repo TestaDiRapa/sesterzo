@@ -3,7 +3,8 @@ package org.testadirapa.sesterzo
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import org.testadirapa.sesterzo.config.configureDao
+import org.testadirapa.sesterzo.config.configureControllers
+import org.testadirapa.sesterzo.config.configureDAO
 import org.testadirapa.sesterzo.config.configureExceptions
 import org.testadirapa.sesterzo.config.configureHTTP
 import org.testadirapa.sesterzo.config.configureKoin
@@ -17,7 +18,8 @@ fun main() {
 fun Application.module() {
 	configureHTTP()
 	configureKoin()
+	configureControllers()
 	configureThrottling()
 	configureExceptions()
-	configureDao()
+	configureDAO()
 }

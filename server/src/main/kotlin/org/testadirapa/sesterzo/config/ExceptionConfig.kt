@@ -8,6 +8,7 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
 import io.ktor.util.logging.KtorSimpleLogger
 import io.ktor.util.logging.error
+import org.testadirapa.sesterzo.exceptions.InvalidCaptchaException
 import org.testadirapa.sesterzo.exceptions.UnauthorizedException
 import org.testadirapa.sesterzo.models.StatusResponse
 import java.io.IOException
@@ -29,6 +30,7 @@ fun Application.configureExceptions() {
 				is IllegalAccessException -> call.respond(HttpStatusCode.Forbidden, cause.toErrorResponse(HttpStatusCode.Forbidden))
 				is IOException -> call.respond(HttpStatusCode.BadRequest, cause.toErrorResponse(HttpStatusCode.BadRequest))
 				is IllegalArgumentException -> call.respond(HttpStatusCode.BadRequest, cause.toErrorResponse(HttpStatusCode.BadRequest))
+				is InvalidCaptchaException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.Unauthorized))
 				is UnauthorizedException -> call.respond(HttpStatusCode.Unauthorized, cause.toErrorResponse(HttpStatusCode.Unauthorized))
 				is NotFoundException -> call.respond(HttpStatusCode.NotFound, cause.toErrorResponse(HttpStatusCode.NotFound))
 				else -> {

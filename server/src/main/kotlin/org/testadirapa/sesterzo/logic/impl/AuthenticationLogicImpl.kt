@@ -1,13 +1,18 @@
 package org.testadirapa.sesterzo.logic.impl
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.icure.kerberus.Solution
+import com.icure.kerberus.validateSolution
 import com.icure.kryptom.crypto.defaultCryptoService
 import kotlinx.coroutines.flow.mapNotNull
 import org.testadirapa.sesterzo.components.mail.Mailer
 import org.testadirapa.sesterzo.dao.SpaceDAO
 import org.testadirapa.sesterzo.dao.UserDAO
+import org.testadirapa.sesterzo.exceptions.InvalidCaptchaException
 import org.testadirapa.sesterzo.exceptions.InvalidRegistrationException
+import org.testadirapa.sesterzo.exceptions.UnauthorizedException
 import org.testadirapa.sesterzo.logic.AuthenticationLogic
+import org.testadirapa.sesterzo.logic.CaptchaLogic
 import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.model.dto.AuthResponse
 import org.testadirapa.sesterzo.security.JWTClaims
@@ -21,6 +26,7 @@ class AuthenticationLogicImpl(
 	private val mailer: Mailer,
 	private val userDAO: UserDAO,
 	private val spaceDAO: SpaceDAO,
+	private val captchaLogic: CaptchaLogic,
 	private val jwtManager: JWTManager,
 ) : AuthenticationLogic {
 
@@ -45,7 +51,10 @@ class AuthenticationLogicImpl(
 		)
 	}
 
-	override suspend fun startRegistration(email: String, name: String): String {
+	override suspend fun startRegistration(email: String, name: String, solution: Solution): String {
+		if (!captchaLogic.validateChallenge(solution)) {
+			throw InvalidCaptchaException()
+		}
 		val token = generateShortToken(tokenLength)
 		val processId = defaultCryptoService.strongRandom.randomUUID()
 		registrationCache.put(
@@ -63,7 +72,7 @@ class AuthenticationLogicImpl(
 			throw InvalidRegistrationException(processId, token)
 		}
 		registrationCache.invalidate(processId)
-		val createdUserId = userDao.save(
+		val createdUserId = userDAO.save(
 			User(
 				id = defaultCryptoService.strongRandom.randomUUID(),
 				email = process.email,

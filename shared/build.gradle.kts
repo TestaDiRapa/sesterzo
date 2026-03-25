@@ -36,6 +36,7 @@ kotlin {
 		commonMain.dependencies {
 			implementation(libs.kotlinx.serialization.json)
 			api(libs.kryptom)
+			api(libs.kerberus)
 		}
 		commonTest.dependencies {
 			implementation(libs.kotlin.test)

@@ -9,6 +9,7 @@ import kotlin.time.Duration.Companion.seconds
 
 const val LOGIN_RATE_LIMIT_KEY = "login"
 const val REGISTER_RATE_LIMIT_KEY = "register"
+const val CAPTCHA_RATE_LIMIT_KEY = "captcha"
 
 fun Application.configureThrottling() {
 	install(RateLimit) {
@@ -20,7 +21,14 @@ fun Application.configureThrottling() {
 		}
 
 		register(RateLimitName(REGISTER_RATE_LIMIT_KEY)) {
-			rateLimiter(limit = 10, refillPeriod = 60.seconds)
+			rateLimiter(limit = 30, refillPeriod = 60.seconds)
+			requestKey { applicationCall ->
+				applicationCall.request.origin.remoteHost
+			}
+		}
+
+		register(RateLimitName(CAPTCHA_RATE_LIMIT_KEY)) {
+			rateLimiter(limit = 30, refillPeriod = 60.seconds)
 			requestKey { applicationCall ->
 				applicationCall.request.origin.remoteHost
 			}

@@ -1,5 +1,7 @@
 package org.testadirapa.sesterzo.logic
 
+import com.icure.kerberus.Solution
+import org.testadirapa.sesterzo.exceptions.InvalidCaptchaException
 import org.testadirapa.sesterzo.model.dto.AuthResponse
 
 interface AuthenticationLogic {
@@ -18,9 +20,11 @@ interface AuthenticationLogic {
 	 *
 	 * @param email the email of the user.
 	 * @param name the name of the user.
+	 * @param solution the captcha [Solution].
 	 * @return the id of the [RegistrationProcess].
+	 * @throws [InvalidCaptchaException] if the provided captcha solution is not valid.
 	 */
-	suspend fun startRegistration(email: String, name: String): String
+	suspend fun startRegistration(email: String, name: String, solution: Solution): String
 
 	/**
 	 * Completes the registration process by verifying the token against the cached data. If the verification is

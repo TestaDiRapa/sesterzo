@@ -13,7 +13,6 @@ sealed interface MailerConfig {
 					tokenTemplateId = config.property("mailer.tokenTemplateId").getString(),
 				)
 			} else LocalMailerConfig
-
 	}
 
 	data class HermesMailerConfig(

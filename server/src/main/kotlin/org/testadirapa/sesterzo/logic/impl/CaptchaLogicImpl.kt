@@ -10,8 +10,7 @@ import org.testadirapa.sesterzo.model.dto.CaptchaChallenge
 import java.util.concurrent.TimeUnit
 
 class CaptchaLogicImpl(
-	val numSalts: Int,
-	val difficultyFactor: Int
+	val config: CaptchaLogic.Config
 ): CaptchaLogic {
 
 	val challengeCache = Caffeine.newBuilder()
@@ -23,8 +22,8 @@ class CaptchaLogicImpl(
 			input = input,
 			challenge = Challenge(
 				id = defaultCryptoService.strongRandom.randomUUID(),
-				salts = List(numSalts) { defaultCryptoService.strongRandom.randomUUID() },
-				difficultyFactor = difficultyFactor
+				salts = List(config.numSalts) { defaultCryptoService.strongRandom.randomUUID() },
+				difficultyFactor = config.difficultyFactor
 			)
 		).also { challengeCache.put(it.challenge.id, it) }
 

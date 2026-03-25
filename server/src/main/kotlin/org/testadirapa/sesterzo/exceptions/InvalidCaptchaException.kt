@@ -1,3 +1,8 @@
 package org.testadirapa.sesterzo.exceptions
 
-class InvalidCaptchaException : Exception("Invalid captcha")
+import io.ktor.http.HttpStatusCode
+
+class InvalidCaptchaException : HttpException("Invalid captcha") {
+	override val statusCode: HttpStatusCode = HttpStatusCode.Unauthorized
+	override val label: ExceptionLabel = ExceptionLabel.InvalidCaptcha
+}

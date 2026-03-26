@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.logic
 import com.icure.kerberus.Solution
 import org.testadirapa.sesterzo.exceptions.InvalidCaptchaException
 import org.testadirapa.sesterzo.model.dto.AuthResponse
+import org.testadirapa.sesterzo.exceptions.UnauthorizedException
 
 interface AuthenticationLogic {
 
@@ -35,4 +36,22 @@ interface AuthenticationLogic {
 	 * @return an [AuthResponse], if the process is successful.
 	 */
 	suspend fun completeRegistration(processId: String, token: String): AuthResponse
+
+	/**
+	 * Logs in a user by email and token.
+	 * @param email the user email.
+	 * @param token the user token.
+	 * @param solution a captcha [Solution].
+	 * @return an [AuthResponse] if the process is successful.
+	 * @throws [UnauthorizedException] if the process fails for any reason.
+	 */
+	suspend fun login(email: String, token: String, solution: Solution): AuthResponse
+
+	/**
+	 * Generates a new JWT for a user.
+	 * @param userId the id of the user.
+	 * @param refreshToken the refresh token, already validated.
+	 * @return an [AuthResponse] where [AuthResponse.refreshJwt] is the refresh token passed as parameter.
+	 */
+	suspend fun refresh(userId: String, refreshToken: String): AuthResponse
 }

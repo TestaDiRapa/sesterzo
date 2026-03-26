@@ -52,7 +52,8 @@ fun applicationModules(
 			userDAO = get(),
 			spaceDAO = get(),
 			captchaLogic = get(),
-			jwtManager = get()
+			jwtManager = get(),
+			passwordEncoder = get()
 		)
 	}
 

@@ -6,6 +6,7 @@ import com.icure.kerberus.validateSolution
 import com.icure.kryptom.crypto.defaultCryptoService
 import kotlinx.coroutines.flow.mapNotNull
 import org.testadirapa.sesterzo.components.mail.Mailer
+import org.testadirapa.sesterzo.components.security.PasswordEncoder
 import org.testadirapa.sesterzo.dao.SpaceDAO
 import org.testadirapa.sesterzo.dao.UserDAO
 import org.testadirapa.sesterzo.exceptions.InvalidCaptchaException
@@ -19,7 +20,9 @@ import org.testadirapa.sesterzo.security.JWTClaims
 import org.testadirapa.sesterzo.security.JWTManager
 import org.testadirapa.sesterzo.security.JWTRefreshClaims
 import org.testadirapa.sesterzo.utils.toMap
+import java.util.Date
 import java.util.concurrent.TimeUnit
+import kotlin.compareTo
 
 class AuthenticationLogicImpl(
 	private val tokenLength: Int,
@@ -28,6 +31,7 @@ class AuthenticationLogicImpl(
 	private val spaceDAO: SpaceDAO,
 	private val captchaLogic: CaptchaLogic,
 	private val jwtManager: JWTManager,
+	private val passwordEncoder: PasswordEncoder
 ) : AuthenticationLogic {
 
 	val registrationCache = Caffeine.newBuilder()
@@ -39,7 +43,7 @@ class AuthenticationLogicImpl(
 			"${it.toShort() % 10}"
 		}
 
-	private suspend fun buildAuthResponse(userId: String): AuthResponse {
+	private suspend fun buildAuthResponse(userId: String, refreshToken: String? = null): AuthResponse {
 		val spacesWithPermission = spaceDAO.getByParticipant(userId).mapNotNull { space ->
 			space.users[userId]?.let {
 				space.id to it
@@ -47,9 +51,15 @@ class AuthenticationLogicImpl(
 		}.toMap()
 		return AuthResponse(
 			jwt = jwtManager.generateAuthJWT(JWTClaims(userId = userId, spaces = spacesWithPermission)),
-			refreshJwt = jwtManager.generateRefreshJWT(JWTRefreshClaims(userId)),
+			refreshJwt = refreshToken ?: jwtManager.generateRefreshJWT(JWTRefreshClaims(userId)),
 		)
 	}
+
+	private fun User.hasMatchingToken(token: String): Boolean =
+		authenticationTokens.values
+			.filter { it.expiresAt > System.currentTimeMillis() }
+			.map { it.token }
+			.any { passwordEncoder.checkHash(token = token, hash = it) }
 
 	override suspend fun startRegistration(email: String, name: String, solution: Solution): String {
 		if (!captchaLogic.validateChallenge(solution)) {
@@ -80,5 +90,23 @@ class AuthenticationLogicImpl(
 			)
 		)
 		return buildAuthResponse(createdUserId)
+	}
+
+	override suspend fun login(email: String, token: String, solution: Solution): AuthResponse {
+		if (!captchaLogic.validateChallenge(solution)) {
+			throw InvalidCaptchaException()
+		}
+		val user = userDAO.getByEmail(email) ?: throw UnauthorizedException("Invalid username or password")
+		return if (user.hasMatchingToken(token)) {
+			buildAuthResponse(user.id)
+		} else {
+			throw UnauthorizedException("Invalid username or password")
+		}
+	}
+
+	override suspend fun refresh(userId: String, refreshToken: String): AuthResponse {
+		userDAO.getById(userId)
+			?: throw UnauthorizedException("User $userId not found")
+		return buildAuthResponse(userId = userId, refreshToken = refreshToken)
 	}
 }

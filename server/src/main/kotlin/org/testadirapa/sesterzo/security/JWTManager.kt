@@ -41,7 +41,7 @@ class JWTManager(
 			.withClaim(USER_ID_KEY, jwtClaims.userId)
 			.withClaim(SPACES_KEY, jwtClaims.spaces)
 			.withExpiresAt(Date(System.currentTimeMillis() + authJWTDuration))
-			.sign(Algorithm.HMAC256(config.authSecret))
+			.sign(Algorithm.RSA256(config.authPublicKey, config.authPrivateKey))
 
 	/**
 	 * Generates a refresh JWT from the claims passed as parameter.
@@ -56,7 +56,7 @@ class JWTManager(
 			.withIssuer(config.issuer)
 			.withClaim(USER_ID_KEY, jwtClaims.userId)
 			.withExpiresAt(Date(System.currentTimeMillis() + refreshJWTDuration))
-			.sign(Algorithm.HMAC256(config.refreshSecret))
+			.sign(Algorithm.RSA256(config.refreshPublicKey, config.refreshPrivateKey))
 
 	/**
 	 * Converts a [JWTCredential] to a [JWTPrincipal], ensuring that the payload is in the correct format.
@@ -76,7 +76,7 @@ class JWTManager(
 	 */
 	fun authJWTVerifier(): JWTVerifier =
 		JWT
-			.require(Algorithm.HMAC256(config.authSecret))
+			.require(Algorithm.RSA256(config.authPublicKey, null))
 			.withAudience(config.audience)
 			.withIssuer(config.issuer)
 			.build()
@@ -86,7 +86,7 @@ class JWTManager(
 	 */
 	fun refreshJWTVerifier(): JWTVerifier =
 		JWT
-			.require(Algorithm.HMAC256(config.refreshSecret))
+			.require(Algorithm.RSA256(config.refreshPublicKey, null))
 			.withAudience(config.audience)
 			.withIssuer(config.issuer)
 			.build()

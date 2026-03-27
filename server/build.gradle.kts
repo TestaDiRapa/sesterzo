@@ -26,11 +26,6 @@ dependencies {
 	implementation(libs.ktor.serverContentNegtiation)
 	implementation(libs.ktor.serverDoubleReceive)
 
-	implementation(libs.ktor.clientCore)
-	implementation(libs.ktor.clientOkHttp)
-	implementation(libs.ktor.clientContentNegotiation)
-	implementation(libs.ktor.serialization)
-
 	implementation(libs.koin.ktor)
 	implementation(libs.koin.logger)
 

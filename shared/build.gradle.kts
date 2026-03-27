@@ -21,6 +21,8 @@ kotlin {
 //		}
 //	}
 
+	jvm()
+
 	js {
 		browser()
 	}
@@ -39,6 +41,9 @@ kotlin {
 			api(libs.ktor.clientCore)
 			api(libs.ktor.clientContentNegotiation)
 			api(libs.ktor.serialization)
+		}
+		jvmMain.dependencies {
+			api(libs.ktor.clientOkHttp)
 		}
 		commonTest.dependencies {
 			implementation(libs.kotlin.test)

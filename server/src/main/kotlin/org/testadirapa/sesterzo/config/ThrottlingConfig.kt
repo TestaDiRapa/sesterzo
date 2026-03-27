@@ -5,6 +5,8 @@ import io.ktor.server.application.install
 import io.ktor.server.plugins.origin
 import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.plugins.ratelimit.RateLimitName
+import io.ktor.server.request.receive
+import org.testadirapa.sesterzo.model.dto.DataWithEmail
 import kotlin.time.Duration.Companion.seconds
 
 const val LOGIN_RATE_LIMIT_KEY = "login"
@@ -16,7 +18,8 @@ fun Application.configureThrottling() {
 		register(RateLimitName(LOGIN_RATE_LIMIT_KEY)) {
 			rateLimiter(limit = 30, refillPeriod = 60.seconds)
 			requestKey { applicationCall ->
-				applicationCall.request.origin.remoteHost
+				val payload = applicationCall.receive<DataWithEmail>()
+				payload.email
 			}
 		}
 

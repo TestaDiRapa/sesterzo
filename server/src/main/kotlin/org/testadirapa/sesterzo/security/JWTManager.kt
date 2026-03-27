@@ -11,7 +11,7 @@ import org.testadirapa.sesterzo.model.UserSpaceRole
 import java.util.*
 import kotlin.collections.mapValues
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * This component manages the authentication and refresh JWT creation and verification
@@ -23,8 +23,8 @@ class JWTManager(
 		const val USER_ID_KEY = "uId"
 		const val SPACES_KEY = "s"
 
-		private val authJWTDuration = 1L.hours.inWholeMilliseconds
-		private val refreshJWTDuration = 30L.days.inWholeMilliseconds
+		private val authJWTDuration = 15.minutes.inWholeMilliseconds
+		private val refreshJWTDuration = 30.days.inWholeMilliseconds
 	}
 
 	/**

@@ -2,7 +2,6 @@ package org.testadirapa.sesterzo.logic.impl
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.icure.kerberus.Solution
-import com.icure.kerberus.validateSolution
 import com.icure.kryptom.crypto.defaultCryptoService
 import kotlinx.coroutines.flow.mapNotNull
 import org.testadirapa.sesterzo.components.mail.Mailer
@@ -20,9 +19,7 @@ import org.testadirapa.sesterzo.security.JWTClaims
 import org.testadirapa.sesterzo.security.JWTManager
 import org.testadirapa.sesterzo.security.JWTRefreshClaims
 import org.testadirapa.sesterzo.utils.toMap
-import java.util.Date
 import java.util.concurrent.TimeUnit
-import kotlin.compareTo
 
 class AuthenticationLogicImpl(
 	private val tokenLength: Int,
@@ -37,6 +34,10 @@ class AuthenticationLogicImpl(
 	val registrationCache = Caffeine.newBuilder()
 		.expireAfterWrite(15, TimeUnit.MINUTES)
 		.build<String, AuthenticationLogic.RegistrationProcess>()
+
+	val ottCache = Caffeine.newBuilder()
+		.expireAfterWrite(15, TimeUnit.MINUTES)
+		.build<String, String>()
 
 	private fun generateShortToken(length: Int): String =
 		defaultCryptoService.strongRandom.randomBytes(length).joinToString("") {
@@ -55,8 +56,14 @@ class AuthenticationLogicImpl(
 		)
 	}
 
+	private fun User.hasMatchingOtt(ott: String): Boolean? =
+		ottCache.getIfPresent(email)
+			?.let { it == ott }
+			?.takeIf { it }
+			?.also { ottCache.invalidate(email) }
+
 	private fun User.hasMatchingToken(token: String): Boolean =
-		authenticationTokens.values
+		hasMatchingOtt(token) ?: authenticationTokens.values
 			.filter { it.expiresAt > System.currentTimeMillis() }
 			.map { it.token }
 			.any { passwordEncoder.checkHash(token = token, hash = it) }
@@ -92,10 +99,18 @@ class AuthenticationLogicImpl(
 		return buildAuthResponse(createdUserId)
 	}
 
-	override suspend fun login(email: String, token: String, solution: Solution): AuthResponse {
+	override suspend fun generateOTT(email: String, solution: Solution) {
 		if (!captchaLogic.validateChallenge(solution)) {
 			throw InvalidCaptchaException()
 		}
+		val user = userDAO.getByEmail(email)
+		if (user != null) {
+			val token = ottCache.get(email) { generateShortToken(tokenLength) }
+			mailer.sendAccessTokenEmail(email = email, name = user.name, token = token)
+		}
+	}
+
+	override suspend fun login(email: String, token: String): AuthResponse {
 		val user = userDAO.getByEmail(email) ?: throw UnauthorizedException("Invalid username or password")
 		return if (user.hasMatchingToken(token)) {
 			buildAuthResponse(user.id)

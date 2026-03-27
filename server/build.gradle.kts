@@ -24,6 +24,7 @@ dependencies {
 	implementation(libs.ktor.serverRateLimiting)
 	implementation(libs.ktor.serverStatusPages)
 	implementation(libs.ktor.serverContentNegtiation)
+	implementation(libs.ktor.serverDoubleReceive)
 
 	implementation(libs.ktor.clientCore)
 	implementation(libs.ktor.clientOkHttp)
@@ -38,6 +39,9 @@ dependencies {
 
 	implementation(libs.jbcrypt)
 	implementation(libs.caffeine)
+	implementation("io.ktor:ktor-server-core:3.4.1")
+	implementation("io.ktor:ktor-server-double-receive:3.4.1")
+	implementation("io.ktor:ktor-server-core:3.4.1")
 
 	testImplementation(libs.ktor.serverTestHost)
 	testImplementation(libs.kotlin.testJunit)

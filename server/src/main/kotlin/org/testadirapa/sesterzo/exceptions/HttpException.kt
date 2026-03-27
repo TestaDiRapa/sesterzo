@@ -1,7 +1,6 @@
 package org.testadirapa.sesterzo.exceptions
 
 import io.ktor.http.HttpStatusCode
-import org.testadirapa.sesterzo.model.dto.StatusResponse
 
 abstract class HttpException(
 	msg: String,

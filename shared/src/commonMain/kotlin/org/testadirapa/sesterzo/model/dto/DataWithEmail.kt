@@ -3,7 +3,6 @@ package org.testadirapa.sesterzo.model.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LoginData(
-	override val email: String,
-	val token: String,
-): DataWithEmail
+sealed interface DataWithEmail {
+	val email: String
+}

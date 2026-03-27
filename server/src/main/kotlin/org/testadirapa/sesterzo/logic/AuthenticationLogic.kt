@@ -38,14 +38,24 @@ interface AuthenticationLogic {
 	suspend fun completeRegistration(processId: String, token: String): AuthResponse
 
 	/**
+	 * Generates a new OTT for the user with the specified [email] and sends it via mail. The token is saved in a cache
+	 * and is valid for a single access, in a time window of 15 minutes. Requesting another token will automatically
+	 * invalidate the previous one.
+	 * If a user with the specified email does not exist, no error is returned.
+	 *
+	 * @param email the email of the user.
+	 * @param solution a captcha [Solution].
+	 */
+	suspend fun generateOTT(email: String, solution: Solution)
+
+	/**
 	 * Logs in a user by email and token.
 	 * @param email the user email.
 	 * @param token the user token.
-	 * @param solution a captcha [Solution].
 	 * @return an [AuthResponse] if the process is successful.
 	 * @throws [UnauthorizedException] if the process fails for any reason.
 	 */
-	suspend fun login(email: String, token: String, solution: Solution): AuthResponse
+	suspend fun login(email: String, token: String): AuthResponse
 
 	/**
 	 * Generates a new JWT for a user.

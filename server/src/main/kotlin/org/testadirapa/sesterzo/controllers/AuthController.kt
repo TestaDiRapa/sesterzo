@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.controllers
 import io.ktor.server.auth.authenticate
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.principal
+import io.ktor.server.plugins.doublereceive.DoubleReceive
 import io.ktor.server.plugins.ratelimit.RateLimitName
 import io.ktor.server.plugins.ratelimit.rateLimit
 import io.ktor.server.request.*
@@ -18,6 +19,7 @@ import org.testadirapa.sesterzo.logic.AuthenticationLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
 import org.testadirapa.sesterzo.model.dto.CompleteRegistrationData
 import org.testadirapa.sesterzo.model.dto.LoginData
+import org.testadirapa.sesterzo.model.dto.OttData
 import org.testadirapa.sesterzo.model.dto.StartRegistrationData
 import org.testadirapa.sesterzo.security.toJWTRefreshClaims
 
@@ -27,12 +29,10 @@ fun Routing.authController() =
 		val captchaLogic by inject<CaptchaLogic>()
 
 		rateLimit(RateLimitName(CAPTCHA_RATE_LIMIT_KEY)) {
-
 			get("/captcha/{input}") {
 				val input = requireNotNull(call.parameters["input"]) { "Input must be specified for captcha" }
 				call.respond(captchaLogic.generateChallenge(input))
 			}
-
 		}
 
 		rateLimit(RateLimitName(REGISTER_RATE_LIMIT_KEY)) {
@@ -52,10 +52,19 @@ fun Routing.authController() =
 		}
 
 		rateLimit(RateLimitName(LOGIN_RATE_LIMIT_KEY)) {
+			install(DoubleReceive)
+
+			get("/ott") {
+				val ottData = call.receive<OttData>()
+				call.respond(
+					authLogic.generateOTT(email = ottData.email, solution = ottData.captchaSolution)
+				)
+			}
+
 			post("/login") {
 				val loginData = call.receive<LoginData>()
 				call.respond(
-					authLogic.login(email = loginData.email, token = loginData.token, solution = loginData.captchaSolution)
+					authLogic.login(email = loginData.email, token = loginData.token)
 				)
 			}
 		}

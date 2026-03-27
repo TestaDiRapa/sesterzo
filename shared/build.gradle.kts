@@ -21,8 +21,6 @@ kotlin {
 //		}
 //	}
 
-	jvm()
-
 	js {
 		browser()
 	}
@@ -37,9 +35,16 @@ kotlin {
 			implementation(libs.kotlinx.serialization.json)
 			api(libs.kryptom)
 			api(libs.kerberus)
+
+			api(libs.ktor.clientCore)
+			api(libs.ktor.clientContentNegotiation)
+			api(libs.ktor.serialization)
 		}
 		commonTest.dependencies {
 			implementation(libs.kotlin.test)
+		}
+		webMain.dependencies {
+			api(libs.ktor.clientJs)
 		}
 	}
 }

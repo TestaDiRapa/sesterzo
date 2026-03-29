@@ -1,27 +1,26 @@
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
 	alias(libs.plugins.kotlinMultiplatform)
-//	alias(libs.plugins.androidMultiplatformLibrary)
+	alias(libs.plugins.androidMultiplatformLibrary)
 	alias(libs.plugins.composeMultiplatform)
 	alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
 
-//	androidLibrary {
-//		namespace = "org.testadirapa.sesterzo.compose"
-//		compileSdk = libs.versions.android.compileSdk.get().toInt()
-//
-//		compilerOptions {
-//			jvmTarget.set(JvmTarget.JVM_11)
-//		}
-//
-//		androidResources {
-//			enable = true
-//		}
-//	}
+	androidLibrary {
+		namespace = "org.testadirapa.sesterzo.compose"
+		compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+		compilerOptions {
+			jvmTarget.set(JvmTarget.JVM_11)
+		}
+
+		androidResources {
+			enable = true
+		}
+	}
 
 	js {
 		browser()

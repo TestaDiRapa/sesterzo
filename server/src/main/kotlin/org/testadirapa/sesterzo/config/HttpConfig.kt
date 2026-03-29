@@ -6,8 +6,8 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.response.*
-import org.testadirapa.sesterzo.security.JWTConfig
-import org.testadirapa.sesterzo.security.JWTManager
+import org.testadirapa.sesterzo.security.JwtConfig
+import org.testadirapa.sesterzo.security.JwtManager
 
 const val AUTH_CTX = "auth-ctx"
 const val REFRESH_CTX = "refresh-ctx"
@@ -29,8 +29,8 @@ fun Application.configureHTTP() {
 		anyHost()
 	}
 
-	val jwtConfig = JWTConfig.fromConfig(environment.config)
-	val jwtManager = JWTManager(jwtConfig)
+	val jwtConfig = JwtConfig.fromConfig(environment.config)
+	val jwtManager = JwtManager(jwtConfig)
 	install(Authentication) {
 		jwt(AUTH_CTX) {
 			realm = jwtManager.config.realm

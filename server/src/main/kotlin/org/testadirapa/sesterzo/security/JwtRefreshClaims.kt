@@ -1,5 +1,5 @@
 package org.testadirapa.sesterzo.security
 
-data class JWTRefreshClaims(
+data class JwtRefreshClaims(
 	val userId: String,
 )

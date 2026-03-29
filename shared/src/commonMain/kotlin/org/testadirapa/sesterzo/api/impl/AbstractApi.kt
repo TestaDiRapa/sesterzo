@@ -1,20 +1,17 @@
 package org.testadirapa.sesterzo.api.impl
 
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.timeout
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.headers
 import io.ktor.client.request.request
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpMethod
 import kotlinx.coroutines.delay
 import org.testadirapa.sesterzo.config.HttpConfig
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 abstract class AbstractApi(
-	private val config: HttpConfig
+	private val config: HttpConfig,
 ) {
+
+	protected val baseUrl: String get() = config.baseUrl
 
 	protected suspend fun get(
 		block: suspend HttpRequestBuilder.() -> Unit

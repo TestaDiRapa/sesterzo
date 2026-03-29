@@ -54,7 +54,7 @@ fun Routing.authController() =
 		rateLimit(RateLimitName(LOGIN_RATE_LIMIT_KEY)) {
 			install(DoubleReceive)
 
-			get("/ott") {
+			post("/ott") {
 				val ottData = call.receive<OttData>()
 				call.respond(
 					authLogic.generateOTT(email = ottData.email, solution = ottData.captchaSolution)

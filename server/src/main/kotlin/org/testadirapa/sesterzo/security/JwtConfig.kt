@@ -8,7 +8,7 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.util.Base64
 
-class JWTConfig(
+class JwtConfig(
 	val authPrivateKey: RSAPrivateKey,
 	val authPublicKey: RSAPublicKey,
 	val refreshPrivateKey: RSAPrivateKey,
@@ -19,7 +19,7 @@ class JWTConfig(
 ) {
 	companion object {
 		fun fromConfig(config: ApplicationConfig) =
-			JWTConfig(
+			JwtConfig(
 				authPrivateKey = loadPrivateKey(config.property("ktor.jwt.authPrivateKey").getString()),
 				authPublicKey = loadPublicKey(config.property("ktor.jwt.authPublicKey").getString()),
 				refreshPrivateKey = loadPrivateKey(config.property("ktor.jwt.refreshPrivateKey").getString()),

@@ -15,9 +15,9 @@ import org.testadirapa.sesterzo.logic.AuthenticationLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
 import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.model.dto.AuthResponse
-import org.testadirapa.sesterzo.security.JWTClaims
-import org.testadirapa.sesterzo.security.JWTManager
-import org.testadirapa.sesterzo.security.JWTRefreshClaims
+import org.testadirapa.sesterzo.security.JwtClaims
+import org.testadirapa.sesterzo.security.JwtManager
+import org.testadirapa.sesterzo.security.JwtRefreshClaims
 import org.testadirapa.sesterzo.utils.toMap
 import java.util.concurrent.TimeUnit
 
@@ -27,7 +27,7 @@ class AuthenticationLogicImpl(
 	private val userDAO: UserDAO,
 	private val spaceDAO: SpaceDAO,
 	private val captchaLogic: CaptchaLogic,
-	private val jwtManager: JWTManager,
+	private val jwtManager: JwtManager,
 	private val passwordEncoder: PasswordEncoder
 ) : AuthenticationLogic {
 
@@ -51,8 +51,8 @@ class AuthenticationLogicImpl(
  			}
 		}.toMap()
 		return AuthResponse(
-			jwt = jwtManager.generateAuthJWT(JWTClaims(userId = userId, spaces = spacesWithPermission)),
-			refreshJwt = refreshToken ?: jwtManager.generateRefreshJWT(JWTRefreshClaims(userId)),
+			jwt = jwtManager.generateAuthJWT(JwtClaims(userId = userId, spaces = spacesWithPermission)),
+			refreshJwt = refreshToken ?: jwtManager.generateRefreshJWT(JwtRefreshClaims(userId)),
 		)
 	}
 

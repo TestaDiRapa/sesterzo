@@ -8,6 +8,8 @@ import io.ktor.server.auth.jwt.*
 import org.testadirapa.sesterzo.exceptions.JWTException
 import org.testadirapa.sesterzo.exceptions.UnauthorizedException
 import org.testadirapa.sesterzo.model.UserSpaceRole
+import org.testadirapa.sesterzo.security.UserJwtClaims.Companion.SPACES_KEY
+import org.testadirapa.sesterzo.security.UserJwtClaims.Companion.USER_ID_KEY
 import java.util.*
 import kotlin.collections.mapValues
 import kotlin.time.Duration.Companion.days
@@ -16,13 +18,10 @@ import kotlin.time.Duration.Companion.minutes
 /**
  * This component manages the authentication and refresh JWT creation and verification
  */
-class JWTManager(
-	val config: JWTConfig,
+class JwtManager(
+	val config: JwtConfig,
 ) {
 	companion object {
-		const val USER_ID_KEY = "uId"
-		const val SPACES_KEY = "s"
-
 		private val authJWTDuration = 15.minutes.inWholeMilliseconds
 		private val refreshJWTDuration = 30.days.inWholeMilliseconds
 	}
@@ -31,10 +30,10 @@ class JWTManager(
 	 * Generates an authentication JWT from the claims passed as parameter.
 	 * The duration of the token is set to 1 hour.
 	 *
-	 * @param jwtClaims the [JWTClaims] to put in the token.
+	 * @param jwtClaims the [JwtClaims] to put in the token.
 	 * @return a base64-encoded JWT.
 	 */
-	fun generateAuthJWT(jwtClaims: JWTClaims): String =
+	fun generateAuthJWT(jwtClaims: JwtClaims): String =
 		JWT.create()
 			.withAudience(config.audience)
 			.withIssuer(config.issuer)
@@ -47,10 +46,10 @@ class JWTManager(
 	 * Generates a refresh JWT from the claims passed as parameter.
 	 * The duration of the token is set to 1 hour.
 	 *
-	 * @param jwtClaims the [JWTRefreshClaims] to put in the token.
+	 * @param jwtClaims the [JwtRefreshClaims] to put in the token.
 	 * @return a base64-encoded JWT.
 	 */
-	fun generateRefreshJWT(jwtClaims: JWTRefreshClaims): String =
+	fun generateRefreshJWT(jwtClaims: JwtRefreshClaims): String =
 		JWT.create()
 			.withAudience(config.audience)
 			.withIssuer(config.issuer)
@@ -108,17 +107,17 @@ class JWTManager(
 }
 
 /**
- * Converts a [Payload] to [JWTClaims].
+ * Converts a [Payload] to [JwtClaims].
  *
  * @receiver payload a [Payload].
- * @return a [JWTClaims]
+ * @return a [JwtClaims]
  * @throws JWTException if it the JWT is in the wrong format.
  */
-fun Payload.toJWTClaims(): JWTClaims =
+fun Payload.toJWTClaims(): JwtClaims =
 	try {
-		JWTClaims(
-			userId = getClaim(JWTManager.USER_ID_KEY).asString(),
-			spaces = getClaim(JWTManager.SPACES_KEY).asMap().mapValues { (_, v) ->
+		JwtClaims(
+			userId = getClaim(USER_ID_KEY).asString(),
+			spaces = getClaim(SPACES_KEY).asMap().mapValues { (_, v) ->
 				v as UserSpaceRole
 			}
 		)
@@ -127,16 +126,16 @@ fun Payload.toJWTClaims(): JWTClaims =
 	}
 
 /**
- * Converts a [Payload] to [JWTRefreshClaims].
+ * Converts a [Payload] to [JwtRefreshClaims].
  *
  * @receiver payload a [Payload].
- * @return a [JWTRefreshClaims]
+ * @return a [JwtRefreshClaims]
  * @throws JWTException if the JWT is in the wrong format.
  */
-fun Payload.toJWTRefreshClaims(): JWTRefreshClaims =
+fun Payload.toJWTRefreshClaims(): JwtRefreshClaims =
 	try {
-		JWTRefreshClaims(
-			userId = getClaim(JWTManager.USER_ID_KEY).asString()
+		JwtRefreshClaims(
+			userId = getClaim(USER_ID_KEY).asString()
 		)
 	} catch (e: Exception) {
 		throw JWTException(e.message ?: "Wrong JWT format")

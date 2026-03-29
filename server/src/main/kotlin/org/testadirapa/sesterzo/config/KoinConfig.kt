@@ -22,13 +22,13 @@ import org.testadirapa.sesterzo.logic.AuthenticationLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
 import org.testadirapa.sesterzo.logic.impl.AuthenticationLogicImpl
 import org.testadirapa.sesterzo.logic.impl.CaptchaLogicImpl
-import org.testadirapa.sesterzo.security.JWTConfig
-import org.testadirapa.sesterzo.security.JWTManager
+import org.testadirapa.sesterzo.security.JwtConfig
+import org.testadirapa.sesterzo.security.JwtManager
 
 fun applicationModules(
 	config: ApplicationConfig,
 ) = module {
-	single<JWTManager> { JWTManager(config = JWTConfig.fromConfig(config)) }
+	single<JwtManager> { JwtManager(config = JwtConfig.fromConfig(config)) }
 	single<DBClient> { DBClient(dbCredentials = MongoDBCredentials.fromConfig(config)) }
 	single<PasswordEncoder> { BCryptPasswordEncoder() }
 

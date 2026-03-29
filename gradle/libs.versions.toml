@@ -61,7 +61,7 @@ mongo-client-serialization = { module = "org.mongodb:bson-kotlinx", version = "5
 
 jbcrypt = { module = "org.mindrot:jbcrypt", version = "0.4" }
 
-ktor-clientCore = { module = "io.ktor:ktor-client-core-jvm", version.ref = "ktor" }
+ktor-clientCore = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-clientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref=  "ktor" }
 ktor-clientOkHttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-clientJs = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }

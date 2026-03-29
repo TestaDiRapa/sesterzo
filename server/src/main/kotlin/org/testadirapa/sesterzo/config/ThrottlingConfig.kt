@@ -19,7 +19,7 @@ fun Application.configureThrottling() {
 			rateLimiter(limit = 30, refillPeriod = 60.seconds)
 			requestKey { applicationCall ->
 				val payload = applicationCall.receive<DataWithEmail>()
-				payload.email
+				payload.email to applicationCall.request.origin.remoteHost
 			}
 		}
 

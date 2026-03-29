@@ -60,8 +60,9 @@ mongo-client-coroutine = { module = "org.mongodb:mongodb-driver-kotlin-coroutine
 mongo-client-serialization = { module = "org.mongodb:bson-kotlinx", version = "5.6.4" }
 
 jbcrypt = { module = "org.mindrot:jbcrypt", version = "0.4" }
+
 ktor-clientCore = { module = "io.ktor:ktor-client-core-jvm", version.ref = "ktor" }
-ktor-clientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation-jvm", version.ref=  "ktor" }
+ktor-clientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref=  "ktor" }
 ktor-clientOkHttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-clientJs = { module = "io.ktor:ktor-client-js", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }

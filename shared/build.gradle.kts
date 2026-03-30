@@ -8,6 +8,10 @@ plugins {
 
 kotlin {
 
+	compilerOptions {
+		freeCompilerArgs.add("-Xexpect-actual-classes")
+	}
+
 	androidLibrary {
 		namespace = "org.testadirapa.sesterzo.compose"
 		compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -53,6 +57,8 @@ kotlin {
 		}
 		androidMain.dependencies {
 			api(libs.ktor.clientAndroid)
+			implementation(libs.androidx.biometric)
+			implementation(libs.androidx.datastore)
 		}
 	}
 }

@@ -15,6 +15,9 @@ plugins {
 buildscript {
 	dependencies {
 		// For KGP
-		classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.21")
+		classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.20")
+	}
+	repositories {
+		mavenCentral()
 	}
 }

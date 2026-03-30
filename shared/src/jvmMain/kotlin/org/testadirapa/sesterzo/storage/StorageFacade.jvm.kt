@@ -14,5 +14,3 @@ class VolatileStorageFacade: StorageFacade {
 	}
 
 }
-
-actual fun getStorageFacade(): StorageFacade = VolatileStorageFacade()

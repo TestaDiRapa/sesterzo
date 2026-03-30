@@ -2,7 +2,7 @@ package org.testadirapa.sesterzo.storage
 
 import kotlinx.browser.localStorage
 
-class LocalStorageStorageJsFacade : StorageFacade {
+class LocalStorageJsFacade : StorageFacade {
 	init {
 		check(eval("typeof(localStorage) === 'object'") as Boolean) {
 			"No global local storage is available"
@@ -18,5 +18,3 @@ class LocalStorageStorageJsFacade : StorageFacade {
 	override suspend fun removeItem(key: String) =
 		localStorage.removeItem(key)
 }
-
-actual fun getStorageFacade(): StorageFacade = LocalStorageStorageJsFacade()

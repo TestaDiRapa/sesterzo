@@ -4,6 +4,6 @@ import org.testadirapa.sesterzo.storage.StorageFacade
 
 expect object PlatformConfig {
 
-	expect suspend fun storageFacade(): StorageFacade
+	suspend fun storageFacade(): StorageFacade
 
 }

@@ -8,5 +8,3 @@ interface StorageFacade {
 
 	suspend fun removeItem(key: String)
 }
-
-expect fun getStorageFacade(): StorageFacade

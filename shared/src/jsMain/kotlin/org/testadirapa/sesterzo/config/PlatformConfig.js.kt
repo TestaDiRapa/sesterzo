@@ -1,0 +1,8 @@
+package org.testadirapa.sesterzo.config
+
+import org.testadirapa.sesterzo.storage.LocalStorageJsFacade
+import org.testadirapa.sesterzo.storage.StorageFacade
+
+actual object PlatformConfig {
+	actual suspend fun storageFacade(): StorageFacade = LocalStorageJsFacade()
+}

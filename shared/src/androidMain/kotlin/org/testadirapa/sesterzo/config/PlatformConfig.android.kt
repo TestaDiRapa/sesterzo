@@ -1,12 +1,12 @@
 package org.testadirapa.sesterzo.config
 
 import android.app.Application
-import android.content.Context
 import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.datastore.preferences.preferencesDataStoreFile
 import org.testadirapa.sesterzo.storage.AndroidSecureStorageFacade
 import org.testadirapa.sesterzo.storage.DataStorePreferenceStorage
 import org.testadirapa.sesterzo.storage.SecureKeyAccessLevel
@@ -17,17 +17,13 @@ actual object PlatformConfig {
 
 	private val durationBetweenBiometricPrompts = 2.minutes
 
-	private val Context.appDataStore: DataStore<Preferences> by preferencesDataStore(
-		name = applicationId
-	)
-
 	private var _applicationId: String? = null
-	val applicationId: String
-		get() = checkNotNull(_applicationId) { "PlatformConfig was not initialized" }
+
+	private var _appDataStore: DataStore<Preferences>? = null
 
 	private val storageFacade: StorageFacade by lazy {
-		checkNotNull(_applicationContext) { "PlatformConfig was not initialized" }.let {
-			DataStorePreferenceStorage(it.appDataStore)
+		checkNotNull(_appDataStore) { "PlatformConfig was not initialized" }.let {
+			DataStorePreferenceStorage(it)
 		}
 	}
 
@@ -36,8 +32,12 @@ actual object PlatformConfig {
 	private var secureCardinalStorageFacade: StorageFacade? = null
 
 	fun setup(application: Application) {
+		_applicationId = application.packageName
 		_applicationContext = application
 		_biometricManager = BiometricManager.from(application)
+		_appDataStore = PreferenceDataStoreFactory.create(
+			produceFile = { application.preferencesDataStoreFile(application.packageName) }
+		)
 	}
 
 	actual suspend fun storageFacade(): StorageFacade {

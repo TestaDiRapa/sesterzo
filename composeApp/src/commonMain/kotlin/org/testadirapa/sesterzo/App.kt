@@ -16,11 +16,12 @@ import kotlinx.coroutines.launch
 import org.testadirapa.sesterzo.config.PlatformContext
 import org.testadirapa.sesterzo.security.authenticateUsingBiometric
 import org.testadirapa.sesterzo.storage.StorageFacade
+import org.testadirapa.sesterzo.styles.SesterzoTheme
 
 @Composable
 @Preview
 fun App() {
-	MaterialTheme {
+	SesterzoTheme {
 		val scope = rememberCoroutineScope()
 		var storage by remember { mutableStateOf<StorageFacade?>(null) }
 		var isAuthenticated by remember { mutableStateOf(false) }

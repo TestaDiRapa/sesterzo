@@ -27,6 +27,7 @@ data class DecryptedBudget(
 	val expenses: Map<ExpenseKey, Amount> = emptyMap()
 ) : Budget, DecryptedData {
 
+	@Serializable
 	data class ExpenseKey(val timestamp: Timestamp, val key: String)
 
 }

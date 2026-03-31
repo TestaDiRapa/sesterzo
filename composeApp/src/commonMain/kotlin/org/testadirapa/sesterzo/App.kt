@@ -1,11 +1,8 @@
 package org.testadirapa.sesterzo
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -14,36 +11,54 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.resources.painterResource
-import org.testadirapa.sesterzo.config.PlatformConfig
-
-import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.compose_multiplatform
+import com.icure.kryptom.crypto.defaultCryptoService
+import kotlinx.coroutines.launch
+import org.testadirapa.sesterzo.config.PlatformContext
+import org.testadirapa.sesterzo.security.authenticateUsingBiometric
+import org.testadirapa.sesterzo.storage.StorageFacade
 
 @Composable
 @Preview
 fun App() {
 	MaterialTheme {
-		var showContent by remember { mutableStateOf(false) }
-		Column(
-			modifier = Modifier
-				.background(MaterialTheme.colorScheme.primaryContainer)
-				.safeContentPadding()
-				.fillMaxSize(),
-			horizontalAlignment = Alignment.CenterHorizontally,
-		) {
-			Button(onClick = { showContent = !showContent }) {
-				Text("Click me!")
+		val scope = rememberCoroutineScope()
+		var storage by remember { mutableStateOf<StorageFacade?>(null) }
+		var isAuthenticated by remember { mutableStateOf(false) }
+		var content by remember { mutableStateOf<String?>(null) }
+		LaunchedEffect("auth") {
+			isAuthenticated = PlatformContext.biometricAuthenticator().authenticateUsingBiometric(
+				"Unlock key",
+				"test",
+				"Description"
+			)
+		}
+		if (isAuthenticated) {
+			LaunchedEffect("storage") {
+				storage = PlatformContext.storageFacade()
 			}
-			AnimatedVisibility(showContent) {
-				val greeting = "Ciao"
-				Column(
-					modifier = Modifier.fillMaxWidth(),
-					horizontalAlignment = Alignment.CenterHorizontally,
-				) {
-					Image(painterResource(Res.drawable.compose_multiplatform), null)
-					Text("Compose: $greeting")
+			Column(
+				modifier = Modifier
+					.background(MaterialTheme.colorScheme.primaryContainer)
+					.safeContentPadding()
+					.fillMaxSize(),
+				horizontalAlignment = Alignment.CenterHorizontally,
+			) {
+				Button(onClick = {
+					scope.launch {
+						storage?.setItem("test", defaultCryptoService.strongRandom.randomUUID())
+					}
+				}) {
+					Text("Store something")
 				}
+				Button(onClick = {
+					scope.launch {
+						content = storage?.getItem("test")
+					}
+				}) {
+					Text("Retrieve something")
+				}
+				Text("Storage is null ${storage == null}")
+				Text("Retrieve: $content")
 			}
 		}
 	}

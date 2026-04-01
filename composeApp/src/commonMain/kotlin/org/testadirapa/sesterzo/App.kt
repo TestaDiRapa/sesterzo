@@ -30,15 +30,8 @@ fun App() {
 	) {
 		val scope = rememberCoroutineScope()
 		var storage by remember { mutableStateOf<StorageFacade?>(null) }
-		var isAuthenticated by remember { mutableStateOf(false) }
+		var isAuthenticated by remember { mutableStateOf(true) }
 		var content by remember { mutableStateOf<String?>(null) }
-		LaunchedEffect("auth") {
-			isAuthenticated = PlatformContext.biometricAuthenticator().authenticateUsingBiometric(
-				"Unlock key",
-				"test",
-				"Description"
-			)
-		}
 		if (isAuthenticated) {
 			LaunchedEffect("storage") {
 				storage = PlatformContext.storageFacade()

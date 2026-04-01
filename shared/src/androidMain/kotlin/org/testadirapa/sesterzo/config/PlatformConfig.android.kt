@@ -11,7 +11,7 @@ import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.fragment.app.FragmentActivity
 import org.testadirapa.sesterzo.security.AndroidBiometricAuthenticator
 import org.testadirapa.sesterzo.security.BiometricAuthenticator
-import org.testadirapa.sesterzo.storage.AndroidSecureStorageFacade
+import org.testadirapa.sesterzo.storage.AndroidBiometricSecureStorageFacade
 import org.testadirapa.sesterzo.storage.DataStorePreferenceStorage
 import org.testadirapa.sesterzo.storage.SecureKeyAccessLevel
 import org.testadirapa.sesterzo.storage.StorageFacade
@@ -71,8 +71,9 @@ actual object PlatformContext {
 				val biometricManager = checkNotNull(_biometricManager) { "PlatformContext was not initialized" }
 				val accessLevels = setOfNotNull(getHighestAuthOptionAvailable(biometricManager))
 
-				AndroidSecureStorageFacade(
+				AndroidBiometricSecureStorageFacade(
 					storage = storageFacade,
+					biometricAuthenticator = _biometricAuthenticator!!,
 					accessLevel = accessLevels,
 					authorizationTimeoutSeconds = durationBetweenBiometricPrompts.inWholeSeconds.toInt()
 				)

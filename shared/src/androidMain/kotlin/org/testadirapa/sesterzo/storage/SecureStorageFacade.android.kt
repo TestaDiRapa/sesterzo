@@ -20,24 +20,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 
 @RequiresApi(Build.VERSION_CODES.R)
-@Suppress("FunctionName")
-suspend fun AndroidSecureStorageFacade(
-	storage: StorageFacade,
-	accessLevel: Set<SecureKeyAccessLevel>,
-	authorizationTimeoutSeconds: Int = 0
-): EncryptedStorageFacade {
-	val encryptionKey = getOrCreateSecretKey(storage, SECRET_KEY, accessLevel, authorizationTimeoutSeconds)
-	return EncryptedStorageFacade(storage, encryptionKey)
-}
-
-/**
- * Get or create a secret key for encryption.
- *
- * @param storageFacade The storage facade to use to store the secret key.
- * @param key The key to use to store/access the AES key.
- */
-@RequiresApi(Build.VERSION_CODES.R)
-private suspend fun getOrCreateSecretKey(
+suspend fun getOrCreateSecretKey(
 	storageFacade: StorageFacade,
 	key: String,
 	accessLevel: Set<SecureKeyAccessLevel>,
@@ -47,7 +30,7 @@ private suspend fun getOrCreateSecretKey(
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
-private suspend fun getSecretKey(key: String, storage: StorageFacade): AesKey<CbcWithPkcs7Padding>? {
+suspend fun getSecretKey(key: String, storage: StorageFacade): AesKey<CbcWithPkcs7Padding>? {
 	val keyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
 	val iv = storage.getItem("$key.iv")?.let { base64Decode(it) }
 	val cipherBytes = storage.getItem("$key.cipher")?.let { base64Decode(it) }

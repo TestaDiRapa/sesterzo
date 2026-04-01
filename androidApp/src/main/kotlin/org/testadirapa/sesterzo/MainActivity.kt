@@ -1,7 +1,6 @@
 package org.testadirapa.sesterzo
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
@@ -17,7 +16,8 @@ class MainActivity : FragmentActivity() {
 		setContent {
 			PlatformContext.setup(
 				application = this.application,
-				fragmentActivityContext = this
+				fragmentActivityContext = this,
+				unlockStorageTitle = "Tap to unlock your budget"
 			)
 			App()
 		}

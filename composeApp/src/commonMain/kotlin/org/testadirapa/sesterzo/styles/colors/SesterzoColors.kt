@@ -5,107 +5,106 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
 object SesterzoColors {
-	// Gold (primary / brand / fixed expenses)
-	val Gold50  = Color(0xFFFDF6DC)
-	val Gold100 = Color(0xFFF5DC7A)
-	val Gold200 = Color(0xFFE8B800)
-	val Gold400 = Color(0xFFC9960C)   // ★ primary action
-	val Gold600 = Color(0xFFA67C00)   // border, emphasis
-	val Gold800 = Color(0xFF7A5C00)   // text on gold bg
-	val Gold900 = Color(0xFF3D2E00)   // brand panel bg / dark surface
+	// Blue (primary / fixed expenses)
+	val Blue50  = Color(0xFFE6F1FB)
+	val Blue100 = Color(0xFFB5D4F4)
+	val Blue400 = Color(0xFF378ADD)
+	val Blue600 = Color(0xFF185FA5)   // ★ primary action
+	val Blue800 = Color(0xFF0C447C)
+	val Blue900 = Color(0xFF042C53)   // brand panel bg
 
-	// Green (savings / positive delta)
+	// Green (savings / positive)
 	val Green50  = Color(0xFFEAF3DE)
 	val Green200 = Color(0xFF97C459)
-	val Green400 = Color(0xFF1D9E75)
+	val Green400 = Color(0xFF1D9E75)  // ★ savings dots, positive delta
 	val Green600 = Color(0xFF3B6D11)
 
 	// Red (overspend / alerts)
 	val Red50  = Color(0xFFFCEBEB)
 	val Red200 = Color(0xFFF09595)
-	val Red400 = Color(0xFFE24B4A)
+	val Red400 = Color(0xFFE24B4A)    // ★ negative amounts
 	val Red600 = Color(0xFFA32D2D)
 
-	// Terracotta (variable expenses)
-	val Terra50  = Color(0xFFFAECE7)
-	val Terra200 = Color(0xFFF0997B)
-	val Terra400 = Color(0xFFD85A30)
-	val Terra600 = Color(0xFF993C1D)
+	// Amber (variable expenses / warnings)
+	val Amber50  = Color(0xFFFAEEDA)
+	val Amber200 = Color(0xFFEF9F27)
+	val Amber400 = Color(0xFFBA7517)  // ★ variable dots
+	val Amber600 = Color(0xFF854F0B)
 
-	// Warm stone neutrals
+	// Neutrals
 	val White    = Color(0xFFFFFFFF)
-	val Stone50  = Color(0xFFF7F4EE)   // page background
-	val Stone100 = Color(0xFFE8E4DA)   // dividers, borders
-	val Stone400 = Color(0xFF9C9488)   // secondary text
-	val Stone900 = Color(0xFF2E2A22)   // primary text
+	val Gray50   = Color(0xFFF5F5F3)   // page background
+	val Gray100  = Color(0xFFE8E8E5)   // dividers, borders
+	val Gray400  = Color(0xFF888780)   // secondary text
+	val Gray900  = Color(0xFF2C2C2A)   // primary text
 
-	// Dark mode surfaces (warm-tinted darks)
-	val DarkSurface  = Color(0xFF1E1B14)
-	val DarkSurface2 = Color(0xFF272318)
-	val DarkSurface3 = Color(0xFF302B1E)
-	val DarkBorder   = Color(0xFF3D3828)
-	val DarkTextPrimary   = Color(0xFFF2EDD8)
-	val DarkTextSecondary = Color(0xFF9C9070)
+	// Dark mode surfaces
+	val DarkSurface    = Color(0xFF1C1C1A)
+	val DarkSurface2   = Color(0xFF252523)
+	val DarkSurface3   = Color(0xFF2E2E2B)
+	val DarkBorder     = Color(0xFF3A3A37)
+	val DarkTextPrimary   = Color(0xFFF0EFEA)
+	val DarkTextSecondary = Color(0xFF9E9D97)
 }
 
 val LightColorScheme = lightColorScheme(
-	primary = SesterzoColors.Gold400,
-	onPrimary = SesterzoColors.Gold50,
-	primaryContainer = SesterzoColors.Gold50,
-	onPrimaryContainer = SesterzoColors.Gold800,
+	primary            = SesterzoColors.Blue600,
+	onPrimary          = SesterzoColors.White,
+	primaryContainer   = SesterzoColors.Blue50,
+	onPrimaryContainer = SesterzoColors.Blue800,
 
-	secondary = SesterzoColors.Green400,
-	onSecondary = SesterzoColors.White,
-	secondaryContainer = SesterzoColors.Green50,
+	secondary            = SesterzoColors.Green400,
+	onSecondary          = SesterzoColors.White,
+	secondaryContainer   = SesterzoColors.Green50,
 	onSecondaryContainer = SesterzoColors.Green600,
 
-	tertiary = SesterzoColors.Terra400,
-	onTertiary = SesterzoColors.White,
-	tertiaryContainer = SesterzoColors.Terra50,
-	onTertiaryContainer = SesterzoColors.Terra600,
+	tertiary            = SesterzoColors.Amber400,
+	onTertiary          = SesterzoColors.White,
+	tertiaryContainer   = SesterzoColors.Amber50,
+	onTertiaryContainer = SesterzoColors.Amber600,
 
-	error = SesterzoColors.Red400,
-	onError = SesterzoColors.White,
-	errorContainer = SesterzoColors.Red50,
+	error            = SesterzoColors.Red400,
+	onError          = SesterzoColors.White,
+	errorContainer   = SesterzoColors.Red50,
 	onErrorContainer = SesterzoColors.Red600,
 
-	background = SesterzoColors.Stone50,
-	onBackground = SesterzoColors.Stone900,
-	surface = SesterzoColors.White,
-	onSurface = SesterzoColors.Stone900,
-	surfaceVariant = SesterzoColors.Stone50,
-	onSurfaceVariant = SesterzoColors.Stone400,
-	outline = SesterzoColors.Stone100,
-	outlineVariant = SesterzoColors.Stone100,
+	background    = SesterzoColors.Gray50,
+	onBackground  = SesterzoColors.Gray900,
+	surface       = SesterzoColors.White,
+	onSurface     = SesterzoColors.Gray900,
+	surfaceVariant   = SesterzoColors.Gray50,
+	onSurfaceVariant = SesterzoColors.Gray400,
+	outline          = SesterzoColors.Gray100,
+	outlineVariant   = SesterzoColors.Gray100,
 )
 
 val DarkColorScheme = darkColorScheme(
-	primary = SesterzoColors.Gold200,
-	onPrimary = SesterzoColors.Gold900,
-	primaryContainer = SesterzoColors.Gold800,
-	onPrimaryContainer = SesterzoColors.Gold100,
+	primary            = SesterzoColors.Blue400,
+	onPrimary          = SesterzoColors.Blue900,
+	primaryContainer   = SesterzoColors.Blue800,
+	onPrimaryContainer = SesterzoColors.Blue100,
 
-	secondary = SesterzoColors.Green400,
-	onSecondary = SesterzoColors.Gold900,
+	secondary            = SesterzoColors.Green400,
+	onSecondary          = SesterzoColors.Blue900,
 	secondaryContainer   = Color(0xFF0F3D2A),
 	onSecondaryContainer = Color(0xFF9FE1CB),
 
-	tertiary = SesterzoColors.Terra200,
-	onTertiary = Color(0xFF4A1B0C),
-	tertiaryContainer = Color(0xFF6B2C15),
-	onTertiaryContainer = Color(0xFFF5C4B3),
+	tertiary            = SesterzoColors.Amber200,
+	onTertiary          = Color(0xFF412402),
+	tertiaryContainer   = Color(0xFF5A3208),
+	onTertiaryContainer = Color(0xFFFAC775),
 
-	error = SesterzoColors.Red200,
-	onError = Color(0xFF501313),
-	errorContainer = Color(0xFF791F1F),
+	error            = SesterzoColors.Red200,
+	onError          = Color(0xFF501313),
+	errorContainer   = Color(0xFF791F1F),
 	onErrorContainer = Color(0xFFF7C1C1),
 
-	background = SesterzoColors.DarkSurface,
-	onBackground = SesterzoColors.DarkTextPrimary,
-	surface = SesterzoColors.DarkSurface2,
-	onSurface = SesterzoColors.DarkTextPrimary,
-	surfaceVariant = SesterzoColors.DarkSurface3,
+	background    = SesterzoColors.DarkSurface,
+	onBackground  = SesterzoColors.DarkTextPrimary,
+	surface       = SesterzoColors.DarkSurface2,
+	onSurface     = SesterzoColors.DarkTextPrimary,
+	surfaceVariant   = SesterzoColors.DarkSurface3,
 	onSurfaceVariant = SesterzoColors.DarkTextSecondary,
-	outline = SesterzoColors.DarkBorder,
-	outlineVariant = SesterzoColors.DarkBorder,
+	outline          = SesterzoColors.DarkBorder,
+	outlineVariant   = SesterzoColors.DarkBorder,
 )

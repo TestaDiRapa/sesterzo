@@ -5,23 +5,19 @@ import kotlinx.coroutines.CompletableDeferred
 interface BiometricAuthenticator {
 	fun authenticate(
 		title: String,
-		subtitle: String,
-		description: String,
+		subtitle: String?,
+		description: String?,
 		onSuccess: () -> Unit,
 		onFailure: (String) -> Unit
 	)
 }
 
-suspend fun BiometricAuthenticator.authenticateUsingBiometric(
-	title: String,
-	subtitle: String,
-	description: String,
-): Boolean {
+suspend fun BiometricAuthenticator.authenticateUsingBiometric(title: String): Boolean {
 	val result = CompletableDeferred<Boolean>()
 	this.authenticate(
 		title = title,
-		subtitle = subtitle,
-		description = description,
+		subtitle = null,
+		description = null,
 		onSuccess = {
 			result.complete(true)
 		},

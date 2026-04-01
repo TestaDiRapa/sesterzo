@@ -24,8 +24,8 @@ class AndroidBiometricAuthenticator(
 
 	override fun authenticate(
 		title: String,
-		subtitle: String,
-		description: String,
+		subtitle: String?,
+		description: String?,
 		onSuccess: () -> Unit,
 		onFailure: (String) -> Unit
 	) {

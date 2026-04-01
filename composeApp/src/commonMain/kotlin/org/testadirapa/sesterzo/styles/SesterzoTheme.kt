@@ -8,7 +8,8 @@ import org.testadirapa.sesterzo.styles.colors.DarkSemanticColors
 import org.testadirapa.sesterzo.styles.colors.LightColorScheme
 import org.testadirapa.sesterzo.styles.colors.LightSemanticColors
 import org.testadirapa.sesterzo.styles.colors.LocalSemanticColors
-import org.testadirapa.sesterzo.styles.typography.SesterzoTypography
+import org.testadirapa.sesterzo.styles.font.dmSansFontFamily
+import org.testadirapa.sesterzo.styles.typography.sesterzoTypography
 
 @Composable
 fun SesterzoTheme(
@@ -21,7 +22,7 @@ fun SesterzoTheme(
 	CompositionLocalProvider(LocalSemanticColors provides semanticColors) {
 		MaterialTheme(
 			colorScheme = colorScheme,
-			typography = SesterzoTypography,
+			typography = sesterzoTypography(dmSansFontFamily()),
 			content = content
 		)
 	}

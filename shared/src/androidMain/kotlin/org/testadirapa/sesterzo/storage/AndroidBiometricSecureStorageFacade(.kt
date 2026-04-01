@@ -11,6 +11,7 @@ class AndroidBiometricSecureStorageFacade(
 	private val storage: StorageFacade,
 	private val biometricAuthenticator: AndroidBiometricAuthenticator,
 	private val accessLevel: Set<SecureKeyAccessLevel>,
+	private val biometricAuthenticationTitle: String,
 	private val authorizationTimeoutSeconds: Int = 0
 ) : StorageFacade {
 
@@ -18,11 +19,7 @@ class AndroidBiometricSecureStorageFacade(
 
 	private suspend fun getEncryptedFacade(): EncryptedStorageFacade {
 		if (!::encryptedStorageFacade.isInitialized) {
-			biometricAuthenticator.authenticateUsingBiometric(
-				"Unlock key",
-				"test",
-				"Description"
-			)
+			biometricAuthenticator.authenticateUsingBiometric(biometricAuthenticationTitle)
 			val encryptionKey = getOrCreateSecretKey(storage, SECRET_KEY, accessLevel, authorizationTimeoutSeconds)
 			encryptedStorageFacade = EncryptedStorageFacade(storage, encryptionKey)
 		}

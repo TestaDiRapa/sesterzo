@@ -1,0 +1,16 @@
+<resources>
+    <string name="unlock_storage">Tap to unlock your budget</string>
+
+    <!--  Registration page  -->
+    <string name="register_title">Welcome!</string>
+    <string name="register_subtitle">Create an account</string>
+    <string name="register_name">Name</string>
+    <string name="register_name_placeholder">A name, a nickname, or anything</string>
+    <string name="register_name_error">Invalid name</string>
+    <string name="register_button">Register</string>
+
+    <!--  Email field  -->
+    <string name="email_field">Email</string>
+    <string name="email_field_placeholder">test@example.com</string>
+    <string name="email_field_invalid">Invalid email</string>
+</resources>

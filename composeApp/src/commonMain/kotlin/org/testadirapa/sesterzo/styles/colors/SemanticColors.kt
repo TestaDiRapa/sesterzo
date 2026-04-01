@@ -33,46 +33,45 @@ val LocalSemanticColors = staticCompositionLocalOf<SesterzoSemanticColors> {
 }
 
 val LightSemanticColors = SesterzoSemanticColors(
-	fixedExpense = SesterzoColors.Gold400,
-	fixedExpenseContainer = SesterzoColors.Gold50,
-	onFixedExpenseContainer = SesterzoColors.Gold800,
+	fixedExpense          = SesterzoColors.Blue600,
+	fixedExpenseContainer = SesterzoColors.Blue50,
+	onFixedExpenseContainer = SesterzoColors.Blue800,
 
-	variableExpense = SesterzoColors.Terra400,
-	variableExpenseContainer = SesterzoColors.Terra50,
-	onVariableExpenseContainer = SesterzoColors.Terra600,
+	variableExpense          = SesterzoColors.Amber400,
+	variableExpenseContainer = SesterzoColors.Amber50,
+	onVariableExpenseContainer = SesterzoColors.Amber600,
 
-	savings = SesterzoColors.Green400,
+	savings          = SesterzoColors.Green400,
 	savingsContainer = SesterzoColors.Green50,
 	onSavingsContainer = SesterzoColors.Green600,
 
-	positiveAmount = SesterzoColors.Green400,
-	negativeAmount = SesterzoColors.Red400,
-	unplannedAmount = SesterzoColors.Terra400,
+	positiveAmount  = SesterzoColors.Green400,
+	negativeAmount  = SesterzoColors.Red400,
+	unplannedAmount = SesterzoColors.Amber400,
 
-	divider = SesterzoColors.Stone100,
+	divider     = SesterzoColors.Gray100,
 	cardSurface = SesterzoColors.White,
 )
 
 val DarkSemanticColors = SesterzoSemanticColors(
-	fixedExpense = SesterzoColors.Gold200,
-	fixedExpenseContainer = SesterzoColors.Gold800,
-	onFixedExpenseContainer = SesterzoColors.Gold100,
+	fixedExpense          = SesterzoColors.Blue400,
+	fixedExpenseContainer = SesterzoColors.Blue800,
+	onFixedExpenseContainer = SesterzoColors.Blue100,
 
-	variableExpense  = SesterzoColors.Terra200,
-	variableExpenseContainer = Color(0xFF6B2C15),
-	onVariableExpenseContainer = Color(0xFFF5C4B3),
+	variableExpense          = SesterzoColors.Amber200,
+	variableExpenseContainer = Color(0xFF5A3208),
+	onVariableExpenseContainer = Color(0xFFFAC775),
 
-	savings = SesterzoColors.Green400,
+	savings          = SesterzoColors.Green400,
 	savingsContainer = Color(0xFF0F3D2A),
 	onSavingsContainer = Color(0xFF9FE1CB),
 
-	positiveAmount = Color(0xFF5DCAA5),
-	negativeAmount = SesterzoColors.Red200,
-	unplannedAmount = SesterzoColors.Terra200,
+	positiveAmount  = Color(0xFF5DCAA5),
+	negativeAmount  = SesterzoColors.Red200,
+	unplannedAmount = SesterzoColors.Amber200,
 
-	divider = SesterzoColors.DarkBorder,
+	divider     = SesterzoColors.DarkBorder,
 	cardSurface = SesterzoColors.DarkSurface2,
 )
-
 val MaterialTheme.semantic: SesterzoSemanticColors
 	@Composable get() = LocalSemanticColors.current

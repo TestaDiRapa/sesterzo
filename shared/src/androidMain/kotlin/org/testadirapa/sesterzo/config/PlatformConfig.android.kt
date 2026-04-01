@@ -10,7 +10,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.fragment.app.FragmentActivity
 import org.testadirapa.sesterzo.security.AndroidBiometricAuthenticator
-import org.testadirapa.sesterzo.security.BiometricAuthenticator
 import org.testadirapa.sesterzo.storage.AndroidBiometricSecureStorageFacade
 import org.testadirapa.sesterzo.storage.DataStorePreferenceStorage
 import org.testadirapa.sesterzo.storage.SecureKeyAccessLevel
@@ -36,10 +35,12 @@ actual object PlatformContext {
 	@SuppressLint("StaticFieldLeak")
 	private var _biometricAuthenticator: AndroidBiometricAuthenticator? = null
 	private var secureCardinalStorageFacade: StorageFacade? = null
+	private var _unlockStorageTitle: String? = null
 
 	fun setup(
 		application: Application,
 		fragmentActivityContext: FragmentActivity,
+		unlockStorageTitle: String
 	) {
 		_applicationId = application.packageName
 		_applicationContext = application
@@ -52,6 +53,7 @@ actual object PlatformContext {
 		_appDataStore = PreferenceDataStoreFactory.create(
 			produceFile = { application.preferencesDataStoreFile(application.packageName) }
 		)
+		_unlockStorageTitle = unlockStorageTitle
 	}
 
 	private fun getHighestAuthOptionAvailable(biometricManager: BiometricManager): SecureKeyAccessLevel? =
@@ -75,6 +77,7 @@ actual object PlatformContext {
 					storage = storageFacade,
 					biometricAuthenticator = _biometricAuthenticator!!,
 					accessLevel = accessLevels,
+					biometricAuthenticationTitle = _unlockStorageTitle!!,
 					authorizationTimeoutSeconds = durationBetweenBiometricPrompts.inWholeSeconds.toInt()
 				)
 			}
@@ -82,8 +85,5 @@ actual object PlatformContext {
 
 		return secureCardinalStorageFacade!!
 	}
-
-	actual suspend fun biometricAuthenticator(): BiometricAuthenticator =
-		checkNotNull(_biometricAuthenticator) { "PlatformContext was not initialized" }
 
 }

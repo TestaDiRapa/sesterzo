@@ -10,6 +10,7 @@ import org.testadirapa.sesterzo.dao.SpaceDAO
 import org.testadirapa.sesterzo.dao.UserDAO
 import org.testadirapa.sesterzo.exceptions.InvalidCaptchaException
 import org.testadirapa.sesterzo.exceptions.InvalidRegistrationException
+import org.testadirapa.sesterzo.exceptions.InvalidRegistrationParametersException
 import org.testadirapa.sesterzo.exceptions.UnauthorizedException
 import org.testadirapa.sesterzo.logic.AuthenticationLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
@@ -19,6 +20,8 @@ import org.testadirapa.sesterzo.security.JwtClaims
 import org.testadirapa.sesterzo.security.JwtManager
 import org.testadirapa.sesterzo.security.JwtRefreshClaims
 import org.testadirapa.sesterzo.utils.toMap
+import org.testadirapa.sesterzo.validators.EmailValidator
+import org.testadirapa.sesterzo.validators.NotBlankValidator
 import java.util.concurrent.TimeUnit
 
 class AuthenticationLogicImpl(
@@ -72,13 +75,16 @@ class AuthenticationLogicImpl(
 		if (!captchaLogic.validateChallenge(solution)) {
 			throw InvalidCaptchaException()
 		}
+		if (!EmailValidator.isValid(email) || !NotBlankValidator.isValid(name)) {
+			throw InvalidRegistrationParametersException()
+		}
 		val token = generateShortToken(tokenLength)
 		val processId = defaultCryptoService.strongRandom.randomUUID()
 		registrationCache.put(
 			processId,
-			AuthenticationLogic.RegistrationProcess(processId, email, name, token)
+			AuthenticationLogic.RegistrationProcess(processId, email.trim(), name.trim(), token)
 		)
-		mailer.sendRegistrationEmail(email, name, token)
+		mailer.sendRegistrationEmail(email.trim(), name.trim(), token)
 		return processId
 	}
 

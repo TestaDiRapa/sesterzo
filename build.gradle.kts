@@ -10,6 +10,7 @@ plugins {
 	alias(libs.plugins.ktor) apply false
 	alias(libs.plugins.kotlinAndroid) apply false
 	alias(libs.plugins.androidMultiplatformLibrary) apply false
+	alias(libs.plugins.buildkonfig) apply false
 }
 
 buildscript {

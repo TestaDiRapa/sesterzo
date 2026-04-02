@@ -4,5 +4,6 @@ enum class ExceptionLabel {
 	InvalidCaptcha,
 	InvalidJWT,
 	InvalidRegistration,
+	InvalidRegistrationParameters,
 	Unauthorized,
 }

@@ -21,6 +21,7 @@ caffeine = "3.2.3"
 kryptom = "1.4.0"
 kerberus = "1.1.8"
 androidx-biometric = "1.1.0"
+buildkonfig = "0.15.2"
 
 [libraries]
 # Ktor server
@@ -98,3 +99,5 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
+kotlinGradle = { id = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }

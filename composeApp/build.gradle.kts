@@ -1,11 +1,25 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 
 plugins {
 	alias(libs.plugins.kotlinMultiplatform)
 	alias(libs.plugins.androidMultiplatformLibrary)
 	alias(libs.plugins.composeMultiplatform)
 	alias(libs.plugins.composeCompiler)
+	alias(libs.plugins.buildkonfig)
 }
+
+val localProps = gradleLocalProperties(rootDir, providers)
+
+buildkonfig {
+	packageName = "org.testadirapa.sesterzo"
+
+	defaultConfigs {
+		buildConfigField(STRING, "apiUrl", localProps.getProperty("api.url"))
+	}
+}
+
 
 kotlin {
 

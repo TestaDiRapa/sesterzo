@@ -5,8 +5,10 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.ContentType.Application
 import io.ktor.http.appendPathSegments
+import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.date.GMTDate
 import org.testadirapa.sesterzo.api.AuthApi
@@ -47,6 +49,7 @@ class AuthApiImpl(
 				appendPathSegments(baseSegment, "startRegistration")
 			}
 			accept(Application.Json)
+			contentType(Application.Json)
 			setBody(registrationData)
 		}.wrap()
 
@@ -60,6 +63,7 @@ class AuthApiImpl(
 				appendPathSegments(baseSegment, "completeRegistration")
 			}
 			accept(Application.Json)
+			contentType(Application.Json)
 			setBody(
 				CompleteRegistrationData(
 					processId = registrationProcessId,
@@ -78,6 +82,7 @@ class AuthApiImpl(
 				appendPathSegments(baseSegment, "ott")
 			}
 			accept(Application.Json)
+			contentType(Application.Json)
 			setBody(
 				OttData(
 					email = email,
@@ -96,6 +101,7 @@ class AuthApiImpl(
 				appendPathSegments(baseSegment, "login")
 			}
 			accept(Application.Json)
+			contentType(Application.Json)
 			setBody(
 				LoginData(
 					email = email,

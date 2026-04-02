@@ -12,6 +12,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.testadirapa.sesterzo.pages.register.RegistrationPage
 import org.testadirapa.sesterzo.styles.SesterzoTheme
+import org.testadirapa.sesterzo.viewmodel.Intent
+import org.testadirapa.sesterzo.viewmodel.state.AuthenticateState
+import org.testadirapa.sesterzo.viewmodel.state.StartupState
 
 @Composable
 @Preview
@@ -26,9 +29,16 @@ fun App() {
 			modifier = Modifier.fillMaxSize(),
 			color = MaterialTheme.colorScheme.background
 		) {
-			when (state) {
-				AppState.Startup -> {}
-				AppState.Authenticate -> RegistrationPage()
+			when (val currentState = state) {
+				StartupState -> {}
+				is AuthenticateState -> RegistrationPage(
+					onStartRegistration = { email, name ->
+						appViewModel.acceptIntent(
+							Intent.StartRegistration(email, name)
+						)
+					},
+					captchaProgressState = currentState.captchaStateFlow
+				)
 			}
 		}
 	}

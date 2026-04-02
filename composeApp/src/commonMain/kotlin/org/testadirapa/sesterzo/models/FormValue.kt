@@ -7,9 +7,11 @@ data class FormValue<T>(
 	private val validator: Validator<T>? = null
 ) {
 	val isValid: Boolean
-		get() = value == null || (validator?.isValid(value) != false)
+		get() = value != null && (validator?.isValid(value) != false)
 	val displayError: Boolean
 		get() = value != null && !isValid
+	val validValue: T
+		get() = value?.takeIf { isValid } ?: throw IllegalStateException("Value is invalid")
 
 	fun update(newValue: T): FormValue<T> = copy(value = newValue)
 }

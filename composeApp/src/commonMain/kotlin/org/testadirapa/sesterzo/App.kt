@@ -13,7 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.testadirapa.sesterzo.components.errors.ErrorAlert
-import org.testadirapa.sesterzo.pages.register.RegistrationPage
+import org.testadirapa.sesterzo.screens.AuthScreen
+import org.testadirapa.sesterzo.screens.register.RegistrationScreen
 import org.testadirapa.sesterzo.styles.SesterzoTheme
 import org.testadirapa.sesterzo.viewmodel.AppViewModel
 import org.testadirapa.sesterzo.viewmodel.Intent
@@ -38,13 +39,18 @@ fun App() {
 			Box(modifier = Modifier.fillMaxSize()) {
 				when (val currentState = state) {
 					StartupState -> {}
-					is AuthenticateState -> RegistrationPage(
+					is AuthenticateState -> AuthScreen(
 						onStartRegistration = { email, name ->
 							appViewModel.acceptIntent(
 								Intent.StartRegistration(email, name)
 							)
 						},
-						onCompleteRegistration = { token ->
+						onStartLogin = { email ->
+							appViewModel.acceptIntent(
+								Intent.StartLogin(email)
+							)
+						},
+						onCompleteAuth = { token ->
 							appViewModel.acceptIntent(Intent.CompleteAuthentication(token))
 						},
 						captchaProgressState = currentState.captchaStateFlow

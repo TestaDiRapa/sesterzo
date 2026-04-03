@@ -6,6 +6,9 @@ import io.ktor.server.plugins.origin
 import io.ktor.server.plugins.ratelimit.RateLimit
 import io.ktor.server.plugins.ratelimit.RateLimitName
 import io.ktor.server.request.receive
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.testadirapa.sesterzo.model.dto.DataWithEmail
 import kotlin.time.Duration.Companion.seconds
 
@@ -18,8 +21,8 @@ fun Application.configureThrottling() {
 		register(RateLimitName(LOGIN_RATE_LIMIT_KEY)) {
 			rateLimiter(limit = 30, refillPeriod = 60.seconds)
 			requestKey { applicationCall ->
-				val payload = applicationCall.receive<DataWithEmail>()
-				payload.email to applicationCall.request.origin.remoteHost
+				val payload = applicationCall.receive<JsonObject>()
+				payload.getValue("email").jsonPrimitive.content to applicationCall.request.origin.remoteHost
 			}
 		}
 

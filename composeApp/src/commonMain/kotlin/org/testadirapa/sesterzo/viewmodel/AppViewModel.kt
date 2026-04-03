@@ -39,10 +39,12 @@ class AppViewModel : ViewModel() {
 				when (intent) {
 					is Intent.StartRegistration -> {
 						expectStateAs<AuthenticateState>(appState.value) {
-							it.startRegistrationProcess(
-								email = intent.email,
-								name = intent.name
-							)
+							it.startRegistrationProcess(email = intent.email, name = intent.name)
+						}
+					}
+					is Intent.StartLogin -> {
+						expectStateAs<AuthenticateState>(appState.value) {
+							it.startLoginProcess(email = intent.email)
 						}
 					}
 					is Intent.CompleteAuthentication -> {

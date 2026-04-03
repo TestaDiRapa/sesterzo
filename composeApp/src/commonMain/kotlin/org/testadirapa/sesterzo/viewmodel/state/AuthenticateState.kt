@@ -22,6 +22,14 @@ class AuthenticateState : AppState {
 		)
 	}
 
+	suspend fun startLoginProcess(email: String) {
+		process = SesterzoApi.initializeLoginProcess(
+			baseUrl = BuildKonfig.apiUrl,
+			email = email,
+			captchaHandler = MutableStateFlowCaptchaProgressHandler(captchaStateFlow)
+		)
+	}
+
 	suspend fun completeProcess(token: String): SesterzoApi =
 		process.complete(token)
 }

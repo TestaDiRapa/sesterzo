@@ -21,6 +21,12 @@
     <string name="register_button">Register</string>
     <string name="register_complete_button">Complete Registration</string>
 
+    <!--  Login page  -->
+    <string name="login_title">Welcome back!</string>
+    <string name="login_subtitle">Log in</string>
+    <string name="login_button">Log in</string>
+    <string name="login_complete_button">Complete Login</string>
+
     <!--  Email field  -->
     <string name="email_field">Email</string>
     <string name="email_field_placeholder">test@example.com</string>
@@ -28,6 +34,13 @@
 
     <!--  Validation code field  -->
     <string name="validation_code_field">Validation Code</string>
-    <string name="validation_code_field_placeholder">123456</string>
+    <string name="validation_code_field_placeholder">XXXXXX</string>
     <string name="validation_code_field_invalid">Invalid code</string>
+
+    <!--  Buttons  -->
+    <string name="button_login">Log in</string>
+    <string name="button_register">Register</string>
+
+    <!--  Dividers  -->
+    <string name="divider_or">or</string>
 </resources>

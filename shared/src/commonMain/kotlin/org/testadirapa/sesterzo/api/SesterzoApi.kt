@@ -78,7 +78,6 @@ interface SesterzoApi {
 		suspend fun initializeLoginProcess(
 			baseUrl: String,
 			email: String,
-			name: String,
 			captchaHandler: CaptchaProgressHandler
 		): LoginProcess = coroutineScope {
 			val httpConfig = getHttpConfig(baseUrl)

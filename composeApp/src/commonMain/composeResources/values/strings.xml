@@ -1,5 +1,6 @@
 <resources>
     <string name="unlock_storage">Tap to unlock your budget</string>
+    <string name="app_name">Sesterzo</string>
 
     <!--  Auth page  -->
     <string name="auth_code_label">Insert the code received by email.</string>

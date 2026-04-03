@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.testadirapa.sesterzo.components.errors.ErrorAlert
 import org.testadirapa.sesterzo.screens.AuthScreen
-import org.testadirapa.sesterzo.screens.register.RegistrationScreen
+import org.testadirapa.sesterzo.screens.LoadingScreen
 import org.testadirapa.sesterzo.styles.SesterzoTheme
 import org.testadirapa.sesterzo.viewmodel.AppViewModel
 import org.testadirapa.sesterzo.viewmodel.Intent
@@ -38,7 +38,7 @@ fun App() {
 		) {
 			Box(modifier = Modifier.fillMaxSize()) {
 				when (val currentState = state) {
-					StartupState -> {}
+					StartupState -> LoadingScreen()
 					is AuthenticateState -> AuthScreen(
 						onStartRegistration = { email, name ->
 							appViewModel.acceptIntent(

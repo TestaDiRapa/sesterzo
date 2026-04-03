@@ -1,15 +1,10 @@
 package org.testadirapa.sesterzo.screens.register
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -30,7 +25,7 @@ import org.testadirapa.sesterzo.components.input.FormButton
 import org.testadirapa.sesterzo.components.input.TextField
 import org.testadirapa.sesterzo.components.input.ValidationCodeField
 import org.testadirapa.sesterzo.components.text.TitleAndSubtitle
-import org.testadirapa.sesterzo.components.ui.OrDivider
+import org.testadirapa.sesterzo.components.ui.LogoWithName
 import org.testadirapa.sesterzo.handlers.MutableStateFlowCaptchaProgressHandler
 import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.screens.SwitchAuthButton
@@ -40,7 +35,6 @@ import org.testadirapa.sesterzo.validators.OttValidator
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.auth_code_label
 import sesterzo.composeapp.generated.resources.button_login
-import sesterzo.composeapp.generated.resources.button_register
 import sesterzo.composeapp.generated.resources.register_button
 import sesterzo.composeapp.generated.resources.register_complete_button
 import sesterzo.composeapp.generated.resources.register_name
@@ -68,8 +62,8 @@ fun RegistrationScreen(
 				.padding(horizontal = 24.dp)
 				.padding(top = 48.dp),
 			verticalArrangement = Arrangement.spacedBy(16.dp),
-
 		) {
+			LogoWithName()
 			TitleAndSubtitle(
 				title = stringResource(Res.string.register_title),
 				subtitle = stringResource(Res.string.register_subtitle),

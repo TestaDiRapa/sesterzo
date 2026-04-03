@@ -49,6 +49,7 @@ kotlin {
 
 	sourceSets {
 		commonMain.dependencies {
+			implementation(projects.shared)
 			implementation(libs.compose.runtime)
 			implementation(libs.compose.foundation)
 			implementation(libs.compose.material3)
@@ -57,7 +58,7 @@ kotlin {
 			implementation(libs.compose.uiToolingPreview)
 			implementation(libs.androidx.lifecycle.viewmodelCompose)
 			implementation(libs.androidx.lifecycle.runtimeCompose)
-			implementation(projects.shared)
+			implementation(libs.kermit)
 		}
 		commonTest.dependencies {
 			implementation(libs.kotlin.test)

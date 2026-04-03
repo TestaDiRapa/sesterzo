@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,12 +23,17 @@ import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.input.EmailField
 import org.testadirapa.sesterzo.components.input.FormButton
 import org.testadirapa.sesterzo.components.input.TextField
+import org.testadirapa.sesterzo.components.input.ValidationCodeField
 import org.testadirapa.sesterzo.components.text.TitleAndSubtitle
+import org.testadirapa.sesterzo.handlers.MutableStateFlowCaptchaProgressHandler
 import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.validators.EmailValidator
 import org.testadirapa.sesterzo.validators.NotBlankValidator
+import org.testadirapa.sesterzo.validators.OttValidator
 import sesterzo.composeapp.generated.resources.Res
+import sesterzo.composeapp.generated.resources.auth_code_label
 import sesterzo.composeapp.generated.resources.register_button
+import sesterzo.composeapp.generated.resources.register_complete_button
 import sesterzo.composeapp.generated.resources.register_name
 import sesterzo.composeapp.generated.resources.register_name_error
 import sesterzo.composeapp.generated.resources.register_name_placeholder
@@ -35,10 +43,12 @@ import sesterzo.composeapp.generated.resources.register_title
 @Composable
 fun RegistrationPage(
 	onStartRegistration: (email: String, name: String) -> Unit,
-	captchaProgressState: StateFlow<Double?>
+	onCompleteRegistration: (ott: String) -> Unit,
+	captchaProgressState: StateFlow<MutableStateFlowCaptchaProgressHandler.CaptchaProgress>
 ) {
 	var email by remember { mutableStateOf(FormValue(validator = EmailValidator)) }
 	var name by remember { mutableStateOf(FormValue(validator = NotBlankValidator)) }
+	var ott by remember { mutableStateOf(FormValue(validator = OttValidator)) }
 	val captchaProgress by captchaProgressState.collectAsState()
 	Scaffold { innerPadding ->
 		Column(
@@ -56,12 +66,14 @@ fun RegistrationPage(
 			)
 			EmailField(
 				value = email,
+				enabled = captchaProgress.isUninitialised,
 				onValueChange = {
 					email = email.update(it)
 				},
 			)
 			TextField(
 				value = name,
+				enabled = captchaProgress.isUninitialised,
 				title = stringResource(Res.string.register_name),
 				placeholder = stringResource(Res.string.register_name_placeholder),
 				errorMessage = stringResource(Res.string.register_name_error),
@@ -69,19 +81,41 @@ fun RegistrationPage(
 					name = name.update(it)
 				},
 			)
-			captchaProgress?.also { progress ->
+			captchaProgress.loadingValue?.also { progress ->
 				LinearProgressIndicator(
 					progress = { progress.toFloat()},
 					modifier = Modifier.fillMaxWidth(),
 				)
 			}
-			FormButton(
-				onClick = {
-					onStartRegistration(email.validValue, name.validValue)
-				},
-				enabled = email.isValid && name.isValid,
-				text = stringResource(Res.string.register_button)
-			)
+			captchaProgress.takeIf { !it.isComplete }?.also { captcha ->
+				FormButton(
+					onClick = {
+						onStartRegistration(email.validValue, name.validValue)
+					},
+					enabled = captcha.isUninitialised && email.isValid && name.isValid,
+					text = stringResource(Res.string.register_button)
+				)
+			}
+			captchaProgress.takeIf { it.isComplete }?.also {
+				Text(
+					text = stringResource(Res.string.auth_code_label),
+					style = MaterialTheme.typography.titleMedium,
+					color = colorScheme.onSurfaceVariant,
+				)
+				ValidationCodeField(
+					value = ott,
+					onValueChange = {
+						ott = ott.update(it)
+					}
+				)
+				FormButton(
+					onClick = {
+						onCompleteRegistration(ott.validValue)
+					},
+					enabled = ott.isValid,
+					text = stringResource(Res.string.register_complete_button)
+				)
+			}
 		}
 	}
 

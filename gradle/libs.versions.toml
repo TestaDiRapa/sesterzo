@@ -21,7 +21,8 @@ caffeine = "3.2.3"
 kryptom = "1.4.0"
 kerberus = "1.1.8"
 androidx-biometric = "1.1.0"
-buildkonfig = "0.15.2"
+buildkonfig = "0.17.1"
+kermit = "2.0.5"
 
 [libraries]
 # Ktor server
@@ -82,6 +83,7 @@ kryptom = { module = "com.icure.kryptom:kryptom", version.ref = "kryptom" }
 
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 kerberus = { module = "com.icure:kerberus", version.ref = "kerberus" }
+kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
 #Test
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

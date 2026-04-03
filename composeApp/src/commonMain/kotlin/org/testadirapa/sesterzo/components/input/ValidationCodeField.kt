@@ -22,15 +22,14 @@ import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.styles.colors.components.outlinedTextFieldColors
 import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.email_field
-import sesterzo.composeapp.generated.resources.email_field_invalid
-import sesterzo.composeapp.generated.resources.email_field_placeholder
+import sesterzo.composeapp.generated.resources.validation_code_field
+import sesterzo.composeapp.generated.resources.validation_code_field_invalid
+import sesterzo.composeapp.generated.resources.validation_code_field_placeholder
 
 @Composable
-fun EmailField(
+fun ValidationCodeField(
 	value: FormValue<String>,
 	onValueChange: (String) -> Unit,
-	enabled: Boolean = true,
 ) {
 	val focusManager = LocalFocusManager.current
 	Column {
@@ -38,20 +37,19 @@ fun EmailField(
 			modifier = Modifier.padding(bottom = 4.dp),
 		) {
 			Text(
-				text = stringResource(Res.string.email_field),
+				text = stringResource(Res.string.validation_code_field),
 				style = MaterialTheme.typography.titleMedium,
 				color = colorScheme.onSurfaceVariant,
 			)
 		}
 		OutlinedTextField(
 			value = value.value ?: "",
-			enabled = enabled,
 			onValueChange = onValueChange,
-			placeholder = { Text(stringResource(Res.string.email_field_placeholder)) },
+			placeholder = { Text(stringResource(Res.string.validation_code_field_placeholder)) },
 			isError = value.displayError,
 			singleLine = true,
 			keyboardOptions = KeyboardOptions(
-				keyboardType = KeyboardType.Email,
+				keyboardType = KeyboardType.NumberPassword,
 				imeAction = ImeAction.Next
 			),
 			keyboardActions = KeyboardActions(
@@ -59,7 +57,7 @@ fun EmailField(
 			),
 			supportingText = {
 				if (value.displayError) {
-					Text(stringResource(Res.string.email_field_invalid), color = colorScheme.error)
+					Text(stringResource(Res.string.validation_code_field_invalid), color = colorScheme.error)
 				}
 			},
 			modifier = Modifier.fillMaxWidth(),

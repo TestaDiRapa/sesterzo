@@ -34,6 +34,7 @@ fun TextField(
 	title: String,
 	placeholder: String,
 	errorMessage: String,
+	enabled: Boolean = true,
 	onValueChange: (String) -> Unit,
 ) {
 	val focusManager = LocalFocusManager.current
@@ -49,6 +50,7 @@ fun TextField(
 		}
 		OutlinedTextField(
 			value = value.value ?: "",
+			enabled = enabled,
 			onValueChange = onValueChange,
 			placeholder = { Text(placeholder) },
 			isError = value.displayError,

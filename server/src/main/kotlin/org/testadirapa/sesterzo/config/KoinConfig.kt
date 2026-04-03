@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.config
 import io.ktor.server.application.*
 import io.ktor.server.config.ApplicationConfig
 import io.ktor.server.config.getAs
+import io.ktor.util.logging.Logger
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
@@ -27,6 +28,7 @@ import org.testadirapa.sesterzo.security.JwtManager
 
 fun applicationModules(
 	config: ApplicationConfig,
+	logger: Logger,
 ) = module {
 	single<JwtManager> { JwtManager(config = JwtConfig.fromConfig(config)) }
 	single<DBClient> { DBClient(dbCredentials = MongoDBCredentials.fromConfig(config)) }
@@ -35,7 +37,7 @@ fun applicationModules(
 	single<Mailer> {
 		when (val mailerConfig = MailerConfig.fromConfig(config)) {
 			is MailerConfig.HermesMailerConfig -> HermesMailer(mailerConfig)
-			MailerConfig.LocalMailerConfig -> LocalMailer()
+			MailerConfig.LocalMailerConfig -> LocalMailer(logger)
 		}
 	}
 
@@ -68,6 +70,6 @@ fun Application.configureKoin() {
 
 	install(Koin) {
 		slf4jLogger()
-		modules(applicationModules(environment.config))
+		modules(applicationModules(environment.config, log))
 	}
 }

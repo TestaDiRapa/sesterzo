@@ -8,8 +8,10 @@ import org.testadirapa.sesterzo.handlers.MutableStateFlowCaptchaProgressHandler
 
 class AuthenticateState : AppState {
 
-	private var process: Process? = null
-	val captchaStateFlow = MutableStateFlow<Double?>(null)
+	private lateinit var process: Process
+	val captchaStateFlow = MutableStateFlow<MutableStateFlowCaptchaProgressHandler.CaptchaProgress>(
+		MutableStateFlowCaptchaProgressHandler.CaptchaProgress.Uninitialized
+	)
 
 	suspend fun startRegistrationProcess(email: String, name: String) {
 		process = SesterzoApi.initializeRegistrationProcess(
@@ -19,4 +21,7 @@ class AuthenticateState : AppState {
 			captchaHandler = MutableStateFlowCaptchaProgressHandler(captchaStateFlow)
 		)
 	}
+
+	suspend fun completeProcess(token: String): SesterzoApi =
+		process.complete(token)
 }

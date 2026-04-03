@@ -1,6 +1,17 @@
 <resources>
     <string name="unlock_storage">Tap to unlock your budget</string>
 
+    <!--  Auth page  -->
+    <string name="auth_code_label">Insert the code received by email.</string>
+
+    <!--  Errors  -->
+    <string name="error_generic">An unexpected error occurred.</string>
+    <string name="error_invalid_captcha">The provided captcha is invalid.</string>
+    <string name="error_invalid_jwt">You are not logged in.</string>
+    <string name="error_invalid_registration">Invalid token or process id.</string>
+    <string name="error_invalid_registration_data">Invalid email or name.</string>
+    <string name="error_unauthorized">Invalid email or token.</string>
+
     <!--  Registration page  -->
     <string name="register_title">Welcome!</string>
     <string name="register_subtitle">Create an account</string>
@@ -8,9 +19,15 @@
     <string name="register_name_placeholder">A name, a nickname, or anything</string>
     <string name="register_name_error">Invalid name</string>
     <string name="register_button">Register</string>
+    <string name="register_complete_button">Complete Registration</string>
 
     <!--  Email field  -->
     <string name="email_field">Email</string>
     <string name="email_field_placeholder">test@example.com</string>
     <string name="email_field_invalid">Invalid email</string>
+
+    <!--  Validation code field  -->
+    <string name="validation_code_field">Validation Code</string>
+    <string name="validation_code_field_placeholder">123456</string>
+    <string name="validation_code_field_invalid">Invalid code</string>
 </resources>

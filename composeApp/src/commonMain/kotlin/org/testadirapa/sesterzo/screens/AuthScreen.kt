@@ -16,18 +16,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.StateFlow
-import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.ui.OrDivider
 import org.testadirapa.sesterzo.handlers.MutableStateFlowCaptchaProgressHandler
 import org.testadirapa.sesterzo.screens.login.LoginScreen
 import org.testadirapa.sesterzo.screens.register.RegistrationScreen
-import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.button_register
 
 enum class AuthVariant { Login, Register}
 
 @Composable
 fun AuthScreen(
+	isMobile: Boolean,
 	onStartRegistration: (email: String, name: String) -> Unit,
 	onStartLogin: (email: String) -> Unit,
 	onCompleteAuth: (ott: String) -> Unit,

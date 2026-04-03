@@ -10,7 +10,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.testadirapa.sesterzo.components.errors.ErrorAlert
 import org.testadirapa.sesterzo.screens.AuthScreen
@@ -30,6 +33,11 @@ fun App() {
 	val state by appViewModel.appState.collectAsState()
 	val errorState = appViewModel.errorState.collectAsState()
 
+	val widthDp = with(LocalDensity.current) {
+		LocalWindowInfo.current.containerSize.width.toDp()
+	}
+	val isMobile = widthDp < 600.dp
+
 	SesterzoTheme(
 		darkTheme = isSystemInDarkTheme()
 	) {
@@ -41,6 +49,7 @@ fun App() {
 				when (val currentState = state) {
 					StartupState -> LoadingScreen()
 					is AuthenticateState -> AuthScreen(
+						isMobile = isMobile,
 						onStartRegistration = { email, name ->
 							appViewModel.acceptIntent(
 								Intent.StartRegistration(email, name)

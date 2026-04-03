@@ -1,21 +1,22 @@
-package org.testadirapa.sesterzo
+package org.testadirapa.sesterzo.viewmodel
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.config.PlatformContext
 import org.testadirapa.sesterzo.repository.PropertyRepository
 import org.testadirapa.sesterzo.utils.expectStateAs
-import org.testadirapa.sesterzo.viewmodel.Intent
 import org.testadirapa.sesterzo.viewmodel.errors.ErrorState
 import org.testadirapa.sesterzo.viewmodel.errors.toErrorState
 import org.testadirapa.sesterzo.viewmodel.state.AppState
 import org.testadirapa.sesterzo.viewmodel.state.AuthenticateState
+import org.testadirapa.sesterzo.viewmodel.state.MainPageState
 import org.testadirapa.sesterzo.viewmodel.state.StartupState
 import kotlin.time.Duration.Companion.seconds
 
@@ -47,6 +48,7 @@ class AppViewModel : ViewModel() {
 					is Intent.CompleteAuthentication -> {
 						expectStateAs<AuthenticateState>(appState.value) {
 							AppCtx.api = it.completeProcess(intent.token)
+							_appState.update { MainPageState }
 						}
 					}
 				}

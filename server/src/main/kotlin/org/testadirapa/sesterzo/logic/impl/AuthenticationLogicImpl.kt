@@ -44,7 +44,7 @@ class AuthenticationLogicImpl(
 
 	private fun generateShortToken(length: Int): String =
 		defaultCryptoService.strongRandom.randomBytes(length).joinToString("") {
-			"${it.toShort() % 10}"
+			"${it.toUShort() % 10u}"
 		}
 
 	private suspend fun buildAuthResponse(userId: String, refreshToken: String? = null): AuthResponse {

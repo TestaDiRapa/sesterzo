@@ -1,6 +1,8 @@
 package org.testadirapa.sesterzo.services
 
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.testadirapa.sesterzo.api.AuthApi
@@ -19,21 +21,23 @@ class AuthService(
 	private val jwtMutex = Mutex()
 	private val expirationPadding = 30.seconds
 
-	private val jwtState: MutableStateFlow<JwtState?> = MutableStateFlow(
+	private val _jwtState: MutableStateFlow<JwtState?> = MutableStateFlow(
 		JwtState(accessToken = initialJwt, refreshToken = initialRefresh)
 	)
+	val jwtState: StateFlow<JwtState?>
+		get() = _jwtState
 
 	private suspend fun maybeRefreshTokenAndUpdateState() {
 		jwtMutex.withLock {
-			val (currentJwt, currentRefresh) = jwtState.value
+			val (currentJwt, currentRefresh) = _jwtState.value
 				?: throw MissingJwtStateException()
 			when {
 				isJwtExpiredOrInvalid(jwt = currentRefresh, refreshPadding = expirationPadding) -> {
-					jwtState.value = null
+					_jwtState.value = null
 				}
 				currentJwt == null || isJwtExpiredOrInvalid(jwt = currentJwt, refreshPadding = expirationPadding) -> {
 					val newState = authApi.refresh(refreshToken = currentRefresh).bodyOrThrow()
-					jwtState.value = JwtState(accessToken = newState.jwt, refreshToken = currentRefresh)
+					_jwtState.value = JwtState(accessToken = newState.jwt, refreshToken = currentRefresh)
 				}
 			}
 		}
@@ -41,15 +45,15 @@ class AuthService(
 
 	suspend fun getJwtOrNull(): String? {
 		maybeRefreshTokenAndUpdateState()
-		return jwtState.value?.accessToken
+		return _jwtState.value?.accessToken
 	}
 
 	suspend fun getJwt(): String = getJwtOrNull() ?: throw MissingJwtStateException()
 
 	suspend fun invalidateToken() {
 		jwtMutex.withLock {
-			jwtState.value?.let { (_, refreshToken) ->
-				jwtState.value = JwtState(accessToken = null, refreshToken = refreshToken)
+			_jwtState.value?.let { (_, refreshToken) ->
+				_jwtState.value = JwtState(accessToken = null, refreshToken = refreshToken)
 			}
 		}
 	}

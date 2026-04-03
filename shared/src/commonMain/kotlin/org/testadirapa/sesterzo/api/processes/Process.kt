@@ -14,7 +14,7 @@ sealed class Process(
 
 	protected abstract suspend fun completeProcess(authApi: AuthApi, token: String): AuthResponse
 
-	suspend fun complete(token: String): SesterzoApi {
+	suspend fun complete(token: String): Pair<AuthResponse, SesterzoApi> {
 		val httpConfig = getHttpConfig(baseUrl)
 		val authApi = AuthApiImpl(config = httpConfig)
 		val tokens = completeProcess(authApi, token)
@@ -23,7 +23,7 @@ sealed class Process(
 			initialJwt = tokens.jwt,
 			initialRefresh = tokens.refreshJwt
 		)
-		return SesterzoApiImpl(
+		return tokens to SesterzoApiImpl(
 			httpConfig = httpConfig,
 			authService = authService
 		)

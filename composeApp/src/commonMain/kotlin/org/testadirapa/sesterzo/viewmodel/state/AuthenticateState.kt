@@ -5,6 +5,7 @@ import org.testadirapa.sesterzo.BuildKonfig
 import org.testadirapa.sesterzo.api.SesterzoApi
 import org.testadirapa.sesterzo.api.processes.Process
 import org.testadirapa.sesterzo.handlers.MutableStateFlowCaptchaProgressHandler
+import org.testadirapa.sesterzo.model.dto.AuthResponse
 
 class AuthenticateState : AppState {
 
@@ -30,6 +31,6 @@ class AuthenticateState : AppState {
 		)
 	}
 
-	suspend fun completeProcess(token: String): SesterzoApi =
+	suspend fun completeProcess(token: String): Pair<AuthResponse, SesterzoApi> =
 		process.complete(token)
 }

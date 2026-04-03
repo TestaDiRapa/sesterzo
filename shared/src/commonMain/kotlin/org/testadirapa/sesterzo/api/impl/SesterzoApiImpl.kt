@@ -6,7 +6,7 @@ import org.testadirapa.sesterzo.services.AuthService
 
 class SesterzoApiImpl(
 	private val httpConfig: HttpConfig,
-	val authService: AuthService
+	override val authService: AuthService
 ) : SesterzoApi {
 
 }

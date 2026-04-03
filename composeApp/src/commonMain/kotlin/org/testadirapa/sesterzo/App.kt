@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.testadirapa.sesterzo.components.errors.ErrorAlert
 import org.testadirapa.sesterzo.screens.AuthScreen
+import org.testadirapa.sesterzo.screens.HomeScreen
 import org.testadirapa.sesterzo.screens.LoadingScreen
 import org.testadirapa.sesterzo.styles.SesterzoTheme
 import org.testadirapa.sesterzo.viewmodel.AppViewModel
@@ -55,7 +56,7 @@ fun App() {
 						},
 						captchaProgressState = currentState.captchaStateFlow
 					)
-					MainPageState -> {}
+					MainPageState -> HomeScreen()
 				}
 				ErrorAlert(
 					error = errorState.value,

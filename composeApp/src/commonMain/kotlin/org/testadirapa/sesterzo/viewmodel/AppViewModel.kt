@@ -3,12 +3,14 @@ package org.testadirapa.sesterzo.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.BuildKonfig
+import org.testadirapa.sesterzo.api.SesterzoApi
 import org.testadirapa.sesterzo.config.PlatformContext
 import org.testadirapa.sesterzo.repository.PropertyRepository
 import org.testadirapa.sesterzo.utils.expectStateAs
@@ -18,7 +20,6 @@ import org.testadirapa.sesterzo.viewmodel.state.AppState
 import org.testadirapa.sesterzo.viewmodel.state.AuthenticateState
 import org.testadirapa.sesterzo.viewmodel.state.MainPageState
 import org.testadirapa.sesterzo.viewmodel.state.StartupState
-import kotlin.time.Duration.Companion.seconds
 
 class AppViewModel : ViewModel() {
 	private val logger = Logger.withTag("AppViewModel")
@@ -28,6 +29,8 @@ class AppViewModel : ViewModel() {
 
 	private val _errorState = MutableStateFlow<ErrorState?>(null)
 	val errorState: StateFlow<ErrorState?> = _errorState
+
+	private var jwtMonitorJob: Job? = null
 
 	init {
 		checkStorageAndMaybeInit()
@@ -49,7 +52,11 @@ class AppViewModel : ViewModel() {
 					}
 					is Intent.CompleteAuthentication -> {
 						expectStateAs<AuthenticateState>(appState.value) {
-							AppCtx.api = it.completeProcess(intent.token)
+							val (tokens, api) = it.completeProcess(intent.token)
+							AppCtx.api = api
+							AppCtx.propertyRepository.setJwt(tokens.jwt)
+							AppCtx.propertyRepository.setRefreshJwt(tokens.refreshJwt)
+							startMonitoringJwt(api)
 							_appState.update { MainPageState }
 						}
 					}
@@ -71,10 +78,40 @@ class AppViewModel : ViewModel() {
 				datastore = PlatformContext.storageFacade()
 			)
 			AppCtx.propertyRepository = propertyRepository
-			delay(3.seconds)
+			val jwt = propertyRepository.getJwt()
+			val refreshJwt = propertyRepository.getRefreshJwt()
 			_appState.update {
-				AuthenticateState()
+				if (jwt != null && refreshJwt != null) {
+					val api = SesterzoApi.initializeWithTokens(
+						baseUrl = BuildKonfig.apiUrl,
+						jwt = jwt,
+						refreshJwt = refreshJwt
+					)
+					AppCtx.api = api
+					startMonitoringJwt(api)
+					MainPageState
+				} else {
+					AuthenticateState()
+				}
 			}
+		}
+	}
+
+	private fun startMonitoringJwt(api: SesterzoApi) {
+		jwtMonitorJob?.cancel()
+		jwtMonitorJob = viewModelScope.launch {
+			api.authService.jwtState.collect { state ->
+				if (state == null) returnToLogin()
+			}
+		}
+	}
+
+	fun returnToLogin() {
+		jwtMonitorJob?.cancel()
+		jwtMonitorJob = null
+		viewModelScope.launch {
+			AppCtx.propertyRepository.clear()
+			_appState.update { AuthenticateState() }
 		}
 	}
 }

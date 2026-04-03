@@ -28,8 +28,8 @@ fun ErrorAlert(
 ) {
 	AnimatedVisibility(
 		visible = error != null,
-		enter = slideInVertically { -(it * 1.3).toInt() },
-		exit = slideOutVertically { -(it * 1.3).toInt() },
+		enter = slideInVertically { -it },
+		exit = slideOutVertically { -it },
 		modifier = modifier.zIndex(1f)
 	) {
 		Row(

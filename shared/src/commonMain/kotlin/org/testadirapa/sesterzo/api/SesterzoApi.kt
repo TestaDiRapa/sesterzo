@@ -9,12 +9,14 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.coroutineScope
 import org.testadirapa.sesterzo.api.impl.AuthApiImpl
+import org.testadirapa.sesterzo.api.impl.SesterzoApiImpl
 import org.testadirapa.sesterzo.api.processes.LoginProcess
 import org.testadirapa.sesterzo.api.processes.RegistrationProcess
 import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.handlers.CaptchaProgressHandler
 import org.testadirapa.sesterzo.model.dto.StartRegistrationData
 import org.testadirapa.sesterzo.serialization.Serialization
+import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.utils.newPlatformHttpClient
 import kotlin.time.Duration.Companion.seconds
 
@@ -90,6 +92,26 @@ interface SesterzoApi {
 			LoginProcess(email = email, baseUrl = baseUrl)
 		}
 
+		suspend fun initializeWithTokens(
+			baseUrl: String,
+			jwt: String,
+			refreshJwt: String,
+		): SesterzoApi = coroutineScope {
+			val httpConfig = getHttpConfig(baseUrl)
+			val authApi = AuthApiImpl(config = httpConfig)
+			val authService = AuthService(
+				authApi = authApi,
+				initialJwt = jwt,
+				initialRefresh = refreshJwt
+			)
+			SesterzoApiImpl(
+				httpConfig = httpConfig,
+				authService = authService
+			)
+		}
+
 	}
+
+	val authService: AuthService
 
 }

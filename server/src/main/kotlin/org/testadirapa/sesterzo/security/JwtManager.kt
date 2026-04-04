@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.Payload
 import io.ktor.server.auth.jwt.*
-import org.testadirapa.sesterzo.exceptions.JWTException
+import org.testadirapa.sesterzo.exceptions.JwtException
 import org.testadirapa.sesterzo.exceptions.UnauthorizedException
 import org.testadirapa.sesterzo.model.UserSpaceRole
 import org.testadirapa.sesterzo.security.UserJwtClaims.Companion.SPACES_KEY
@@ -111,7 +111,7 @@ class JwtManager(
  *
  * @receiver payload a [Payload].
  * @return a [JwtClaims]
- * @throws JWTException if it the JWT is in the wrong format.
+ * @throws JwtException if it the JWT is in the wrong format.
  */
 fun Payload.toJWTClaims(): JwtClaims =
 	try {
@@ -122,7 +122,7 @@ fun Payload.toJWTClaims(): JwtClaims =
 			}
 		)
 	} catch (e: Exception) {
-		throw JWTException(e.message ?: "Wrong JWT format")
+		throw JwtException(e.message ?: "Wrong JWT format")
 	}
 
 /**
@@ -130,7 +130,7 @@ fun Payload.toJWTClaims(): JwtClaims =
  *
  * @receiver payload a [Payload].
  * @return a [JwtRefreshClaims]
- * @throws JWTException if the JWT is in the wrong format.
+ * @throws JwtException if the JWT is in the wrong format.
  */
 fun Payload.toJWTRefreshClaims(): JwtRefreshClaims =
 	try {
@@ -138,5 +138,5 @@ fun Payload.toJWTRefreshClaims(): JwtRefreshClaims =
 			userId = getClaim(USER_ID_KEY).asString()
 		)
 	} catch (e: Exception) {
-		throw JWTException(e.message ?: "Wrong JWT format")
+		throw JwtException(e.message ?: "Wrong JWT format")
 	}

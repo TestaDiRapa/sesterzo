@@ -5,5 +5,7 @@ enum class ExceptionLabel {
 	InvalidJWT,
 	InvalidRegistration,
 	InvalidRegistrationParameters,
+	PublicKeyUpdateFailed,
 	Unauthorized,
+	UserNotFound,
 }

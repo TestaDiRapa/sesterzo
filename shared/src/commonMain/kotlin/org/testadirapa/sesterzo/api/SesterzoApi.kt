@@ -9,7 +9,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.coroutineScope
 import org.testadirapa.sesterzo.api.impl.AuthApiImpl
-import org.testadirapa.sesterzo.api.impl.SesterzoApiImpl
+import org.testadirapa.sesterzo.api.impl.UserApiImpl
 import org.testadirapa.sesterzo.api.processes.LoginProcess
 import org.testadirapa.sesterzo.api.processes.RegistrationProcess
 import org.testadirapa.sesterzo.config.HttpConfig
@@ -17,6 +17,9 @@ import org.testadirapa.sesterzo.handlers.CaptchaProgressHandler
 import org.testadirapa.sesterzo.model.dto.StartRegistrationData
 import org.testadirapa.sesterzo.serialization.Serialization
 import org.testadirapa.sesterzo.services.AuthService
+import org.testadirapa.sesterzo.services.CryptoService
+import org.testadirapa.sesterzo.services.CryptoService.Companion.PRIVATE_KEY_STORAGE_KEY
+import org.testadirapa.sesterzo.storage.StorageFacade
 import org.testadirapa.sesterzo.utils.newPlatformHttpClient
 import kotlin.time.Duration.Companion.seconds
 
@@ -96,6 +99,7 @@ interface SesterzoApi {
 			baseUrl: String,
 			jwt: String,
 			refreshJwt: String,
+			storage: StorageFacade
 		): SesterzoApi = coroutineScope {
 			val httpConfig = getHttpConfig(baseUrl)
 			val authApi = AuthApiImpl(config = httpConfig)
@@ -104,14 +108,37 @@ interface SesterzoApi {
 				initialJwt = jwt,
 				initialRefresh = refreshJwt
 			)
-			SesterzoApiImpl(
-				httpConfig = httpConfig,
-				authService = authService
-			)
+			val userApi = UserApiImpl(httpConfig = httpConfig, authService = authService)
+			val currentUser = userApi.getCurrentUser().bodyOrThrow()
+			val privateKey = storage.getItem(PRIVATE_KEY_STORAGE_KEY)
+			val cryptoService = when {
+				currentUser.publicKey == null -> CryptoService.initCreatingKeyPair(storage)
+				privateKey != null -> CryptoService.initWithExistingKeyPair(
+					publicKey = currentUser.publicKey,
+					privateKey = privateKey
+				)
+				else -> null
+			}
+			if (cryptoService != null) {
+				FullSesterzoApiImpl(
+					httpConfig = httpConfig,
+					authService = authService,
+					cryptoService = cryptoService
+				)
+			} else {
+				RecoverableSesterzoApiImpl(
+					httpConfig = httpConfig,
+					authService = authService,
+					user = userApi
+				)
+			}
 		}
-
 	}
 
 	val authService: AuthService
-
+	val user: UserApi
 }
+
+interface RecoverableSesterzoApi : SesterzoApi
+
+interface FullSesterzoApi : SesterzoApi

@@ -9,5 +9,6 @@ data class User(
 	val name: String,
 	val email: String,
 	val authenticationTokens: Map<String, AuthenticationToken> = emptyMap(),
-	val publicKey: Base64String? = null
+	val publicKey: Base64String? = null,
+	val hasBackup: Boolean = false,
 ) : Identifiable

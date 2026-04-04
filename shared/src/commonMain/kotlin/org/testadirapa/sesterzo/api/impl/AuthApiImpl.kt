@@ -26,7 +26,7 @@ class AuthApiImpl(
 	config: HttpConfig
 ): AbstractApi(config = config), AuthApi {
 
-	private val baseSegment = "auth"
+	override val baseSegment = "auth"
 
 	override suspend fun getCaptchaChallenge(
 		input: String

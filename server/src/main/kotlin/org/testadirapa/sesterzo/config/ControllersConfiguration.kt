@@ -6,6 +6,7 @@ import io.ktor.server.application.install
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
 import org.testadirapa.sesterzo.controllers.authController
+import org.testadirapa.sesterzo.controllers.userController
 
 fun Application.configureControllers() {
 	install(ContentNegotiation) {
@@ -13,5 +14,6 @@ fun Application.configureControllers() {
 	}
 	routing {
 		authController()
+		userController()
 	}
 }

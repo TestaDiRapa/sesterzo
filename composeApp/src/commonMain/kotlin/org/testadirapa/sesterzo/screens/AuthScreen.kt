@@ -1,12 +1,15 @@
 package org.testadirapa.sesterzo.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +29,32 @@ enum class AuthVariant { Login, Register}
 @Composable
 fun AuthScreen(
 	isMobile: Boolean,
+	onStartRegistration: (email: String, name: String) -> Unit,
+	onStartLogin: (email: String) -> Unit,
+	onCompleteAuth: (ott: String) -> Unit,
+	captchaProgressState: StateFlow<MutableStateFlowCaptchaProgressHandler.CaptchaProgress>
+) {
+	if (isMobile) {
+		MobileAuthScreen(onStartRegistration, onStartLogin, onCompleteAuth, captchaProgressState)
+	} else {
+		Row {
+			Column(
+				modifier = Modifier.weight(1f),
+			) {
+				LoadingScreen()
+				Text("Temporary test")
+			}
+			Scaffold(
+				modifier = Modifier.weight(1f),
+			) {
+				MobileAuthScreen(onStartRegistration, onStartLogin, onCompleteAuth, captchaProgressState)
+			}
+		}
+	}
+}
+
+@Composable
+fun MobileAuthScreen(
 	onStartRegistration: (email: String, name: String) -> Unit,
 	onStartLogin: (email: String) -> Unit,
 	onCompleteAuth: (ott: String) -> Unit,

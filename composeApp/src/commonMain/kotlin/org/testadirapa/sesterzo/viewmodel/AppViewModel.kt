@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.BuildKonfig
+import org.testadirapa.sesterzo.api.FullSesterzoApi
+import org.testadirapa.sesterzo.api.RecoverableSesterzoApi
 import org.testadirapa.sesterzo.api.SesterzoApi
 import org.testadirapa.sesterzo.config.PlatformContext
 import org.testadirapa.sesterzo.repository.PropertyRepository
@@ -52,12 +54,13 @@ class AppViewModel : ViewModel() {
 					}
 					is Intent.CompleteAuthentication -> {
 						expectStateAs<AuthenticateState>(appState.value) {
-							val (tokens, api) = it.completeProcess(intent.token)
-							AppCtx.api = api
+							val (tokens, api) = it.completeProcess(
+								token = intent.token,
+								storageFacade = PlatformContext.storageFacade()
+							)
 							AppCtx.propertyRepository.setJwt(tokens.jwt)
 							AppCtx.propertyRepository.setRefreshJwt(tokens.refreshJwt)
-							startMonitoringJwt(api)
-							_appState.update { MainPageState }
+							instantiateApiAndUpdateState(api)
 						}
 					}
 				}
@@ -80,20 +83,18 @@ class AppViewModel : ViewModel() {
 			AppCtx.propertyRepository = propertyRepository
 			val jwt = propertyRepository.getJwt()
 			val refreshJwt = propertyRepository.getRefreshJwt()
-			_appState.update {
-				if (jwt != null && refreshJwt != null) {
-					val api = SesterzoApi.initializeWithTokens(
-						baseUrl = BuildKonfig.apiUrl,
-						jwt = jwt,
-						refreshJwt = refreshJwt
-					)
-					AppCtx.api = api
-					startMonitoringJwt(api)
-					MainPageState
-				} else {
-					AuthenticateState()
-				}
+			if (jwt != null && refreshJwt != null) {
+				val api = SesterzoApi.initializeWithTokens(
+					baseUrl = BuildKonfig.apiUrl,
+					jwt = jwt,
+					refreshJwt = refreshJwt,
+					storage = PlatformContext.storageFacade()
+				)
+				instantiateApiAndUpdateState(api)
+			} else {
+				_appState.update { AuthenticateState() }
 			}
+
 		}
 	}
 
@@ -113,5 +114,23 @@ class AppViewModel : ViewModel() {
 			AppCtx.propertyRepository.clear()
 			_appState.update { AuthenticateState() }
 		}
+	}
+
+	private suspend fun instantiateApiAndUpdateState(api: SesterzoApi) {
+		val currentUser = api.user.getCurrentUser().bodyOrThrow()
+		_appState.update {
+			when (api) {
+				is RecoverableSesterzoApi -> { TODO() }
+				is FullSesterzoApi if currentUser.hasBackup -> {
+					startMonitoringJwt(api)
+					AppCtx.api = api
+					MainPageState
+				}
+				else -> {
+					TODO()
+				}
+			}
+		}
+
 	}
 }

@@ -21,8 +21,10 @@ import org.testadirapa.sesterzo.dao.impl.SpaceDAOImpl
 import org.testadirapa.sesterzo.dao.impl.UserDAOImpl
 import org.testadirapa.sesterzo.logic.AuthenticationLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
+import org.testadirapa.sesterzo.logic.UserLogic
 import org.testadirapa.sesterzo.logic.impl.AuthenticationLogicImpl
 import org.testadirapa.sesterzo.logic.impl.CaptchaLogicImpl
+import org.testadirapa.sesterzo.logic.impl.UserLogicImpl
 import org.testadirapa.sesterzo.security.JwtConfig
 import org.testadirapa.sesterzo.security.JwtManager
 
@@ -58,6 +60,7 @@ fun applicationModules(
 			passwordEncoder = get()
 		)
 	}
+	single<UserLogic> { UserLogicImpl(userDAO = get()) }
 
 }
 

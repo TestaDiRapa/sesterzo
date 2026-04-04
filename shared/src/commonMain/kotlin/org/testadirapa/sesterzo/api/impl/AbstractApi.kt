@@ -10,7 +10,7 @@ import org.testadirapa.sesterzo.config.HttpConfig
 abstract class AbstractApi(
 	private val config: HttpConfig,
 ) {
-
+	protected abstract val baseSegment: String
 	protected val baseUrl: String get() = config.baseUrl
 
 	protected suspend fun get(

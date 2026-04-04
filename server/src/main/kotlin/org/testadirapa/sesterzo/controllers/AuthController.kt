@@ -14,7 +14,7 @@ import org.testadirapa.sesterzo.config.CAPTCHA_RATE_LIMIT_KEY
 import org.testadirapa.sesterzo.config.LOGIN_RATE_LIMIT_KEY
 import org.testadirapa.sesterzo.config.REFRESH_CTX
 import org.testadirapa.sesterzo.config.REGISTER_RATE_LIMIT_KEY
-import org.testadirapa.sesterzo.exceptions.JWTException
+import org.testadirapa.sesterzo.exceptions.JwtException
 import org.testadirapa.sesterzo.logic.AuthenticationLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
 import org.testadirapa.sesterzo.model.dto.CompleteRegistrationData
@@ -72,9 +72,9 @@ fun Routing.authController() =
 		authenticate(REFRESH_CTX) {
 			post("/refresh") {
 				val claims = call.principal<JWTPrincipal>()?.payload?.toJWTRefreshClaims()
-						?: throw JWTException("No JWT passed in the request")
+						?: throw JwtException("No JWT passed in the request")
 				val refreshToken = call.request.headers["Authorization"]?.removePrefix("Bearer ")
-					?: throw JWTException("No JWT passed in the request")
+					?: throw JwtException("No JWT passed in the request")
 				call.respond(authLogic.refresh(userId = claims.userId, refreshToken = refreshToken))
 			}
 		}

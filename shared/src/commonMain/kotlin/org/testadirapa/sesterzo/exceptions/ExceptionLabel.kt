@@ -6,6 +6,8 @@ enum class ExceptionLabel {
 	InvalidRegistration,
 	InvalidRegistrationParameters,
 	PublicKeyUpdateFailed,
+	RecoveryKeyExpired,
+	RecoveryKeyNotFound,
 	Unauthorized,
-	UserNotFound,
+	UserNotFound
 }

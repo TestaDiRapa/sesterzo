@@ -19,11 +19,13 @@ import org.testadirapa.sesterzo.components.errors.ErrorAlert
 import org.testadirapa.sesterzo.screens.AuthScreen
 import org.testadirapa.sesterzo.screens.HomeScreen
 import org.testadirapa.sesterzo.screens.LoadingScreen
+import org.testadirapa.sesterzo.screens.backup.BackupPrivateKeyScreen
 import org.testadirapa.sesterzo.styles.SesterzoTheme
 import org.testadirapa.sesterzo.viewmodel.AppViewModel
 import org.testadirapa.sesterzo.viewmodel.Intent
 import org.testadirapa.sesterzo.viewmodel.state.AuthenticateState
-import org.testadirapa.sesterzo.viewmodel.state.MainPageState
+import org.testadirapa.sesterzo.viewmodel.state.BackupPrivateKeyState
+import org.testadirapa.sesterzo.viewmodel.state.MainScreenState
 import org.testadirapa.sesterzo.viewmodel.state.StartupState
 
 @Composable
@@ -65,7 +67,8 @@ fun App() {
 						},
 						captchaProgressState = currentState.captchaStateFlow
 					)
-					MainPageState -> HomeScreen()
+					BackupPrivateKeyState -> BackupPrivateKeyScreen(onUserAccept = {})
+					MainScreenState -> HomeScreen()
 				}
 				ErrorAlert(
 					error = errorState.value,

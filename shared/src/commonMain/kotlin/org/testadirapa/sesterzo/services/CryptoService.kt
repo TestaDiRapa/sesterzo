@@ -47,4 +47,8 @@ class CryptoService private constructor(
 
 	suspend fun exportAndEncodePublicKey(): Base64String =
 		base64Encode(defaultCryptoService.rsa.exportPublicKeySpki(keyPair.public))
+
+	suspend fun exportPrivateKey(): ByteArray = defaultCryptoService.rsa.exportPrivateKeyPkcs8(keyPair.private)
+
+	suspend fun exportAndEncodePrivateKey(): Base64String = base64Encode(exportPrivateKey())
 }

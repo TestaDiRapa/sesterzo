@@ -109,6 +109,7 @@ interface SesterzoApi {
 				initialRefresh = refreshJwt
 			)
 			val userApi = UserApiImpl(httpConfig = httpConfig, authService = authService)
+			print("Before get user in init")
 			val currentUser = userApi.getCurrentUser().bodyOrThrow()
 			val privateKey = storage.getItem(PRIVATE_KEY_STORAGE_KEY)
 			val cryptoService = when {
@@ -120,6 +121,11 @@ interface SesterzoApi {
 				else -> null
 			}
 			if (cryptoService != null) {
+				if (currentUser.publicKey == null) {
+					userApi.setPublicKeyForCurrentUser(
+						cryptoService.exportAndEncodePublicKey()
+					).bodyOrThrow()
+				}
 				FullSesterzoApiImpl(
 					httpConfig = httpConfig,
 					authService = authService,
@@ -141,4 +147,7 @@ interface SesterzoApi {
 
 interface RecoverableSesterzoApi : SesterzoApi
 
-interface FullSesterzoApi : SesterzoApi
+interface FullSesterzoApi : SesterzoApi {
+	val cryptoService: CryptoService
+	val recoveryApi: RecoveryApi
+}

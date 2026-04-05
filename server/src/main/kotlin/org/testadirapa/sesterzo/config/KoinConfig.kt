@@ -15,15 +15,19 @@ import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.components.mongodb.MongoDBCredentials
 import org.testadirapa.sesterzo.components.security.BCryptPasswordEncoder
 import org.testadirapa.sesterzo.components.security.PasswordEncoder
+import org.testadirapa.sesterzo.dao.RecoveryDAO
 import org.testadirapa.sesterzo.dao.SpaceDAO
 import org.testadirapa.sesterzo.dao.UserDAO
+import org.testadirapa.sesterzo.dao.impl.RecoveryDAOImpl
 import org.testadirapa.sesterzo.dao.impl.SpaceDAOImpl
 import org.testadirapa.sesterzo.dao.impl.UserDAOImpl
 import org.testadirapa.sesterzo.logic.AuthenticationLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
+import org.testadirapa.sesterzo.logic.RecoveryLogic
 import org.testadirapa.sesterzo.logic.UserLogic
 import org.testadirapa.sesterzo.logic.impl.AuthenticationLogicImpl
 import org.testadirapa.sesterzo.logic.impl.CaptchaLogicImpl
+import org.testadirapa.sesterzo.logic.impl.RecoveryLogicImpl
 import org.testadirapa.sesterzo.logic.impl.UserLogicImpl
 import org.testadirapa.sesterzo.security.JwtConfig
 import org.testadirapa.sesterzo.security.JwtManager
@@ -44,6 +48,7 @@ fun applicationModules(
 	}
 
 	// DAOs
+	single<RecoveryDAO> { RecoveryDAOImpl(client = get()) }
 	single<SpaceDAO> { SpaceDAOImpl(client = get()) }
 	single<UserDAO> { UserDAOImpl(client = get()) }
 
@@ -60,6 +65,7 @@ fun applicationModules(
 			passwordEncoder = get()
 		)
 	}
+	single<RecoveryLogic> { RecoveryLogicImpl(recoveryDAO = get()) }
 	single<UserLogic> { UserLogicImpl(userDAO = get()) }
 
 }

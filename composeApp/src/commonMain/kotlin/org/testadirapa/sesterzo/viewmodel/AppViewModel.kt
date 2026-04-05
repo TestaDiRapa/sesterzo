@@ -20,7 +20,8 @@ import org.testadirapa.sesterzo.viewmodel.errors.ErrorState
 import org.testadirapa.sesterzo.viewmodel.errors.toErrorState
 import org.testadirapa.sesterzo.viewmodel.state.AppState
 import org.testadirapa.sesterzo.viewmodel.state.AuthenticateState
-import org.testadirapa.sesterzo.viewmodel.state.MainPageState
+import org.testadirapa.sesterzo.viewmodel.state.BackupPrivateKeyState
+import org.testadirapa.sesterzo.viewmodel.state.MainScreenState
 import org.testadirapa.sesterzo.viewmodel.state.StartupState
 
 class AppViewModel : ViewModel() {
@@ -119,16 +120,18 @@ class AppViewModel : ViewModel() {
 	private suspend fun instantiateApiAndUpdateState(api: SesterzoApi) {
 		val currentUser = api.user.getCurrentUser().bodyOrThrow()
 		_appState.update {
-			when (api) {
-				is RecoverableSesterzoApi -> { TODO() }
-				is FullSesterzoApi if currentUser.hasBackup -> {
-					startMonitoringJwt(api)
-					AppCtx.api = api
-					MainPageState
+			if (api is RecoverableSesterzoApi) {
+				TODO()
+			} else if (api is FullSesterzoApi) {
+				startMonitoringJwt(api)
+				AppCtx.api = api
+				if (currentUser.hasBackup) {
+					MainScreenState
+				} else {
+					BackupPrivateKeyState
 				}
-				else -> {
-					TODO()
-				}
+			} else {
+				it
 			}
 		}
 

@@ -1,3 +1,3 @@
 package org.testadirapa.sesterzo.viewmodel.state
 
-data object MainPageState : AppState
+data object BackupPrivateKeyState : AppState

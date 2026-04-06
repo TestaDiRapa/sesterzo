@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.components.input
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Switch
@@ -14,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun LabeledSwitch(
@@ -24,20 +26,20 @@ fun LabeledSwitch(
 	var checked by remember { mutableStateOf(initialValue) }
 	Row(
 		modifier = Modifier.fillMaxWidth(),
-		horizontalArrangement = Arrangement.SpaceBetween,
 		verticalAlignment = Alignment.CenterVertically,
 	) {
-		Text(
-			text = label,
-			style = MaterialTheme.typography.bodyMedium,
-			color = colorScheme.onSurfaceVariant,
-		)
 		Switch(
 			checked = checked,
 			onCheckedChange = {
 				checked = it
 				onCheckedChange(it)
 			},
+		)
+		Text(
+			text = label,
+			style = MaterialTheme.typography.bodyMedium,
+			color = colorScheme.onSurfaceVariant,
+			modifier = Modifier.padding(start = 16.dp)
 		)
 	}
 }

@@ -15,4 +15,9 @@ interface UserLogic {
 	 * Sets the [User.publicKey] for the current user, if not set already.
 	 */
 	suspend fun setPublicKey(publicKey: Base64String): User
+
+	/**
+	 * Sets [User.hasBackup] to true for the current user.
+	 */
+	suspend fun setBackupConfirmation(): User
 }

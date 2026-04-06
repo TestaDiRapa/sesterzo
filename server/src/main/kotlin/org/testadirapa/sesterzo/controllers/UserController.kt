@@ -9,6 +9,7 @@ import org.testadirapa.sesterzo.logic.UserLogic
 import org.testadirapa.sesterzo.model.dto.PublicKeyPayload
 import org.testadirapa.sesterzo.security.authenticatedGet
 import org.testadirapa.sesterzo.security.authenticatedPost
+import org.testadirapa.sesterzo.security.authenticatedPut
 
 fun Routing.userController() = route("/user") {
 
@@ -21,6 +22,10 @@ fun Routing.userController() = route("/user") {
 	authenticatedPost("/current/publicKey") {
 		val publicKey = call.receive<PublicKeyPayload>().publicKey
 		call.respond(userLogic.setPublicKey(publicKey))
+	}
+
+	authenticatedPut("/current/hasBackup") {
+		call.respond(userLogic.setBackupConfirmation())
 	}
 
 }

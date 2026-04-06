@@ -9,5 +9,6 @@ enum class ExceptionLabel {
 	RecoveryKeyExpired,
 	RecoveryKeyNotFound,
 	Unauthorized,
-	UserNotFound
+	UserNotFound,
+	UserUpdateFailed
 }

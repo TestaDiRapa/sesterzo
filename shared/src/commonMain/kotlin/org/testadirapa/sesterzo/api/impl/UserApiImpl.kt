@@ -46,4 +46,14 @@ class UserApiImpl(
 			contentType(Application.Json)
 			setBody(PublicKeyPayload(publicKey))
 		}.wrap()
+
+	override suspend fun setBackupConfirmation(): HttpResponse<User> =
+		put {
+			url {
+				takeFrom(baseUrl)
+				appendPathSegments(baseSegment, "current", "hasBackup")
+			}
+			bearerAuth(authService.getJwt())
+			accept(Application.Json)
+		}.wrap()
 }

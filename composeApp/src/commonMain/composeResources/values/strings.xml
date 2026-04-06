@@ -16,6 +16,7 @@
     <string name="error_recovery_key_not_found">Recovery key not found.</string>
     <string name="error_unauthorized">Invalid email or token.</string>
     <string name="error_user_not_found">User not found.</string>
+    <string name="error_user_update_failed">User update failed.</string>
 
     <!--  Backup private key page  -->
     <string name="backup_key_title">Back up your private key</string>

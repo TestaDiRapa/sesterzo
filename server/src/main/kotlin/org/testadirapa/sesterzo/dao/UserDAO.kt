@@ -17,4 +17,6 @@ abstract class UserDAO(client: DBClient) : GenericDAO<User>(client) {
 	abstract suspend fun getByEmail(email: String): User?
 
 	abstract suspend fun setPublicKey(userId: String, publicKey: Base64String): User?
+
+	abstract suspend fun setBackupConfirmation(userId: String): User?
 }

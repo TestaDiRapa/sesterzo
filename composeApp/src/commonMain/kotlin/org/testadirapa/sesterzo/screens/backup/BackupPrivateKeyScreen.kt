@@ -1,9 +1,16 @@
 package org.testadirapa.sesterzo.screens.backup
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -16,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -45,6 +53,7 @@ import sesterzo.composeapp.generated.resources.backup_key_title
 
 @Composable
 fun BackupPrivateKeyScreen(
+	isMobile: Boolean,
 	onUserAccept: () -> Unit,
 ) {
 	val scope = rememberCoroutineScope()
@@ -57,81 +66,100 @@ fun BackupPrivateKeyScreen(
 	}
 
 	Scaffold { innerPadding ->
-		Column(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(innerPadding)
-				.padding(horizontal = 24.dp)
-				.padding(top = 48.dp),
-			verticalArrangement = Arrangement.spacedBy(16.dp),
+		Box(
+			modifier = Modifier.fillMaxSize().padding(innerPadding),
+			contentAlignment = Alignment.Center,
 		) {
-			Text(
-				text = stringResource(Res.string.backup_key_title),
-				style = MaterialTheme.typography.titleLarge,
-				fontWeight = FontWeight.Bold,
-				color = colorScheme.onBackground,
-			)
-			MultilineBodyText(
-				resources = listOf(
-					Res.string.backup_key_description_1,
-					Res.string.backup_key_description_2,
-					Res.string.backup_key_description_3
-				)
-			)
-			privateKey?.also { key ->
-				ReadOnlyCopyField(
-					value = key,
-					label = "Private Key",
-					title = stringResource(Res.string.backup_key_private_key),
-				)
-			}
-			OrDivider()
-
-			Text(
-				text = stringResource(Res.string.backup_key_recovery_title),
-				style = MaterialTheme.typography.titleMedium,
-				fontWeight = FontWeight.Bold,
-				color = colorScheme.onBackground,
-			)
-			MultilineBodyText(
-				resources = listOf(
-					Res.string.backup_key_recovery_description_1,
-					Res.string.backup_key_recovery_description_2,
-				)
-			)
-			recoveryKey?.also { key ->
-				ReadOnlyCopyField(
-					value = key,
-					label = "RecoveryKey Key",
-					title = stringResource(Res.string.backup_key_recovery_title),
-				)
-			} ?: FormButton(
-				onClick = {
-					scope.launch {
-						val key = AppCtx.api.recoveryApi.generateRecoveryKey(
-							owner = AppCtx.api.user.getCurrentUser().bodyOrThrow().id,
-							expiresAt = null
+			val content: @Composable () -> Unit = {
+				Column(
+					modifier = Modifier
+						.padding(horizontal = 24.dp)
+						.padding(vertical = 24.dp),
+					verticalArrangement = Arrangement.spacedBy(16.dp),
+				) {
+					Text(
+						text = stringResource(Res.string.backup_key_title),
+						style = MaterialTheme.typography.titleLarge,
+						fontWeight = FontWeight.Bold,
+						color = colorScheme.onBackground,
+					)
+					MultilineBodyText(
+						resources = listOf(
+							Res.string.backup_key_description_1,
+							Res.string.backup_key_description_2,
+							Res.string.backup_key_description_3
 						)
-						recoveryKey = base32Encode(key)
+					)
+					privateKey?.also { key ->
+						ReadOnlyCopyField(
+							value = key,
+							label = "Private Key",
+							title = stringResource(Res.string.backup_key_private_key),
+						)
 					}
-				},
-				enabled = true,
-				text = stringResource(Res.string.backup_key_generate_recovery)
-			)
+					OrDivider()
 
-			HorizontalDivider(modifier = Modifier.weight(1f))
+					Text(
+						text = stringResource(Res.string.backup_key_recovery_title),
+						style = MaterialTheme.typography.titleMedium,
+						fontWeight = FontWeight.Bold,
+						color = colorScheme.onBackground,
+					)
+					MultilineBodyText(
+						resources = listOf(
+							Res.string.backup_key_recovery_description_1,
+							Res.string.backup_key_recovery_description_2,
+						)
+					)
+					recoveryKey?.also { key ->
+						ReadOnlyCopyField(
+							value = key,
+							label = "Recovery Key",
+							title = stringResource(Res.string.backup_key_recovery_title),
+						)
+					} ?: FormButton(
+						onClick = {
+							scope.launch {
+								val key = AppCtx.api.recoveryApi.generateRecoveryKey(
+									owner = AppCtx.api.user.getCurrentUser().bodyOrThrow().id,
+									expiresAt = null
+								)
+								recoveryKey = base32Encode(key)
+							}
+						},
+						enabled = true,
+						text = stringResource(Res.string.backup_key_generate_recovery)
+					)
 
-			LabeledSwitch(
-				label = stringResource(Res.string.backup_key_confirm_text),
-				initialValue = userAccepted,
-				onCheckedChange = { userAccepted = it },
-			)
+					HorizontalDivider(modifier = Modifier.weight(1f))
 
-			FormButton(
-				onClick = onUserAccept,
-				enabled = userAccepted,
-				text = stringResource(Res.string.backup_key_confirm_button),
-			)
+					LabeledSwitch(
+						label = stringResource(Res.string.backup_key_confirm_text),
+						initialValue = userAccepted,
+						onCheckedChange = { userAccepted = it },
+					)
+
+					FormButton(
+						onClick = onUserAccept,
+						enabled = userAccepted,
+						text = stringResource(Res.string.backup_key_confirm_button),
+					)
+				}
+			}
+
+			if (isMobile) {
+				content()
+			} else {
+				Card(
+					modifier = Modifier
+						.widthIn(max = 1200.dp)
+						.heightIn(max = 720.dp),
+					border = BorderStroke(width = 2.dp, color = colorScheme.onBackground),
+					colors = CardDefaults.cardColors(containerColor = colorScheme.background),
+				) {
+					content()
+				}
+			}
 		}
 	}
 }

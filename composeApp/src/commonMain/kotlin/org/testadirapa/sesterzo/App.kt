@@ -38,7 +38,7 @@ fun App() {
 	val widthDp = with(LocalDensity.current) {
 		LocalWindowInfo.current.containerSize.width.toDp()
 	}
-	val isMobile = widthDp < 600.dp
+	val isMobile = widthDp < 960.dp
 
 	SesterzoTheme(
 		darkTheme = isSystemInDarkTheme()
@@ -67,7 +67,10 @@ fun App() {
 						},
 						captchaProgressState = currentState.captchaStateFlow
 					)
-					BackupPrivateKeyState -> BackupPrivateKeyScreen(onUserAccept = {})
+					BackupPrivateKeyState -> BackupPrivateKeyScreen(
+						isMobile = isMobile,
+						onUserAccept = { appViewModel.acceptIntent(Intent.ConfirmBackup) }
+					)
 					MainScreenState -> HomeScreen()
 				}
 				ErrorAlert(

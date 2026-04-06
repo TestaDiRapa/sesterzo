@@ -64,6 +64,10 @@ class AppViewModel : ViewModel() {
 							instantiateApiAndUpdateState(api)
 						}
 					}
+					Intent.ConfirmBackup -> {
+						AppCtx.api.user.setBackupConfirmation().bodyOrThrow()
+						_appState.update { MainScreenState }
+					}
 				}
 			}.onFailure { error ->
 				logger.e(error) { "Error processing intent: $intent" }

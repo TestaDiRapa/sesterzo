@@ -30,4 +30,11 @@ class UserDAOImpl(client: DBClient) : UserDAO(client) {
 			update = Updates.set(User::publicKey.name, publicKey),
 			options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 		)
+
+	override suspend fun setBackupConfirmation(userId: String): User? =
+		collection.findOneAndUpdate(
+			filter = eq("_id", userId),
+			update = Updates.set(User::hasBackup.name, true),
+			options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+		)
 }

@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.logic.impl
 import org.testadirapa.sesterzo.dao.UserDAO
 import org.testadirapa.sesterzo.exceptions.PublicKeyUpdateFailedException
 import org.testadirapa.sesterzo.exceptions.EntityNotFoundException
+import org.testadirapa.sesterzo.exceptions.EntityUpdateFailedException
 import org.testadirapa.sesterzo.exceptions.ExceptionLabel
 import org.testadirapa.sesterzo.logic.UserLogic
 import org.testadirapa.sesterzo.model.Base64String
@@ -22,6 +23,16 @@ class UserLogicImpl(
 			when {
 				result == null -> throw EntityNotFoundException(currentUserId, ExceptionLabel.UserNotFound)
 				result.publicKey != publicKey -> throw PublicKeyUpdateFailedException(currentUserId)
+				else -> result
+			}
+		}
+	}
+
+	override suspend fun setBackupConfirmation(): User = withSecurityContext {
+		userDAO.setBackupConfirmation(userId = currentUserId).let { result ->
+			when {
+				result == null -> throw EntityNotFoundException(currentUserId, ExceptionLabel.UserNotFound)
+				!result.hasBackup -> throw EntityUpdateFailedException(currentUserId, ExceptionLabel.UserUpdateFailed)
 				else -> result
 			}
 		}

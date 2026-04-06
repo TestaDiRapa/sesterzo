@@ -14,6 +14,7 @@ import sesterzo.composeapp.generated.resources.error_recovery_key_expired
 import sesterzo.composeapp.generated.resources.error_recovery_key_not_found
 import sesterzo.composeapp.generated.resources.error_unauthorized
 import sesterzo.composeapp.generated.resources.error_user_not_found
+import sesterzo.composeapp.generated.resources.error_user_update_failed
 
 data class ErrorState(val message: String)
 
@@ -30,6 +31,7 @@ suspend fun Throwable.toErrorState(): ErrorState = when(this) {
 			ExceptionLabel.RecoveryKeyExpired -> getString(Res.string.error_recovery_key_expired)
 			ExceptionLabel.RecoveryKeyNotFound -> getString(Res.string.error_recovery_key_not_found)
 			ExceptionLabel.UserNotFound -> getString(Res.string.error_user_not_found)
+			ExceptionLabel.UserUpdateFailed -> getString(Res.string.error_user_update_failed)
 		}
 	}
 	else -> getString(Res.string.error_generic)

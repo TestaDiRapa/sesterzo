@@ -2,5 +2,5 @@ package org.testadirapa.sesterzo.exceptions
 
 class ResponseStatusException(
 	val msg: String?,
-	val label: ExceptionLabel?
-) : Exception()
+	override val label: ExceptionLabel?
+) : Exception(), ExceptionWithLabel

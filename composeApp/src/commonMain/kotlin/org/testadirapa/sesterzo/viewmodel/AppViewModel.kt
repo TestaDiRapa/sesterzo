@@ -21,6 +21,7 @@ import org.testadirapa.sesterzo.viewmodel.errors.toErrorState
 import org.testadirapa.sesterzo.viewmodel.state.AppState
 import org.testadirapa.sesterzo.viewmodel.state.AuthenticateState
 import org.testadirapa.sesterzo.viewmodel.state.BackupPrivateKeyState
+import org.testadirapa.sesterzo.viewmodel.state.CreateSpaceState
 import org.testadirapa.sesterzo.viewmodel.state.MainScreenState
 import org.testadirapa.sesterzo.viewmodel.state.StartupState
 
@@ -66,13 +67,19 @@ class AppViewModel : ViewModel() {
 					}
 					Intent.ConfirmBackup -> {
 						AppCtx.api.user.setBackupConfirmation().bodyOrThrow()
-						_appState.update { MainScreenState }
+						_appState.update { mainScreenOrCreateSpace() }
 					}
 				}
 			}.onFailure { error ->
 				logger.e(error) { "Error processing intent: $intent" }
 				_errorState.update { error.toErrorState() }
 			}
+		}
+	}
+
+	fun setError(error: Throwable) {
+		viewModelScope.launch {
+			_errorState.update { error.toErrorState() }
 		}
 	}
 
@@ -130,7 +137,7 @@ class AppViewModel : ViewModel() {
 				startMonitoringJwt(api)
 				AppCtx.api = api
 				if (currentUser.hasBackup) {
-					MainScreenState
+					mainScreenOrCreateSpace()
 				} else {
 					BackupPrivateKeyState
 				}
@@ -138,6 +145,12 @@ class AppViewModel : ViewModel() {
 				it
 			}
 		}
-
 	}
+
+	private suspend fun mainScreenOrCreateSpace() : AppState =
+		if (AppCtx.api.spaceApi.getSpaces().isEmpty()) {
+			CreateSpaceState(isFirst = true)
+		} else {
+			MainScreenState
+		}
 }

@@ -1,7 +1,6 @@
 package org.testadirapa.sesterzo.screens.backup
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +54,7 @@ import sesterzo.composeapp.generated.resources.backup_key_title
 fun BackupPrivateKeyScreen(
 	isMobile: Boolean,
 	onUserAccept: () -> Unit,
+	onError: (error: Throwable) -> Unit,
 ) {
 	val scope = rememberCoroutineScope()
 	var privateKey by remember { mutableStateOf<Base64String?>(null) }
@@ -120,11 +120,13 @@ fun BackupPrivateKeyScreen(
 					} ?: FormButton(
 						onClick = {
 							scope.launch {
-								val key = AppCtx.api.recoveryApi.generateRecoveryKey(
-									owner = AppCtx.api.user.getCurrentUser().bodyOrThrow().id,
-									expiresAt = null
-								)
-								recoveryKey = base32Encode(key)
+								runCatching {
+									val key = AppCtx.api.recovery.generateRecoveryKey(
+										owner = AppCtx.api.currentUserId,
+										expiresAt = null
+									)
+									recoveryKey = base32Encode(key)
+								}.onFailure(onError)
 							}
 						},
 						enabled = true,

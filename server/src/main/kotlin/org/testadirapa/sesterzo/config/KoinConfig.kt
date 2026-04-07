@@ -24,13 +24,16 @@ import org.testadirapa.sesterzo.dao.impl.UserDAOImpl
 import org.testadirapa.sesterzo.logic.AuthenticationLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
 import org.testadirapa.sesterzo.logic.RecoveryLogic
+import org.testadirapa.sesterzo.logic.SpaceLogic
 import org.testadirapa.sesterzo.logic.UserLogic
 import org.testadirapa.sesterzo.logic.impl.AuthenticationLogicImpl
 import org.testadirapa.sesterzo.logic.impl.CaptchaLogicImpl
 import org.testadirapa.sesterzo.logic.impl.RecoveryLogicImpl
+import org.testadirapa.sesterzo.logic.impl.SpaceLogicImpl
 import org.testadirapa.sesterzo.logic.impl.UserLogicImpl
 import org.testadirapa.sesterzo.security.JwtConfig
 import org.testadirapa.sesterzo.security.JwtManager
+import kotlin.math.sin
 
 fun applicationModules(
 	config: ApplicationConfig,
@@ -66,6 +69,7 @@ fun applicationModules(
 		)
 	}
 	single<RecoveryLogic> { RecoveryLogicImpl(recoveryDAO = get()) }
+	single<SpaceLogic> { SpaceLogicImpl(spaceDAO = get()) }
 	single<UserLogic> { UserLogicImpl(userDAO = get()) }
 
 }

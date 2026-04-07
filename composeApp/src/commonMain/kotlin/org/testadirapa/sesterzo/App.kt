@@ -69,7 +69,8 @@ fun App() {
 					)
 					BackupPrivateKeyState -> BackupPrivateKeyScreen(
 						isMobile = isMobile,
-						onUserAccept = { appViewModel.acceptIntent(Intent.ConfirmBackup) }
+						onUserAccept = { appViewModel.acceptIntent(Intent.ConfirmBackup) },
+						onError = { appViewModel.setError(it) }
 					)
 					MainScreenState -> HomeScreen()
 				}

@@ -15,6 +15,7 @@ import org.testadirapa.sesterzo.exceptions.UnauthorizedException
 import org.testadirapa.sesterzo.logic.AuthenticationLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
 import org.testadirapa.sesterzo.model.User
+import org.testadirapa.sesterzo.model.UserAccessKey
 import org.testadirapa.sesterzo.model.dto.AuthResponse
 import org.testadirapa.sesterzo.security.JwtClaims
 import org.testadirapa.sesterzo.security.JwtManager
@@ -50,7 +51,11 @@ class AuthenticationLogicImpl(
 	private suspend fun buildAuthResponse(userId: String, refreshToken: String? = null): AuthResponse {
 		val spacesWithPermission = spaceDAO.getByParticipant(userId).mapNotNull { space ->
 			space.users[userId]?.let {
-				space.id to it
+				if (it is UserAccessKey) {
+					space.id to it.accessLevel
+				} else {
+					null
+				}
  			}
 		}.toMap()
 		return AuthResponse(

@@ -9,5 +9,5 @@ data class Space(
 	val fixedExpensesTemplateId: String,
 	val incomeSourcesTemplateId: String,
 	val savingsTemplateId: String,
-	val users: Map<String, UserSpaceRole>
+	val users: Map<String, AccessKey>
 ) : Identifiable

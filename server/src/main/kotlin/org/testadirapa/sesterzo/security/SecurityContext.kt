@@ -1,6 +1,10 @@
 package org.testadirapa.sesterzo.security
 
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
+import kotlinx.coroutines.flow.flow
+import org.testadirapa.sesterzo.model.UserSpaceRole
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
@@ -17,7 +21,12 @@ data class SecurityContext(
 			with(getFromCoroutineContext()) {
 				block()
 			}
+		fun <T> flowOnSecurityContext(block: suspend FlowCollector<T>.(SecurityContext) -> Unit): Flow<T> = flow {
+			val securityContext = getFromCoroutineContext()
+			block(securityContext)
+		}
 	}
 
 	val currentUserId: String get() = jwtClaims.userId
+	val spaces: Map<String, UserSpaceRole> = jwtClaims.spaces
 }

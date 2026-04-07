@@ -5,6 +5,7 @@ enum class ExceptionLabel {
 	InvalidJWT,
 	InvalidRegistration,
 	InvalidRegistrationParameters,
+	InvalidPrivateKey,
 	PublicKeyUpdateFailed,
 	RecoveryKeyExpired,
 	RecoveryKeyNotFound,

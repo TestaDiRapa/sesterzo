@@ -14,6 +14,8 @@ import org.testadirapa.sesterzo.api.processes.LoginProcess
 import org.testadirapa.sesterzo.api.processes.RegistrationProcess
 import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.handlers.CaptchaProgressHandler
+import org.testadirapa.sesterzo.model.Base32String
+import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.dto.StartRegistrationData
 import org.testadirapa.sesterzo.serialization.Serialization
 import org.testadirapa.sesterzo.services.AuthService
@@ -109,13 +111,17 @@ interface SesterzoApi {
 				initialRefresh = refreshJwt
 			)
 			val userApi = UserApiImpl(httpConfig = httpConfig, authService = authService)
-			val currentUser = userApi.getCurrentUser().bodyOrThrow()
+			val currentUser = userApi.getCurrentUser()
 			val privateKey = storage.getItem(PRIVATE_KEY_STORAGE_KEY)
 			val cryptoService = when {
-				currentUser.publicKey == null -> CryptoService.initCreatingKeyPair(storage)
+				currentUser.publicKey == null -> CryptoService.initCreatingKeyPair(
+					storage = storage,
+					userId = currentUser.id,
+				)
 				privateKey != null -> CryptoService.initWithExistingKeyPair(
 					publicKey = currentUser.publicKey,
-					privateKey = privateKey
+					privateKey = privateKey,
+					userId = currentUser.id,
 				)
 				else -> null
 			}
@@ -142,15 +148,19 @@ interface SesterzoApi {
 
 	val authService: AuthService
 	val user: UserApi
+	val recovery: RecoveryApi
 }
 
-interface RecoverableSesterzoApi : SesterzoApi
+interface RecoverableSesterzoApi : SesterzoApi {
+	suspend fun toFullApiWithRecoveryKey(storage: StorageFacade, recoveryKey: Base32String): FullSesterzoApi
+	suspend fun toFullApiWithPrivateKey(storage: StorageFacade, privateKey: Base64String): FullSesterzoApi
+}
 
 interface FullSesterzoApi : SesterzoApi {
 	val currentUserId: String
 
 	val cryptoService: CryptoService
 
-	val recovery: RecoveryApi
+	override val recovery: FullRecoveryApi
 	val spaceApi: SpaceApi
 }

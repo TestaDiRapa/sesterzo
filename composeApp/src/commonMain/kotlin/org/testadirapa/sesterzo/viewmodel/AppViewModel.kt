@@ -23,6 +23,7 @@ import org.testadirapa.sesterzo.viewmodel.state.AuthenticateState
 import org.testadirapa.sesterzo.viewmodel.state.BackupPrivateKeyState
 import org.testadirapa.sesterzo.viewmodel.state.CreateSpaceState
 import org.testadirapa.sesterzo.viewmodel.state.MainScreenState
+import org.testadirapa.sesterzo.viewmodel.state.RecoverKeyState
 import org.testadirapa.sesterzo.viewmodel.state.StartupState
 
 class AppViewModel : ViewModel() {
@@ -62,7 +63,7 @@ class AppViewModel : ViewModel() {
 							)
 							AppCtx.propertyRepository.setJwt(tokens.jwt)
 							AppCtx.propertyRepository.setRefreshJwt(tokens.refreshJwt)
-							instantiateApiAndUpdateState(api)
+							updateStateOnKeyState(api)
 						}
 					}
 					Intent.ConfirmBackup -> {
@@ -102,7 +103,7 @@ class AppViewModel : ViewModel() {
 					refreshJwt = refreshJwt,
 					storage = PlatformContext.storageFacade()
 				)
-				instantiateApiAndUpdateState(api)
+				updateStateOnKeyState(api)
 			} else {
 				_appState.update { AuthenticateState() }
 			}
@@ -128,21 +129,21 @@ class AppViewModel : ViewModel() {
 		}
 	}
 
-	private suspend fun instantiateApiAndUpdateState(api: SesterzoApi) {
+	private suspend fun updateStateOnKeyState(api: SesterzoApi) {
 		val currentUser = api.user.getCurrentUser().bodyOrThrow()
 		_appState.update {
-			if (api is RecoverableSesterzoApi) {
-				TODO()
-			} else if (api is FullSesterzoApi) {
-				startMonitoringJwt(api)
-				AppCtx.api = api
-				if (currentUser.hasBackup) {
-					mainScreenOrCreateSpace()
-				} else {
-					BackupPrivateKeyState
+			when (api) {
+				is RecoverableSesterzoApi -> RecoverKeyState(api)
+				is FullSesterzoApi -> {
+					startMonitoringJwt(api)
+					AppCtx.api = api
+					if (currentUser.hasBackup) {
+						mainScreenOrCreateSpace()
+					} else {
+						BackupPrivateKeyState
+					}
 				}
-			} else {
-				it
+				else -> it
 			}
 		}
 	}

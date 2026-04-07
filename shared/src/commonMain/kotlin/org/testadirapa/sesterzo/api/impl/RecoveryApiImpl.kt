@@ -1,6 +1,5 @@
 package org.testadirapa.sesterzo.api.impl
 
-import com.icure.kryptom.crypto.AesAlgorithm
 import com.icure.kryptom.crypto.AesAlgorithm.CbcWithPkcs7Padding
 import com.icure.kryptom.crypto.defaultCryptoService
 import com.icure.kryptom.utils.base64Decode
@@ -19,19 +18,16 @@ import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrap
 import org.testadirapa.sesterzo.model.RecoveryKey
-import org.testadirapa.sesterzo.model.Timestamp
 import org.testadirapa.sesterzo.services.AuthService
-import org.testadirapa.sesterzo.services.CryptoService
 
-class RecoveryApiImpl(
+open class RecoveryApiImpl(
 	httpConfig: HttpConfig,
 	private val authService: AuthService,
-	private val cryptoService: CryptoService,
 ) : AbstractApi(httpConfig), RecoveryApi {
 
 	override val baseSegment: String = "recoveryKey"
 
-	private suspend fun getRecoveryKey(recoveryKeyId: String): HttpResponse<RecoveryKey> = get {
+	protected suspend fun getRecoveryKey(recoveryKeyId: String): HttpResponse<RecoveryKey> = get {
 		url {
 			takeFrom(baseUrl)
 			appendPathSegments(baseSegment, recoveryKeyId)
@@ -41,7 +37,7 @@ class RecoveryApiImpl(
 		accept(Application.Json)
 	}.wrap()
 
-	private suspend fun createRecoveryKey(recoveryKey: RecoveryKey): HttpResponse<RecoveryKey> = post {
+	protected suspend fun createRecoveryKey(recoveryKey: RecoveryKey): HttpResponse<RecoveryKey> = post {
 		url {
 			takeFrom(baseUrl)
 			appendPathSegments(baseSegment)
@@ -52,33 +48,6 @@ class RecoveryApiImpl(
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
 	}.wrap()
-
-	override suspend fun generateRecoveryKey(
-		owner: String,
-		expiresAt: Timestamp?
-	): ByteArray {
-		val privateKey = cryptoService.exportPrivateKey()
-		val recoveryKey = defaultCryptoService.aes.generateKey(CbcWithPkcs7Padding)
-		val encryptedPrivateKey = base64Encode(
-			defaultCryptoService.aes.encrypt(
-				data = privateKey,
-				key = recoveryKey
-			)
-		)
-		val exportedRecoveryKey = defaultCryptoService.aes.exportKey(recoveryKey)
-		val recoveryKeyHash = base64Encode(
-			defaultCryptoService.digest.sha256(exportedRecoveryKey)
-		)
-		createRecoveryKey(
-			RecoveryKey(
-				id = recoveryKeyHash,
-				expiresAt = expiresAt,
-				owner = owner,
-				encryptedKey = encryptedPrivateKey
-			)
-		).bodyOrThrow()
-		return exportedRecoveryKey
-	}
 
 	override suspend fun recoverKey(
 		recoveryKeyBytes: ByteArray,

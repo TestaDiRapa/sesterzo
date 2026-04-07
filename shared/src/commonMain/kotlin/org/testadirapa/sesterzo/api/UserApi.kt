@@ -6,7 +6,7 @@ import org.testadirapa.sesterzo.model.User
 
 interface UserApi {
 
-	suspend fun getCurrentUser(): HttpResponse<User>
+	suspend fun getCurrentUser(): User
 
 	/**
 	 * Sets the [User.publicKey] for the current user. This method will fail if the user has already a public key.

@@ -25,7 +25,7 @@ class UserApiImpl(
 
 	override val baseSegment: String = "user"
 
-	override suspend fun getCurrentUser(): HttpResponse<User> = get {
+	private suspend fun retrieveCurrentUser(): HttpResponse<User> = get {
 		url {
 			takeFrom(baseUrl)
 			appendPathSegments(baseSegment, "current")
@@ -34,6 +34,8 @@ class UserApiImpl(
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
 	}.wrap()
+
+	override suspend fun getCurrentUser(): User = retrieveCurrentUser().bodyOrThrow()
 
 	override suspend fun setPublicKeyForCurrentUser(publicKey: Base64String): HttpResponse<User> =
 		post {

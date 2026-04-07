@@ -1,4 +1,4 @@
-package org.testadirapa.sesterzo.screens.backup
+package org.testadirapa.sesterzo.screens.crypto
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -41,12 +41,16 @@ import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.backup_key_confirm_button
 import sesterzo.composeapp.generated.resources.backup_key_confirm_text
 import sesterzo.composeapp.generated.resources.backup_key_description_1
-import sesterzo.composeapp.generated.resources.backup_key_description_2
+import sesterzo.composeapp.generated.resources.backup_key_description_2_1
+import sesterzo.composeapp.generated.resources.backup_key_description_2_2
+import sesterzo.composeapp.generated.resources.backup_key_description_2_3
+import sesterzo.composeapp.generated.resources.backup_key_description_2_4
 import sesterzo.composeapp.generated.resources.backup_key_description_3
 import sesterzo.composeapp.generated.resources.backup_key_generate_recovery
 import sesterzo.composeapp.generated.resources.backup_key_private_key
 import sesterzo.composeapp.generated.resources.backup_key_recovery_description_1
 import sesterzo.composeapp.generated.resources.backup_key_recovery_description_2
+import sesterzo.composeapp.generated.resources.backup_key_recovery_description_3
 import sesterzo.composeapp.generated.resources.backup_key_recovery_title
 import sesterzo.composeapp.generated.resources.backup_key_title
 
@@ -86,7 +90,10 @@ fun BackupPrivateKeyScreen(
 					MultilineBodyText(
 						resources = listOf(
 							Res.string.backup_key_description_1,
-							Res.string.backup_key_description_2,
+							Res.string.backup_key_description_2_1,
+							Res.string.backup_key_description_2_2,
+							Res.string.backup_key_description_2_3,
+							Res.string.backup_key_description_2_4,
 							Res.string.backup_key_description_3
 						)
 					)
@@ -109,6 +116,7 @@ fun BackupPrivateKeyScreen(
 						resources = listOf(
 							Res.string.backup_key_recovery_description_1,
 							Res.string.backup_key_recovery_description_2,
+							Res.string.backup_key_recovery_description_3,
 						)
 					)
 					recoveryKey?.also { key ->

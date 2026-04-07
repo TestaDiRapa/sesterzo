@@ -6,6 +6,17 @@ import org.testadirapa.sesterzo.model.RecoveryKey
 interface RecoveryApi {
 
 	/**
+	 * Recover the private key stored in the [RecoveryKey] corresponding to the provided AES key bytes and decrypts it.
+	 *
+	 * @param recoveryKeyBytes the bytes of the AES key used to encrypt the private key.
+	 * @return the bytes of the private key.
+	 */
+	suspend fun recoverKey(recoveryKeyBytes: ByteArray): ByteArray
+}
+
+interface FullRecoveryApi : RecoveryApi {
+
+	/**
 	 * Creates a new [RecoveryKey] for the private key of the current user, saves it to the backend and returns the
 	 * recovery AES key.
 	 *
@@ -15,11 +26,4 @@ interface RecoveryApi {
 	 */
 	suspend fun generateRecoveryKey(owner: String, expiresAt: Timestamp?): ByteArray
 
-	/**
-	 * Recover the private key stored in the [RecoveryKey] corresponding to the provided AES key bytes and decrypts it.
-	 *
-	 * @param recoveryKeyBytes the bytes of the AES key used to encrypt the private key.
-	 * @return the bytes of the private key.
-	 */
-	suspend fun recoverKey(recoveryKeyBytes: ByteArray): ByteArray
 }

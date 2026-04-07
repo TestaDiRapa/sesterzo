@@ -19,13 +19,16 @@ import org.testadirapa.sesterzo.components.errors.ErrorAlert
 import org.testadirapa.sesterzo.screens.AuthScreen
 import org.testadirapa.sesterzo.screens.HomeScreen
 import org.testadirapa.sesterzo.screens.LoadingScreen
-import org.testadirapa.sesterzo.screens.backup.BackupPrivateKeyScreen
+import org.testadirapa.sesterzo.screens.crypto.BackupPrivateKeyScreen
+import org.testadirapa.sesterzo.screens.crypto.RestorePrivateKeyScreen
 import org.testadirapa.sesterzo.styles.SesterzoTheme
 import org.testadirapa.sesterzo.viewmodel.AppViewModel
 import org.testadirapa.sesterzo.viewmodel.Intent
 import org.testadirapa.sesterzo.viewmodel.state.AuthenticateState
 import org.testadirapa.sesterzo.viewmodel.state.BackupPrivateKeyState
+import org.testadirapa.sesterzo.viewmodel.state.CreateSpaceState
 import org.testadirapa.sesterzo.viewmodel.state.MainScreenState
+import org.testadirapa.sesterzo.viewmodel.state.RecoverKeyState
 import org.testadirapa.sesterzo.viewmodel.state.StartupState
 
 @Composable
@@ -72,6 +75,11 @@ fun App() {
 						onUserAccept = { appViewModel.acceptIntent(Intent.ConfirmBackup) },
 						onError = { appViewModel.setError(it) }
 					)
+					is RecoverKeyState -> RestorePrivateKeyScreen(
+						isMobile = isMobile,
+						api = currentState.api
+					)
+					is CreateSpaceState -> TODO()
 					MainScreenState -> HomeScreen()
 				}
 				ErrorAlert(

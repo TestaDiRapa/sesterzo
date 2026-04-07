@@ -45,9 +45,7 @@ class AuthService(
 
 	suspend fun getJwtOrNull(): String? {
 		maybeRefreshTokenAndUpdateState()
-		return _jwtState.value?.accessToken.also {
-			print("new $it")
-		}
+		return _jwtState.value?.accessToken
 	}
 
 	suspend fun getJwt(): String = getJwtOrNull() ?: throw MissingJwtStateException()

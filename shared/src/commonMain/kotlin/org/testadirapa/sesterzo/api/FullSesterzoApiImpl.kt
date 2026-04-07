@@ -1,5 +1,6 @@
 package org.testadirapa.sesterzo.api
 
+import org.testadirapa.sesterzo.api.impl.FullRecoveryApiImpl
 import org.testadirapa.sesterzo.api.impl.RecoveryApiImpl
 import org.testadirapa.sesterzo.api.impl.SpaceApiImpl
 import org.testadirapa.sesterzo.api.impl.UserApiImpl
@@ -17,8 +18,8 @@ class FullSesterzoApiImpl(
 
 	override val user: UserApi by lazy { UserApiImpl(httpConfig, authService) }
 
-	override val recovery: RecoveryApi by lazy {
-		RecoveryApiImpl(
+	override val recovery: FullRecoveryApi by lazy {
+		FullRecoveryApiImpl(
 			httpConfig = httpConfig,
 			authService = authService,
 			cryptoService = cryptoService

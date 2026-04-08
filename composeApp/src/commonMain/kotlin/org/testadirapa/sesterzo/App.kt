@@ -82,7 +82,7 @@ fun App() {
 							appViewModel.acceptIntent(Intent.RestoreWithPrivateKey(key))
 						},
 						onRestoreWithRecoveryKey = { key ->
-							appViewModel.acceptIntent(Intent.RestoreWithPrivateKey(key))
+							appViewModel.acceptIntent(Intent.RestoreWithRecoveryKey(key))
 						}
 					)
 					is CreateSpaceState -> CreateSpaceScreen(

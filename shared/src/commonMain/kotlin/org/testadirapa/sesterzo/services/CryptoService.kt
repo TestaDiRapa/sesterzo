@@ -12,6 +12,11 @@ import org.testadirapa.sesterzo.exceptions.InvalidPrivateKeyException
 import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.storage.StorageFacade
+import org.testadirapa.sesterzo.utils.decodeBase64Key
+import org.testadirapa.sesterzo.utils.loadAesKey
+import org.testadirapa.sesterzo.utils.loadPrivateRsaKeyPkcs8
+import org.testadirapa.sesterzo.utils.loadPublicRsaKeySpki
+import org.testadirapa.sesterzo.utils.rsaDecrypt
 
 class CryptoService private constructor(
 	private val keyPair: RsaKeypair<RsaAlgorithm.RsaEncryptionAlgorithm.OaepWithSha256>,
@@ -40,14 +45,8 @@ class CryptoService private constructor(
 			publicKey: Base64String,
 			userId: String
 		): CryptoService {
-			val publicKeySpki = defaultCryptoService.rsa.loadPublicKeySpki(
-				algorithm = RsaAlgorithm.RsaEncryptionAlgorithm.OaepWithSha256,
-				publicKeySpki = base64Decode(publicKey)
-			)
-			val privateKeyPkcs8 = defaultCryptoService.rsa.loadPrivateKeyPkcs8(
-				algorithm = RsaAlgorithm.RsaEncryptionAlgorithm.OaepWithSha256,
-				privateKeyPkcs8 = base64Decode(privateKey)
-			)
+			val publicKeySpki = loadPublicRsaKeySpki(decodeBase64Key(publicKey))
+			val privateKeyPkcs8 = loadPrivateRsaKeyPkcs8(decodeBase64Key(privateKey))
 			val keyPair = RsaKeypair(privateKeyPkcs8, publicKeySpki)
 			verifyKeyPair(keyPair)
 			return CryptoService(keyPair = keyPair, userId = userId)
@@ -76,14 +75,11 @@ class CryptoService private constructor(
 	suspend fun decryptAndLoadSpaceKey(space: Space) {
 		if(!spaceKeys.containsKey(space.id)) {
 			space.users[userId]?.also { accessKey ->
-				val decryptedKey = defaultCryptoService.rsa.decrypt(
-					data = base64Decode(accessKey.encryptedKey),
+				val decryptedKey = rsaDecrypt(
+					encryptedData = base64Decode(accessKey.encryptedKey),
 					privateKey = keyPair.private
 				)
-				val aesKey = defaultCryptoService.aes.loadKey(
-					algorithm = AesAlgorithm.CbcWithPkcs7Padding,
-					bytes = decryptedKey
-				)
+				val aesKey = loadAesKey(decryptedKey)
 				spaceKeys[space.id] = aesKey
 			}
 		}

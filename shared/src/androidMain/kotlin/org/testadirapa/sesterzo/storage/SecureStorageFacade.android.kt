@@ -13,6 +13,7 @@ import com.icure.kryptom.utils.base64Decode
 import com.icure.kryptom.utils.base64Encode
 import org.testadirapa.sesterzo.exceptions.SecureStorageException
 import org.testadirapa.sesterzo.storage.EncryptedStorageFacade.Companion.SECRET_KEY
+import org.testadirapa.sesterzo.utils.loadAesKey
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -99,7 +100,7 @@ private suspend fun decryptKey(cipherBytes: ByteArray, iv: ByteArray, secretKey:
 		cipher.init(Cipher.DECRYPT_MODE, secretKey, spec)
 
 		val aesKeyBytes = cipher.doFinal(cipherBytes)
-		defaultCryptoService.aes.loadKey(CbcWithPkcs7Padding, aesKeyBytes)
+		loadAesKey(aesKeyBytes)
 //	} catch (e: UserNotAuthenticatedException) {
 //		throw SecureStorageException("User authentication required to decrypt key", e)
 //	} catch (e: KeyPermanentlyInvalidatedException) {

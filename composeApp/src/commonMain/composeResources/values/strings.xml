@@ -6,9 +6,12 @@
     <string name="auth_code_label">Insert the code received by email.</string>
 
     <!--  Errors  -->
+    <string name="error_cannot_decrypt_aes">Cannot decrypt data with provided AES key.</string>
+    <string name="error_cannot_decrypt_rsa">Cannot decrypt data with provided RSA key.</string>
     <string name="error_generic">An unexpected error occurred.</string>
     <string name="error_invalid_captcha">The provided captcha is invalid.</string>
     <string name="error_invalid_jwt">You are not logged in.</string>
+    <string name="error_invalid_key_format">Cannot load key: invalid format.</string>
     <string name="error_invalid_registration">Invalid token or process id.</string>
     <string name="error_invalid_private_key">The private key is invalid or does not match the public key.</string>
     <string name="error_invalid_registration_data">Invalid email or name.</string>

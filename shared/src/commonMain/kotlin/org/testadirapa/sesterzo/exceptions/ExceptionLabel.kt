@@ -1,8 +1,11 @@
 package org.testadirapa.sesterzo.exceptions
 
 enum class ExceptionLabel {
+	CannotDecryptWithAesKey,
+	CannotDecryptWithRsaKey,
 	InvalidCaptcha,
-	InvalidJWT,
+	InvalidJwt,
+	InvalidKeyFormat,
 	InvalidRegistration,
 	InvalidRegistrationParameters,
 	InvalidPrivateKey,

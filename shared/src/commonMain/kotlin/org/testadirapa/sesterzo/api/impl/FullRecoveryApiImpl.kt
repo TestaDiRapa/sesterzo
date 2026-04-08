@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.api.impl
 import com.icure.kryptom.crypto.AesAlgorithm.CbcWithPkcs7Padding
 import com.icure.kryptom.crypto.defaultCryptoService
 import com.icure.kryptom.utils.base64Encode
+import com.icure.kryptom.utils.base64UrlEncode
 import org.testadirapa.sesterzo.api.FullRecoveryApi
 import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.model.RecoveryKey
@@ -29,7 +30,7 @@ open class FullRecoveryApiImpl(
 			)
 		)
 		val exportedRecoveryKey = defaultCryptoService.aes.exportKey(recoveryKey)
-		val recoveryKeyHash = base64Encode(
+		val recoveryKeyHash = base64UrlEncode(
 			defaultCryptoService.digest.sha256(exportedRecoveryKey)
 		)
 		createRecoveryKey(

@@ -9,6 +9,7 @@ import io.ktor.utils.io.charsets.Charsets
 import io.ktor.utils.io.core.toByteArray
 import kotlinx.serialization.Serializable
 import org.testadirapa.sesterzo.serialization.Serialization
+import org.testadirapa.sesterzo.utils.aesDecrypt
 
 enum class SecureKeyAccessLevel {
 	DevicePasscode,
@@ -33,7 +34,7 @@ class EncryptedStorageFacade(
 
 			if (encryptedItem != null) {
 				val decryptedValue = runCatching {
-					defaultCryptoService.aes.decrypt(base64Decode(encryptedItem.encrypted), encryptionKey).decodeToString()
+					aesDecrypt(base64Decode(encryptedItem.encrypted), encryptionKey).decodeToString()
 				}.getOrNull()
 
 				if (decryptedValue == null) {
@@ -46,7 +47,7 @@ class EncryptedStorageFacade(
 					}
 				}
 			} else {
-				defaultCryptoService.aes.decrypt(base64Decode(item), encryptionKey).decodeToString()
+				aesDecrypt(base64Decode(item), encryptionKey).decodeToString()
 			}
 		}
 	}

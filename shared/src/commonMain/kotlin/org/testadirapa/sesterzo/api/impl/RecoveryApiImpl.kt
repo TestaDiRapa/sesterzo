@@ -1,9 +1,8 @@
 package org.testadirapa.sesterzo.api.impl
 
-import com.icure.kryptom.crypto.AesAlgorithm.CbcWithPkcs7Padding
 import com.icure.kryptom.crypto.defaultCryptoService
-import com.icure.kryptom.utils.base64Decode
 import com.icure.kryptom.utils.base64Encode
+import com.icure.kryptom.utils.base64UrlEncode
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.parameter
@@ -19,6 +18,9 @@ import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrap
 import org.testadirapa.sesterzo.model.RecoveryKey
 import org.testadirapa.sesterzo.services.AuthService
+import org.testadirapa.sesterzo.utils.aesDecrypt
+import org.testadirapa.sesterzo.utils.decodeBase64Key
+import org.testadirapa.sesterzo.utils.loadAesKey
 
 open class RecoveryApiImpl(
 	httpConfig: HttpConfig,
@@ -52,19 +54,13 @@ open class RecoveryApiImpl(
 	override suspend fun recoverKey(
 		recoveryKeyBytes: ByteArray,
 	): ByteArray {
-		val recoveryKey = defaultCryptoService.aes.loadKey(
-			algorithm = CbcWithPkcs7Padding,
-			bytes = recoveryKeyBytes,
-		)
-		val recoveryKeyHash = base64Encode(
+		val recoveryKey = loadAesKey(recoveryKeyBytes)
+		val recoveryKeyHash = base64UrlEncode(
 			defaultCryptoService.digest.sha256(recoveryKeyBytes)
 		)
 		val encryptedPrivateKey = getRecoveryKey(recoveryKeyId = recoveryKeyHash).bodyOrThrow().encryptedKey.let {
-			base64Decode(it)
+			decodeBase64Key(it)
 		}
-		return defaultCryptoService.aes.decrypt(
-			ivAndEncryptedData = encryptedPrivateKey,
-			key = recoveryKey
-		)
+		return aesDecrypt(encryptedData = encryptedPrivateKey, key = recoveryKey)
 	}
 }

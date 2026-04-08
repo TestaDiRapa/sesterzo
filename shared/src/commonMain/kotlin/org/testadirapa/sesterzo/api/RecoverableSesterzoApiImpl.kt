@@ -10,6 +10,7 @@ import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
 import org.testadirapa.sesterzo.services.CryptoService.Companion.PRIVATE_KEY_STORAGE_KEY
 import org.testadirapa.sesterzo.storage.StorageFacade
+import org.testadirapa.sesterzo.utils.decodeBase32Key
 
 class RecoverableSesterzoApiImpl(
 	private val httpConfig: HttpConfig,
@@ -29,7 +30,7 @@ class RecoverableSesterzoApiImpl(
 		recoveryKey: Base32String
 	): FullSesterzoApi {
 		val privateKeyBytes = recovery.recoverKey(
-			base32Decode(recoveryKey)
+			decodeBase32Key(recoveryKey)
 		)
 		return toFullApiWithPrivateKey(
 			storage = storage,

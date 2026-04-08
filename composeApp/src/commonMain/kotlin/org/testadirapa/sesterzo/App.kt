@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.testadirapa.sesterzo.components.errors.ErrorAlert
 import org.testadirapa.sesterzo.screens.AuthScreen
+import org.testadirapa.sesterzo.screens.CreateSpaceScreen
 import org.testadirapa.sesterzo.screens.HomeScreen
 import org.testadirapa.sesterzo.screens.LoadingScreen
 import org.testadirapa.sesterzo.screens.crypto.BackupPrivateKeyScreen
@@ -77,9 +78,16 @@ fun App() {
 					)
 					is RecoverKeyState -> RestorePrivateKeyScreen(
 						isMobile = isMobile,
-						api = currentState.api
+						onRestoreWithPrivateKey = { key ->
+							appViewModel.acceptIntent(Intent.RestoreWithPrivateKey(key))
+						},
+						onRestoreWithRecoveryKey = { key ->
+							appViewModel.acceptIntent(Intent.RestoreWithPrivateKey(key))
+						}
 					)
-					is CreateSpaceState -> TODO()
+					is CreateSpaceState -> CreateSpaceScreen(
+						isFirst = currentState.isFirst,
+					)
 					MainScreenState -> HomeScreen()
 				}
 				ErrorAlert(

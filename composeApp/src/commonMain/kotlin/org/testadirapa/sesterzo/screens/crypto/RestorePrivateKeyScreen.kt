@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,27 +19,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
-import org.testadirapa.sesterzo.api.RecoverableSesterzoApi
 import org.testadirapa.sesterzo.components.input.FormButton
 import org.testadirapa.sesterzo.components.input.TextField
-import org.testadirapa.sesterzo.components.text.MultilineBodyText
 import org.testadirapa.sesterzo.components.text.TitleAndSubtitle
 import org.testadirapa.sesterzo.components.ui.OrDivider
+import org.testadirapa.sesterzo.model.Base32String
+import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.validators.Base32Validator
 import org.testadirapa.sesterzo.validators.Base64Validator
-import org.testadirapa.sesterzo.validators.NotBlankValidator
 import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.backup_key_confirm_button
-import sesterzo.composeapp.generated.resources.backup_key_description_1
-import sesterzo.composeapp.generated.resources.backup_key_description_2
-import sesterzo.composeapp.generated.resources.backup_key_description_3
-import sesterzo.composeapp.generated.resources.backup_key_title
-import sesterzo.composeapp.generated.resources.login_subtitle
-import sesterzo.composeapp.generated.resources.login_title
 import sesterzo.composeapp.generated.resources.recover_key_button_confirm
 import sesterzo.composeapp.generated.resources.recover_key_description_1
 import sesterzo.composeapp.generated.resources.recover_key_invalid_key_format
@@ -56,7 +45,8 @@ private enum class RecoveryOption { PrivateKey, RecoveryKey }
 @Composable
 fun RestorePrivateKeyScreen(
 	isMobile: Boolean,
-	api: RecoverableSesterzoApi
+	onRestoreWithPrivateKey: (Base64String) -> Unit,
+	onRestoreWithRecoveryKey: (Base32String) -> Unit,
 ) {
 	var privateKeyBase64 by remember { mutableStateOf(FormValue(validator = Base64Validator)) }
 	var recoveryKeyBase32 by remember { mutableStateOf(FormValue(validator = Base32Validator)) }
@@ -89,7 +79,7 @@ fun RestorePrivateKeyScreen(
 								},
 							)
 							FormButton(
-								onClick = {  },
+								onClick = { onRestoreWithPrivateKey(privateKeyBase64.validValue) },
 								enabled = privateKeyBase64.isValid,
 								text = stringResource(Res.string.recover_key_button_confirm),
 							)
@@ -111,7 +101,7 @@ fun RestorePrivateKeyScreen(
 								},
 							)
 							FormButton(
-								onClick = {  },
+								onClick = { onRestoreWithRecoveryKey(recoveryKeyBase32.validValue) },
 								enabled = recoveryKeyBase32.isValid,
 								text = stringResource(Res.string.recover_key_button_confirm),
 							)

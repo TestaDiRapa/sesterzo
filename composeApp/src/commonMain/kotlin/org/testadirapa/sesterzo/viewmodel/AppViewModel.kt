@@ -70,6 +70,24 @@ class AppViewModel : ViewModel() {
 						AppCtx.api.user.setBackupConfirmation().bodyOrThrow()
 						_appState.update { mainScreenOrCreateSpace() }
 					}
+					is Intent.RestoreWithPrivateKey -> {
+						expectStateAs<RecoverKeyState>(appState.value) {
+							AppCtx.api = it.api.toFullApiWithPrivateKey(
+								storage = PlatformContext.storageFacade(),
+								privateKey = intent.privateKey,
+							)
+							_appState.update { mainScreenOrCreateSpace() }
+						}
+					}
+					is Intent.RestoreWithRecoveryKey -> {
+						expectStateAs<RecoverKeyState>(appState.value) {
+							AppCtx.api = it.api.toFullApiWithRecoveryKey(
+								storage = PlatformContext.storageFacade(),
+								recoveryKey = intent.recoveryKey,
+							)
+							_appState.update { mainScreenOrCreateSpace() }
+						}
+					}
 				}
 			}.onFailure { error ->
 				logger.e(error) { "Error processing intent: $intent" }
@@ -130,7 +148,7 @@ class AppViewModel : ViewModel() {
 	}
 
 	private suspend fun updateStateOnKeyState(api: SesterzoApi) {
-		val currentUser = api.user.getCurrentUser().bodyOrThrow()
+		val currentUser = api.user.getCurrentUser()
 		_appState.update {
 			when (api) {
 				is RecoverableSesterzoApi -> RecoverKeyState(api)

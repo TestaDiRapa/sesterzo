@@ -44,6 +44,7 @@ private enum class RecoveryOption { PrivateKey, RecoveryKey }
 
 @Composable
 fun RestorePrivateKeyScreen(
+	isLoading: Boolean,
 	isMobile: Boolean,
 	onRestoreWithPrivateKey: (Base64String) -> Unit,
 	onRestoreWithRecoveryKey: (Bip39RecoveryKey) -> Unit,
@@ -86,7 +87,7 @@ fun RestorePrivateKeyScreen(
 							OrDivider()
 							FormButton(
 								onClick = { recoveryOption = RecoveryOption.RecoveryKey },
-								enabled = true,
+								isLoading = isLoading,
 								text = stringResource(Res.string.recover_key_option_recovery_key),
 							)
 						}
@@ -107,6 +108,7 @@ fun RestorePrivateKeyScreen(
 									)
 								},
 								enabled = recoveryKeyBip39.isValid,
+								isLoading = isLoading,
 								text = stringResource(Res.string.recover_key_button_confirm),
 							)
 							OrDivider()

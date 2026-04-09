@@ -40,6 +40,7 @@ import sesterzo.composeapp.generated.resources.login_title
 
 @Composable
 fun LoginScreen(
+	isLoading: Boolean,
 	onStartLogin: (email: String) -> Unit,
 	onCompleteLogin: (ott: String) -> Unit,
 	switchToRegister: () -> Unit,
@@ -80,6 +81,7 @@ fun LoginScreen(
 					onClick = {
 						onStartLogin(email.validValue)
 					},
+					isLoading = isLoading,
 					enabled = captcha.isUninitialised && email.isValid,
 					text = stringResource(Res.string.login_button)
 				)
@@ -100,6 +102,7 @@ fun LoginScreen(
 					onClick = {
 						onCompleteLogin(ott.validValue)
 					},
+					isLoading = isLoading,
 					enabled = ott.isValid,
 					text = stringResource(Res.string.login_complete_button)
 				)

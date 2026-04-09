@@ -20,12 +20,12 @@ data class DecryptedSavings(
 
 }
 
+@Serializable
 data class EncryptedSavings(
 	override val savingsId: String,
 	override val version: Int,
 	override val spaceId: String,
 	override val encryptedSelf: Base64String,
-	override val accessKeys: Set<AccessKey>
 ) : Savings, EncryptedData {
 
 	@SerialName("_id")

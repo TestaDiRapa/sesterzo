@@ -45,6 +45,7 @@ import sesterzo.composeapp.generated.resources.register_title
 
 @Composable
 fun RegistrationScreen(
+	isLoading: Boolean,
 	onStartRegistration: (email: String, name: String) -> Unit,
 	onCompleteRegistration: (ott: String) -> Unit,
 	switchToLogin: () -> Unit,
@@ -96,6 +97,7 @@ fun RegistrationScreen(
 					onClick = {
 						onStartRegistration(email.validValue, name.validValue)
 					},
+					isLoading = isLoading,
 					enabled = captcha.isUninitialised && email.isValid && name.isValid,
 					text = stringResource(Res.string.register_button)
 				)
@@ -116,6 +118,7 @@ fun RegistrationScreen(
 					onClick = {
 						onCompleteRegistration(ott.validValue)
 					},
+					isLoading = isLoading,
 					enabled = ott.isValid,
 					text = stringResource(Res.string.register_complete_button)
 				)

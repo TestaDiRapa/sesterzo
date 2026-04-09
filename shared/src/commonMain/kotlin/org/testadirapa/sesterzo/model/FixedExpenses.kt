@@ -27,7 +27,6 @@ data class EncryptedFixedExpenses(
 	override val version: Int,
 	override val spaceId: String,
 	override val encryptedSelf: Base64String,
-	override val accessKeys: Set<AccessKey>
 ) : FixedExpenses, EncryptedData {
 
 	@SerialName("_id")

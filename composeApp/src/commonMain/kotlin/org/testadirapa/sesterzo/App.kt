@@ -38,6 +38,7 @@ fun App() {
 	val appViewModel = viewModel { AppViewModel() }
 	val state by appViewModel.appState.collectAsState()
 	val errorState = appViewModel.errorState.collectAsState()
+	val loadingState = appViewModel.loadingState.collectAsState()
 
 	val widthDp = with(LocalDensity.current) {
 		LocalWindowInfo.current.containerSize.width.toDp()
@@ -55,6 +56,7 @@ fun App() {
 				when (val currentState = state) {
 					StartupState -> LoadingScreen()
 					is AuthenticateState -> AuthScreen(
+						isLoading = loadingState.value,
 						isMobile = isMobile,
 						onStartRegistration = { email, name ->
 							appViewModel.acceptIntent(
@@ -77,6 +79,7 @@ fun App() {
 						onError = { appViewModel.setError(it) }
 					)
 					is RecoverKeyState -> RestorePrivateKeyScreen(
+						isLoading = loadingState.value,
 						isMobile = isMobile,
 						onRestoreWithPrivateKey = { key ->
 							appViewModel.acceptIntent(Intent.RestoreWithPrivateKey(key))

@@ -35,6 +35,9 @@ class AppViewModel : ViewModel() {
 	private val _errorState = MutableStateFlow<ErrorState?>(null)
 	val errorState: StateFlow<ErrorState?> = _errorState
 
+	private val _loadingState = MutableStateFlow(false)
+	val loadingState: StateFlow<Boolean> = _loadingState
+
 	private var jwtMonitorJob: Job? = null
 
 	init {
@@ -42,6 +45,7 @@ class AppViewModel : ViewModel() {
 	}
 
 	fun acceptIntent(intent: Intent) {
+		setLoading()
 		viewModelScope.launch {
 			runCatching {
 				when (intent) {
@@ -94,6 +98,7 @@ class AppViewModel : ViewModel() {
 				_errorState.update { error.toErrorState() }
 			}
 		}
+		unsetLoading()
 	}
 
 	fun setError(error: Throwable) {
@@ -172,4 +177,12 @@ class AppViewModel : ViewModel() {
 		} else {
 			MainScreenState
 		}
+
+	fun setLoading() {
+		_loadingState.update { true }
+	}
+
+	fun unsetLoading() {
+		_loadingState.update { false }
+	}
 }

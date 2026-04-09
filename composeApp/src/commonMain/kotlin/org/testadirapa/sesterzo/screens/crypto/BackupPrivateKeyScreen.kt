@@ -66,6 +66,7 @@ fun BackupPrivateKeyScreen(
 	var privateKey by remember { mutableStateOf<Base64String?>(null) }
 	var recoveryKey by remember { mutableStateOf<Bip39RecoveryKey?>(null) }
 	var userAccepted by remember { mutableStateOf(false) }
+	var loading by remember { mutableStateOf(false) }
 
 	LaunchedEffect("privateKey") {
 		privateKey = AppCtx.api.cryptoService.exportAndEncodePrivateKey()
@@ -132,6 +133,7 @@ fun BackupPrivateKeyScreen(
 								)
 							} ?: FormButton(
 								onClick = {
+									loading = true
 									scope.launch {
 										runCatching {
 											recoveryKey = AppCtx.api.recovery.generateRecoveryKey(
@@ -140,8 +142,10 @@ fun BackupPrivateKeyScreen(
 											)
 										}.onFailure(onError)
 									}
+									loading = false
 								},
-								enabled = true,
+								enabled = !loading,
+								isLoading = loading,
 								text = stringResource(Res.string.backup_key_generate_recovery)
 							)
 

@@ -6,8 +6,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Space(
 	@SerialName("_id") override val id: String,
+	override val version: Int,
+	val name: String,
 	val fixedExpensesTemplateId: String,
 	val incomeSourcesTemplateId: String,
 	val savingsTemplateId: String,
 	val users: Map<String, AccessKey>
-) : Identifiable
+) : Versionable

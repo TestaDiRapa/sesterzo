@@ -28,6 +28,7 @@ enum class AuthVariant { Login, Register}
 
 @Composable
 fun AuthScreen(
+	isLoading: Boolean,
 	isMobile: Boolean,
 	onStartRegistration: (email: String, name: String) -> Unit,
 	onStartLogin: (email: String) -> Unit,
@@ -35,7 +36,7 @@ fun AuthScreen(
 	captchaProgressState: StateFlow<MutableStateFlowCaptchaProgressHandler.CaptchaProgress>
 ) {
 	if (isMobile) {
-		MobileAuthScreen(onStartRegistration, onStartLogin, onCompleteAuth, captchaProgressState)
+		MobileAuthScreen(isLoading, onStartRegistration, onStartLogin, onCompleteAuth, captchaProgressState)
 	} else {
 		Row {
 			Column(
@@ -47,7 +48,7 @@ fun AuthScreen(
 			Scaffold(
 				modifier = Modifier.weight(1f),
 			) {
-				MobileAuthScreen(onStartRegistration, onStartLogin, onCompleteAuth, captchaProgressState)
+				MobileAuthScreen(isLoading, onStartRegistration, onStartLogin, onCompleteAuth, captchaProgressState)
 			}
 		}
 	}
@@ -55,6 +56,7 @@ fun AuthScreen(
 
 @Composable
 fun MobileAuthScreen(
+	isLoading: Boolean,
 	onStartRegistration: (email: String, name: String) -> Unit,
 	onStartLogin: (email: String) -> Unit,
 	onCompleteAuth: (ott: String) -> Unit,
@@ -63,12 +65,14 @@ fun MobileAuthScreen(
 	var variant by remember { mutableStateOf(AuthVariant.Login) }
 	when (variant) {
 		AuthVariant.Login -> LoginScreen(
+			isLoading = isLoading,
 			onStartLogin = onStartLogin,
 			onCompleteLogin = onCompleteAuth,
 			captchaProgressState = captchaProgressState,
 			switchToRegister = { variant = AuthVariant.Register }
 		)
 		AuthVariant.Register -> RegistrationScreen(
+			isLoading = isLoading,
 			onStartRegistration = onStartRegistration,
 			onCompleteRegistration = onCompleteAuth,
 			captchaProgressState = captchaProgressState,

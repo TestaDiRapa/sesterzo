@@ -4,9 +4,8 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.Flow
 import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.model.Space
-import org.testadirapa.sesterzo.model.User
 
-abstract class SpaceDAO(client: DBClient) : GenericDAO<Space>(client) {
+abstract class SpaceDAO(client: DBClient) : GenericSingleCollectionDAO<Space>(client) {
 	override val collection: MongoCollection<Space> = client.getCollection()
 
 	/**
@@ -16,4 +15,12 @@ abstract class SpaceDAO(client: DBClient) : GenericDAO<Space>(client) {
 	 * @return a [Flow] of [Space]s matching the condition.
 	 */
 	abstract fun getByParticipant(userId: String): Flow<Space>
+
+	/**
+	 * Retrieves all the [Space]s where [Space.owner] is equal to [userId].
+	 *
+	 * @param userId the id of the user.
+	 * @return a [Flow] of [Space]s matching the condition.
+	 */
+	abstract fun getByOwner(userId: String): Flow<Space>
 }

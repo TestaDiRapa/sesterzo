@@ -8,6 +8,7 @@ data class Space(
 	@SerialName("_id") override val id: String,
 	override val version: Int,
 	val name: String,
+	val owner: String,
 	val fixedExpensesTemplateId: String,
 	val incomeSourcesTemplateId: String,
 	val savingsTemplateId: String,

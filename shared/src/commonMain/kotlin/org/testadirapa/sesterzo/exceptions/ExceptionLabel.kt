@@ -10,6 +10,7 @@ enum class ExceptionLabel {
 	InvalidRegistrationParameters,
 	InvalidPrivateKey,
 	PublicKeyUpdateFailed,
+	QuotaExceeded,
 	RecoveryKeyExpired,
 	RecoveryKeyNotFound,
 	Unauthorized,

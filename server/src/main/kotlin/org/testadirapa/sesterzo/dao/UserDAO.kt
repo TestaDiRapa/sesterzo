@@ -5,7 +5,7 @@ import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.User
 
-abstract class UserDAO(client: DBClient) : GenericDAO<User>(client) {
+abstract class UserDAO(client: DBClient) : GenericSingleCollectionDAO<User>(client) {
 	override val collection: MongoCollection<User> = client.getCollection()
 
 	/**

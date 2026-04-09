@@ -15,9 +15,11 @@ import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.components.mongodb.MongoDBCredentials
 import org.testadirapa.sesterzo.components.security.BCryptPasswordEncoder
 import org.testadirapa.sesterzo.components.security.PasswordEncoder
+import org.testadirapa.sesterzo.dao.BudgetElementDAO
 import org.testadirapa.sesterzo.dao.RecoveryDAO
 import org.testadirapa.sesterzo.dao.SpaceDAO
 import org.testadirapa.sesterzo.dao.UserDAO
+import org.testadirapa.sesterzo.dao.impl.BudgetElementDAOImpl
 import org.testadirapa.sesterzo.dao.impl.RecoveryDAOImpl
 import org.testadirapa.sesterzo.dao.impl.SpaceDAOImpl
 import org.testadirapa.sesterzo.dao.impl.UserDAOImpl
@@ -33,7 +35,6 @@ import org.testadirapa.sesterzo.logic.impl.SpaceLogicImpl
 import org.testadirapa.sesterzo.logic.impl.UserLogicImpl
 import org.testadirapa.sesterzo.security.JwtConfig
 import org.testadirapa.sesterzo.security.JwtManager
-import kotlin.math.sin
 
 fun applicationModules(
 	config: ApplicationConfig,
@@ -51,6 +52,7 @@ fun applicationModules(
 	}
 
 	// DAOs
+	single<BudgetElementDAO> { BudgetElementDAOImpl(client = get()) }
 	single<RecoveryDAO> { RecoveryDAOImpl(client = get()) }
 	single<SpaceDAO> { SpaceDAOImpl(client = get()) }
 	single<UserDAO> { UserDAOImpl(client = get()) }
@@ -69,7 +71,7 @@ fun applicationModules(
 		)
 	}
 	single<RecoveryLogic> { RecoveryLogicImpl(recoveryDAO = get()) }
-	single<SpaceLogic> { SpaceLogicImpl(spaceDAO = get()) }
+	single<SpaceLogic> { SpaceLogicImpl(budgetElementDAO = get(), spaceDAO = get()) }
 	single<UserLogic> { UserLogicImpl(userDAO = get()) }
 
 }

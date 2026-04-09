@@ -9,6 +9,9 @@ import org.testadirapa.sesterzo.model.Space
 class SpaceDAOImpl(client: DBClient) : SpaceDAO(client) {
 
 	override fun getByParticipant(userId: String): Flow<Space> =
-		collection.find(Filters.exists("${Space::users.name}.$userId"))
+		find(Filters.exists("${Space::users.name}.$userId"))
+
+	override fun getByOwner(userId: String): Flow<Space> =
+		find(Filters.eq(Space::owner.name, userId))
 
 }

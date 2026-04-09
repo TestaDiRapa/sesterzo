@@ -41,5 +41,5 @@ data class EncryptedBudget(
 	override val expensesReference: VersionableReference,
 	override val incomeReference: VersionableReference,
 	override val savingsReference: VersionableReference,
-	override val encryptedSelf: Base64String,
+	override val encryptedSelf: Base64String?,
 ) : Budget, EncryptedData

@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.icure.kryptom.utils.base32Encode
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
@@ -35,8 +34,8 @@ import org.testadirapa.sesterzo.components.input.LabeledSwitch
 import org.testadirapa.sesterzo.components.input.ReadOnlyCopyField
 import org.testadirapa.sesterzo.components.text.MultilineBodyText
 import org.testadirapa.sesterzo.components.ui.OrDivider
-import org.testadirapa.sesterzo.model.Base32String
 import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.Bip39RecoveryKey
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.backup_key_confirm_button
 import sesterzo.composeapp.generated.resources.backup_key_confirm_text
@@ -62,7 +61,7 @@ fun BackupPrivateKeyScreen(
 ) {
 	val scope = rememberCoroutineScope()
 	var privateKey by remember { mutableStateOf<Base64String?>(null) }
-	var recoveryKey by remember { mutableStateOf<Base32String?>(null) }
+	var recoveryKey by remember { mutableStateOf<Bip39RecoveryKey?>(null) }
 	var userAccepted by remember { mutableStateOf(false) }
 
 	LaunchedEffect("privateKey") {
@@ -121,7 +120,7 @@ fun BackupPrivateKeyScreen(
 					)
 					recoveryKey?.also { key ->
 						ReadOnlyCopyField(
-							value = key,
+							value = key.words.joinToString(" "),
 							label = "Recovery Key",
 							title = stringResource(Res.string.backup_key_recovery_title),
 						)
@@ -129,11 +128,10 @@ fun BackupPrivateKeyScreen(
 						onClick = {
 							scope.launch {
 								runCatching {
-									val key = AppCtx.api.recovery.generateRecoveryKey(
+									recoveryKey = AppCtx.api.recovery.generateRecoveryKey(
 										owner = AppCtx.api.currentUserId,
 										expiresAt = null
 									)
-									recoveryKey = base32Encode(key)
 								}.onFailure(onError)
 							}
 						},

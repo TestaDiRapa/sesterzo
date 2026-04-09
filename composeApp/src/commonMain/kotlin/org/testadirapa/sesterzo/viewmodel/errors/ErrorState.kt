@@ -42,5 +42,5 @@ suspend fun Throwable.toErrorState(): ErrorState = when(this) {
 			ExceptionLabel.CannotDecryptWithRsaKey -> getString(Res.string.error_cannot_decrypt_rsa)
 		}
 	}
-	else -> getString(Res.string.error_generic)
+	else -> "${getString(Res.string.error_generic)}${message?.let { ": $it" } ?: ""}"
 }.let { ErrorState(it) }

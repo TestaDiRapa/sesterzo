@@ -25,11 +25,11 @@ import org.testadirapa.sesterzo.components.input.FormButton
 import org.testadirapa.sesterzo.components.input.TextField
 import org.testadirapa.sesterzo.components.text.TitleAndSubtitle
 import org.testadirapa.sesterzo.components.ui.OrDivider
-import org.testadirapa.sesterzo.model.Base32String
 import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.Bip39RecoveryKey
 import org.testadirapa.sesterzo.models.FormValue
-import org.testadirapa.sesterzo.validators.Base32Validator
 import org.testadirapa.sesterzo.validators.Base64Validator
+import org.testadirapa.sesterzo.validators.Bip39Validator
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.recover_key_button_confirm
 import sesterzo.composeapp.generated.resources.recover_key_description_1
@@ -46,10 +46,10 @@ private enum class RecoveryOption { PrivateKey, RecoveryKey }
 fun RestorePrivateKeyScreen(
 	isMobile: Boolean,
 	onRestoreWithPrivateKey: (Base64String) -> Unit,
-	onRestoreWithRecoveryKey: (Base32String) -> Unit,
+	onRestoreWithRecoveryKey: (Bip39RecoveryKey) -> Unit,
 ) {
 	var privateKeyBase64 by remember { mutableStateOf(FormValue(validator = Base64Validator)) }
-	var recoveryKeyBase32 by remember { mutableStateOf(FormValue(validator = Base32Validator)) }
+	var recoveryKeyBip39 by remember { mutableStateOf(FormValue(validator = Bip39Validator)) }
 	var recoveryOption by remember { mutableStateOf<RecoveryOption?>(null) }
 	Scaffold { innerPadding ->
 		Box(
@@ -92,17 +92,21 @@ fun RestorePrivateKeyScreen(
 						}
 						RecoveryOption.RecoveryKey -> {
 							TextField(
-								value = recoveryKeyBase32,
+								value = recoveryKeyBip39,
 								title = stringResource(Res.string.recover_key_option_recovery_key),
 								placeholder = stringResource(Res.string.recover_key_recovery_key_placeholder),
 								errorMessage = stringResource(Res.string.recover_key_invalid_key_format),
 								onValueChange = {
-									recoveryKeyBase32 = recoveryKeyBase32.update(it)
+									recoveryKeyBip39 = recoveryKeyBip39.update(it)
 								},
 							)
 							FormButton(
-								onClick = { onRestoreWithRecoveryKey(recoveryKeyBase32.validValue) },
-								enabled = recoveryKeyBase32.isValid,
+								onClick = {
+									onRestoreWithRecoveryKey(
+										Bip39RecoveryKey.fromString(recoveryKeyBip39.validValue)
+									)
+								},
+								enabled = recoveryKeyBip39.isValid,
 								text = stringResource(Res.string.recover_key_button_confirm),
 							)
 							OrDivider()

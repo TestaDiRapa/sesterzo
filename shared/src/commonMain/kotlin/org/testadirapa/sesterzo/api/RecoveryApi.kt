@@ -1,5 +1,6 @@
 package org.testadirapa.sesterzo.api
 
+import org.testadirapa.sesterzo.model.Bip39RecoveryKey
 import org.testadirapa.sesterzo.model.Timestamp
 import org.testadirapa.sesterzo.model.RecoveryKey
 
@@ -8,10 +9,10 @@ interface RecoveryApi {
 	/**
 	 * Recover the private key stored in the [RecoveryKey] corresponding to the provided AES key bytes and decrypts it.
 	 *
-	 * @param recoveryKeyBytes the bytes of the AES key used to encrypt the private key.
+	 * @param bip39RecoveryKey a [Bip39RecoveryKey].
 	 * @return the bytes of the private key.
 	 */
-	suspend fun recoverKey(recoveryKeyBytes: ByteArray): ByteArray
+	suspend fun recoverKey(bip39RecoveryKey: Bip39RecoveryKey): ByteArray
 }
 
 interface FullRecoveryApi : RecoveryApi {
@@ -22,8 +23,8 @@ interface FullRecoveryApi : RecoveryApi {
 	 *
 	 * @param owner the user that will be able to access the key.
 	 * @param expiresAt an expiration timestamp for the key. If null the key will have no expiration.
-	 * @return the [ByteArray] of the recovery AES key.
+	 * @return a [Bip39RecoveryKey].
 	 */
-	suspend fun generateRecoveryKey(owner: String, expiresAt: Timestamp?): ByteArray
+	suspend fun generateRecoveryKey(owner: String, expiresAt: Timestamp?): Bip39RecoveryKey
 
 }

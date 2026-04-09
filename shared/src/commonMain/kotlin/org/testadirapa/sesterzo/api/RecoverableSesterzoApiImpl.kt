@@ -1,16 +1,14 @@
 package org.testadirapa.sesterzo.api
 
-import com.icure.kryptom.utils.base32Decode
 import com.icure.kryptom.utils.base64Encode
 import org.testadirapa.sesterzo.api.impl.RecoveryApiImpl
 import org.testadirapa.sesterzo.config.HttpConfig
-import org.testadirapa.sesterzo.model.Base32String
 import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.Bip39RecoveryKey
 import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
 import org.testadirapa.sesterzo.services.CryptoService.Companion.PRIVATE_KEY_STORAGE_KEY
 import org.testadirapa.sesterzo.storage.StorageFacade
-import org.testadirapa.sesterzo.utils.decodeBase32Key
 
 class RecoverableSesterzoApiImpl(
 	private val httpConfig: HttpConfig,
@@ -27,11 +25,9 @@ class RecoverableSesterzoApiImpl(
 
 	override suspend fun toFullApiWithRecoveryKey(
 		storage: StorageFacade,
-		recoveryKey: Base32String
+		recoveryKey: Bip39RecoveryKey
 	): FullSesterzoApi {
-		val privateKeyBytes = recovery.recoverKey(
-			decodeBase32Key(recoveryKey)
-		)
+		val privateKeyBytes = recovery.recoverKey(recoveryKey)
 		return toFullApiWithPrivateKey(
 			storage = storage,
 			privateKey = base64Encode(privateKeyBytes),

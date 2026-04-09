@@ -6,6 +6,7 @@ import com.icure.kryptom.utils.base64Encode
 import com.icure.kryptom.utils.base64UrlEncode
 import org.testadirapa.sesterzo.api.FullRecoveryApi
 import org.testadirapa.sesterzo.config.HttpConfig
+import org.testadirapa.sesterzo.model.Bip39RecoveryKey
 import org.testadirapa.sesterzo.model.RecoveryKey
 import org.testadirapa.sesterzo.model.Timestamp
 import org.testadirapa.sesterzo.services.AuthService
@@ -20,7 +21,7 @@ open class FullRecoveryApiImpl(
 	override suspend fun generateRecoveryKey(
 		owner: String,
 		expiresAt: Timestamp?
-	): ByteArray {
+	): Bip39RecoveryKey {
 		val privateKey = cryptoService.exportPrivateKey()
 		val recoveryKey = defaultCryptoService.aes.generateKey(CbcWithPkcs7Padding)
 		val encryptedPrivateKey = base64Encode(
@@ -41,6 +42,6 @@ open class FullRecoveryApiImpl(
 				encryptedKey = encryptedPrivateKey
 			)
 		).bodyOrThrow()
-		return exportedRecoveryKey
+		return bip39Encode(exportedRecoveryKey)
 	}
 }

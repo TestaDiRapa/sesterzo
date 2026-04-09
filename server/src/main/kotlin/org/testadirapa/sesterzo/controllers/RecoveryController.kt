@@ -9,12 +9,17 @@ import org.testadirapa.sesterzo.logic.RecoveryLogic
 import org.testadirapa.sesterzo.logic.UserLogic
 import org.testadirapa.sesterzo.model.RecoveryKey
 import org.testadirapa.sesterzo.model.dto.PublicKeyPayload
+import org.testadirapa.sesterzo.security.Bip39
 import org.testadirapa.sesterzo.security.authenticatedGet
 import org.testadirapa.sesterzo.security.authenticatedPost
 
 fun Routing.recoveryController() = route("/recoveryKey") {
 
 	val recoveryLogic by inject<RecoveryLogic>()
+
+	authenticatedGet("/bip39") {
+		call.respond(Bip39.wordlist)
+	}
 
 	authenticatedGet("/{recoveryKeyId}") {
 		val recoveryKeyId = call.parameters["recoveryKeyId"]

@@ -16,6 +16,7 @@ import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.handlers.CaptchaProgressHandler
 import org.testadirapa.sesterzo.model.Base32String
 import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.Bip39RecoveryKey
 import org.testadirapa.sesterzo.model.dto.StartRegistrationData
 import org.testadirapa.sesterzo.serialization.Serialization
 import org.testadirapa.sesterzo.services.AuthService
@@ -152,7 +153,7 @@ interface SesterzoApi {
 }
 
 interface RecoverableSesterzoApi : SesterzoApi {
-	suspend fun toFullApiWithRecoveryKey(storage: StorageFacade, recoveryKey: Base32String): FullSesterzoApi
+	suspend fun toFullApiWithRecoveryKey(storage: StorageFacade, recoveryKey: Bip39RecoveryKey): FullSesterzoApi
 	suspend fun toFullApiWithPrivateKey(storage: StorageFacade, privateKey: Base64String): FullSesterzoApi
 }
 

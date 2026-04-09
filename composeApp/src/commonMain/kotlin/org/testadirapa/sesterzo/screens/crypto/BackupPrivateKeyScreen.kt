@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.components.input.Bip39RecoveryField
 import org.testadirapa.sesterzo.components.input.FormButton
 import org.testadirapa.sesterzo.components.input.LabeledSwitch
 import org.testadirapa.sesterzo.components.input.ReadOnlyCopyField
@@ -43,15 +44,16 @@ import sesterzo.composeapp.generated.resources.backup_key_description_1
 import sesterzo.composeapp.generated.resources.backup_key_description_2_1
 import sesterzo.composeapp.generated.resources.backup_key_description_2_2
 import sesterzo.composeapp.generated.resources.backup_key_description_2_3
-import sesterzo.composeapp.generated.resources.backup_key_description_2_4
 import sesterzo.composeapp.generated.resources.backup_key_description_3
 import sesterzo.composeapp.generated.resources.backup_key_generate_recovery
 import sesterzo.composeapp.generated.resources.backup_key_private_key
 import sesterzo.composeapp.generated.resources.backup_key_recovery_description_1
-import sesterzo.composeapp.generated.resources.backup_key_recovery_description_2
-import sesterzo.composeapp.generated.resources.backup_key_recovery_description_3
 import sesterzo.composeapp.generated.resources.backup_key_recovery_title
+import sesterzo.composeapp.generated.resources.backup_key_switch_to_private_key
+import sesterzo.composeapp.generated.resources.backup_key_switch_to_recovery_key
 import sesterzo.composeapp.generated.resources.backup_key_title
+
+private enum class BackupMode { PrivateKey, RecoveryKey }
 
 @Composable
 fun BackupPrivateKeyScreen(
@@ -60,6 +62,7 @@ fun BackupPrivateKeyScreen(
 	onError: (error: Throwable) -> Unit,
 ) {
 	val scope = rememberCoroutineScope()
+	var mode by remember { mutableStateOf(BackupMode.PrivateKey) }
 	var privateKey by remember { mutableStateOf<Base64String?>(null) }
 	var recoveryKey by remember { mutableStateOf<Bip39RecoveryKey?>(null) }
 	var userAccepted by remember { mutableStateOf(false) }
@@ -80,78 +83,100 @@ fun BackupPrivateKeyScreen(
 						.padding(vertical = 24.dp),
 					verticalArrangement = Arrangement.spacedBy(16.dp),
 				) {
-					Text(
-						text = stringResource(Res.string.backup_key_title),
-						style = MaterialTheme.typography.titleLarge,
-						fontWeight = FontWeight.Bold,
-						color = colorScheme.onBackground,
-					)
-					MultilineBodyText(
-						resources = listOf(
-							Res.string.backup_key_description_1,
-							Res.string.backup_key_description_2_1,
-							Res.string.backup_key_description_2_2,
-							Res.string.backup_key_description_2_3,
-							Res.string.backup_key_description_2_4,
-							Res.string.backup_key_description_3
-						)
-					)
-					privateKey?.also { key ->
-						ReadOnlyCopyField(
-							value = key,
-							label = "Private Key",
-							title = stringResource(Res.string.backup_key_private_key),
-						)
+					when (mode) {
+						BackupMode.PrivateKey -> {
+							Text(
+								text = stringResource(Res.string.backup_key_title),
+								style = MaterialTheme.typography.titleLarge,
+								fontWeight = FontWeight.Bold,
+								color = colorScheme.onBackground,
+							)
+							MultilineBodyText(
+								resources = listOf(
+									Res.string.backup_key_description_1,
+									Res.string.backup_key_description_2_1,
+									Res.string.backup_key_description_2_2,
+									Res.string.backup_key_description_2_3,
+									Res.string.backup_key_description_3
+								)
+							)
+							privateKey?.also { key ->
+								ReadOnlyCopyField(
+									value = key,
+									label = "Private Key",
+									title = stringResource(Res.string.backup_key_private_key),
+								)
+							}
+						}
+						BackupMode.RecoveryKey -> {
+							Text(
+								text = stringResource(Res.string.backup_key_recovery_title),
+								style = MaterialTheme.typography.titleMedium,
+								fontWeight = FontWeight.Bold,
+								color = colorScheme.onBackground,
+							)
+							MultilineBodyText(
+								resources = listOf(
+									Res.string.backup_key_recovery_description_1,
+									Res.string.backup_key_description_2_1,
+									Res.string.backup_key_description_2_2,
+									Res.string.backup_key_description_2_3,
+									Res.string.backup_key_description_3
+								)
+							)
+							recoveryKey?.also { key ->
+								Bip39RecoveryField(
+									words = key.words,
+									label = "Recovery Key",
+									title = stringResource(Res.string.backup_key_recovery_title),
+								)
+							} ?: FormButton(
+								onClick = {
+									scope.launch {
+										runCatching {
+											recoveryKey = AppCtx.api.recovery.generateRecoveryKey(
+												owner = AppCtx.api.currentUserId,
+												expiresAt = null
+											)
+										}.onFailure(onError)
+									}
+								},
+								enabled = true,
+								text = stringResource(Res.string.backup_key_generate_recovery)
+							)
+
+						}
 					}
 					OrDivider()
 
-					Text(
-						text = stringResource(Res.string.backup_key_recovery_title),
-						style = MaterialTheme.typography.titleMedium,
-						fontWeight = FontWeight.Bold,
-						color = colorScheme.onBackground,
-					)
-					MultilineBodyText(
-						resources = listOf(
-							Res.string.backup_key_recovery_description_1,
-							Res.string.backup_key_recovery_description_2,
-							Res.string.backup_key_recovery_description_3,
-						)
-					)
-					recoveryKey?.also { key ->
-						ReadOnlyCopyField(
-							value = key.words.joinToString(" "),
-							label = "Recovery Key",
-							title = stringResource(Res.string.backup_key_recovery_title),
-						)
-					} ?: FormButton(
+					FormButton(
 						onClick = {
-							scope.launch {
-								runCatching {
-									recoveryKey = AppCtx.api.recovery.generateRecoveryKey(
-										owner = AppCtx.api.currentUserId,
-										expiresAt = null
-									)
-								}.onFailure(onError)
+							mode = if (mode == BackupMode.PrivateKey) {
+								BackupMode.RecoveryKey
+							} else {
+								BackupMode.PrivateKey
 							}
 						},
 						enabled = true,
-						text = stringResource(Res.string.backup_key_generate_recovery)
+						text = when(mode) {
+							BackupMode.PrivateKey -> stringResource(Res.string.backup_key_switch_to_recovery_key)
+							BackupMode.RecoveryKey -> stringResource(Res.string.backup_key_switch_to_private_key)
+						}
 					)
 
-					HorizontalDivider(modifier = Modifier.weight(1f))
-
-					LabeledSwitch(
-						label = stringResource(Res.string.backup_key_confirm_text),
-						initialValue = userAccepted,
-						onCheckedChange = { userAccepted = it },
-					)
-
-					FormButton(
-						onClick = onUserAccept,
-						enabled = userAccepted,
-						text = stringResource(Res.string.backup_key_confirm_button),
-					)
+					if (!userAccepted) {
+						LabeledSwitch(
+							label = stringResource(Res.string.backup_key_confirm_text),
+							initialValue = userAccepted,
+							onCheckedChange = { userAccepted = it },
+						)
+					} else {
+						FormButton(
+							onClick = onUserAccept,
+							enabled = userAccepted,
+							text = stringResource(Res.string.backup_key_confirm_button),
+						)
+					}
 				}
 			}
 

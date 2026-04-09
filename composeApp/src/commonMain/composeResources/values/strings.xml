@@ -25,20 +25,19 @@
     <!--  Backup private key page  -->
     <string name="backup_key_title">Back up your private key</string>
     <string name="backup_key_description_1">This is the master key used to encrypt all your data.</string>
-    <string name="backup_key_description_2_1">1. Copy it.</string>
-    <string name="backup_key_description_2_2">2. Save it somewhere (do not lose it).</string>
-    <string name="backup_key_description_2_3">3. If you change device, this application will ask you for it.</string>
-    <string name="backup_key_description_2_4">4. Keep it confidential!</string>
+    <string name="backup_key_description_2_1">1. Copy it and save it (do not lose it).</string>
+    <string name="backup_key_description_2_2">2. If you change device, this application will ask you for it.</string>
+    <string name="backup_key_description_2_3">3. Keep it confidential!</string>
     <string name="backup_key_description_3">If you lose it, you may not be able to recover your data in case of a key loss.</string>
     <string name="backup_key_private_key">Private key:</string>
     <string name="backup_key_use_recovery">Use a recovery key.</string>
-    <string name="backup_key_recovery_description_1">Your master key will be encrypted with a shorter key and stored on the server.</string>
-    <string name="backup_key_recovery_description_2">You may use this one as a backup, instead of the full key.</string>
-    <string name="backup_key_recovery_description_3">You still have to follow steps 1-4.</string>
-    <string name="backup_key_generate_recovery">Generate recovery key.</string>
-    <string name="backup_key_recovery_title">Recovery key:</string>
+    <string name="backup_key_recovery_description_1">The recovery sentence will be used to recover your key.</string>
+    <string name="backup_key_generate_recovery">Generate recovery sentence.</string>
+    <string name="backup_key_recovery_title">Recovery sentence:</string>
     <string name="backup_key_confirm_text">I confirm I read the text above and backed up the key.</string>
     <string name="backup_key_confirm_button">Continue to the application.</string>
+    <string name="backup_key_switch_to_private_key">Backup the private key directly.</string>
+    <string name="backup_key_switch_to_recovery_key">Use a recovery sentence.</string>
 
     <!--  Recover private key page  -->
     <string name="recover_key_title">Your private key was not found on the device</string>

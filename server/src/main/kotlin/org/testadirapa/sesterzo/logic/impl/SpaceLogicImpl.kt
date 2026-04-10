@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.emitAll
 import org.testadirapa.sesterzo.dao.BudgetElementDAO
 import org.testadirapa.sesterzo.dao.SpaceDAO
+import org.testadirapa.sesterzo.exceptions.ImageTooLargeException
 import org.testadirapa.sesterzo.exceptions.QuotaExceededException
 import org.testadirapa.sesterzo.logic.SpaceLogic
 import org.testadirapa.sesterzo.model.BudgetElement
@@ -14,6 +15,7 @@ import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.SpaceStub
 import org.testadirapa.sesterzo.security.SecurityContext.Companion.flowOnSecurityContext
 import org.testadirapa.sesterzo.security.SecurityContext.Companion.withSecurityContext
+import org.testadirapa.sesterzo.utils.isSizeUnderThreshold
 
 class SpaceLogicImpl(
 	private val budgetElementDAO: BudgetElementDAO,
@@ -27,6 +29,9 @@ class SpaceLogicImpl(
 	}
 
 	override suspend fun createSpace(spaceStub: SpaceStub): Space = withSecurityContext {
+		if(!spaceStub.picture.isSizeUnderThreshold()) {
+			throw ImageTooLargeException()
+		}
 		val existingUserSpaces = spaceDAO.getByOwner(currentUserId).count()
 		if (existingUserSpaces > 5) {
 			throw QuotaExceededException()
@@ -71,7 +76,8 @@ class SpaceLogicImpl(
 				fixedExpensesTemplateId = expensesId,
 				incomeSourcesTemplateId = incomeId,
 				savingsTemplateId = savingsId,
-				users = spaceStub.users
+				users = spaceStub.users,
+				picture = spaceStub.picture,
 			)
 		).let {
 			spaceDAO.getById(it)

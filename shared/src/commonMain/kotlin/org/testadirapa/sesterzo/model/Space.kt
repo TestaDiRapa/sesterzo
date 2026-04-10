@@ -12,5 +12,6 @@ data class Space(
 	val fixedExpensesTemplateId: String,
 	val incomeSourcesTemplateId: String,
 	val savingsTemplateId: String,
-	val users: Map<String, AccessKey>
+	val users: Map<String, AccessKey>,
+	val picture: Base64String?,
 ) : Versionable

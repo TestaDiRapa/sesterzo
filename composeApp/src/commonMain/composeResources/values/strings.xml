@@ -9,6 +9,7 @@
     <string name="error_cannot_decrypt_aes">Cannot decrypt data with provided AES key.</string>
     <string name="error_cannot_decrypt_rsa">Cannot decrypt data with provided RSA key.</string>
     <string name="error_generic">An unexpected error occurred.</string>
+    <string name="error_image_too_large">Image is too large.</string>
     <string name="error_invalid_captcha">The provided captcha is invalid.</string>
     <string name="error_invalid_jwt">You are not logged in.</string>
     <string name="error_invalid_key_format">Cannot load key: invalid format.</string>
@@ -16,6 +17,7 @@
     <string name="error_invalid_private_key">The private key is invalid or does not match the public key.</string>
     <string name="error_invalid_registration_data">Invalid email or name.</string>
     <string name="error_public_key_update_failed">Cannot set the public key for the current user.</string>
+    <string name="error_quota_exceeded">You cannot create more spaces.</string>
     <string name="error_recovery_key_expired">This recovery key expired.</string>
     <string name="error_recovery_key_not_found">Recovery key not found.</string>
     <string name="error_unauthorized">Invalid email or token.</string>

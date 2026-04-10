@@ -7,6 +7,7 @@ import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.error_cannot_decrypt_aes
 import sesterzo.composeapp.generated.resources.error_cannot_decrypt_rsa
 import sesterzo.composeapp.generated.resources.error_generic
+import sesterzo.composeapp.generated.resources.error_image_too_large
 import sesterzo.composeapp.generated.resources.error_invalid_captcha
 import sesterzo.composeapp.generated.resources.error_invalid_jwt
 import sesterzo.composeapp.generated.resources.error_invalid_key_format
@@ -14,6 +15,7 @@ import sesterzo.composeapp.generated.resources.error_invalid_private_key
 import sesterzo.composeapp.generated.resources.error_invalid_registration
 import sesterzo.composeapp.generated.resources.error_invalid_registration_data
 import sesterzo.composeapp.generated.resources.error_public_key_update_failed
+import sesterzo.composeapp.generated.resources.error_quota_exceeded
 import sesterzo.composeapp.generated.resources.error_recovery_key_expired
 import sesterzo.composeapp.generated.resources.error_recovery_key_not_found
 import sesterzo.composeapp.generated.resources.error_unauthorized
@@ -40,6 +42,8 @@ suspend fun Throwable.toErrorState(): ErrorState = when(this) {
 			ExceptionLabel.InvalidKeyFormat -> getString(Res.string.error_invalid_key_format)
 			ExceptionLabel.CannotDecryptWithAesKey -> getString(Res.string.error_cannot_decrypt_aes)
 			ExceptionLabel.CannotDecryptWithRsaKey -> getString(Res.string.error_cannot_decrypt_rsa)
+			ExceptionLabel.ImageTooLarge -> getString(Res.string.error_image_too_large)
+			ExceptionLabel.QuotaExceeded -> getString(Res.string.error_quota_exceeded)
 		}
 	}
 	else -> "${getString(Res.string.error_generic)}${message?.let { ": $it" } ?: ""}"

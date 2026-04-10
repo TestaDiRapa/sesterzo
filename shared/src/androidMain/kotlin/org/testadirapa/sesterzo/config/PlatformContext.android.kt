@@ -9,6 +9,10 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.fragment.app.FragmentActivity
+import app.cash.sqldelight.driver.android.AndroidSqliteDriver
+import org.testadira.sesterzo.AppDatabase
+import org.testadirapa.sesterzo.cache.AndroidPersistentCache
+import org.testadirapa.sesterzo.cache.PersistentCache
 import org.testadirapa.sesterzo.security.AndroidBiometricAuthenticator
 import org.testadirapa.sesterzo.storage.AndroidBiometricSecureStorageFacade
 import org.testadirapa.sesterzo.storage.DataStorePreferenceStorage
@@ -36,6 +40,8 @@ actual object PlatformContext {
 	private var _biometricAuthenticator: AndroidBiometricAuthenticator? = null
 	private var secureCardinalStorageFacade: StorageFacade? = null
 	private var _unlockStorageTitle: String? = null
+	private var _sqlDriver: AndroidSqliteDriver? = null
+	private var _androidPersistentCache: AndroidPersistentCache? = null
 
 	fun setup(
 		application: Application,
@@ -54,6 +60,11 @@ actual object PlatformContext {
 			produceFile = { application.preferencesDataStoreFile(application.packageName) }
 		)
 		_unlockStorageTitle = unlockStorageTitle
+		_sqlDriver = AndroidSqliteDriver(
+			schema  = AppDatabase.Schema,
+			context = application,
+			name = "sesterzo.app.db"
+		)
 	}
 
 	private fun getHighestAuthOptionAvailable(biometricManager: BiometricManager): SecureKeyAccessLevel? =
@@ -84,6 +95,15 @@ actual object PlatformContext {
 		}
 
 		return secureCardinalStorageFacade!!
+	}
+
+	actual suspend fun persistentCache(): PersistentCache {
+		if (_androidPersistentCache == null) {
+			_androidPersistentCache = AndroidPersistentCache(
+				driver = checkNotNull(_sqlDriver) { "PlatformContext was not initialized" }
+			)
+		}
+		return _androidPersistentCache!!
 	}
 
 }

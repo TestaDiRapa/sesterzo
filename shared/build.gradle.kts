@@ -1,10 +1,10 @@
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
 	alias(libs.plugins.kotlinMultiplatform)
 	alias(libs.plugins.androidMultiplatformLibrary)
 	alias(libs.plugins.kotlinSerialization)
+	alias(libs.plugins.sqlDelight)
 }
 
 kotlin {
@@ -55,11 +55,23 @@ kotlin {
 		}
 		webMain.dependencies {
 			api(libs.ktor.clientJs)
+			implementation(libs.indexedDb)
 		}
 		androidMain.dependencies {
 			api(libs.ktor.clientAndroid)
 			implementation(libs.androidx.biometric)
 			implementation(libs.androidx.datastore)
+			implementation(libs.sqlDelight.android)
+			implementation(libs.sqlDelight.coroutines)
+		}
+	}
+}
+
+sqldelight {
+	databases {
+		create("AppDatabase") {
+			packageName.set("org.testadira.sesterzo")
+			srcDirs("src/androidMain/sqlDelight")
 		}
 	}
 }

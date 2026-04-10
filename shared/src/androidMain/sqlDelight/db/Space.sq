@@ -1,0 +1,33 @@
+CREATE TABLE SpaceEntity (
+    id                          TEXT    NOT NULL PRIMARY KEY,
+    version                     INTEGER NOT NULL,
+    name                        TEXT    NOT NULL,
+    owner                       TEXT    NOT NULL,
+    fixed_expenses_template_id  TEXT    NOT NULL,
+    income_sources_template_id  TEXT    NOT NULL,
+    savings_template_id         TEXT    NOT NULL,
+    users                       TEXT    NOT NULL,  -- JSON-encoded Map<String, AccessKey>
+    picture                     TEXT,              -- nullable Base64String
+    inserted_at                 INTEGER NOT NULL   -- Unix timestamp ms, added by us
+);
+
+selectAll:
+SELECT * FROM SpaceEntity
+ORDER BY inserted_at DESC;
+
+selectById:
+SELECT * FROM SpaceEntity
+WHERE id = :id;
+
+upsert:
+INSERT OR REPLACE INTO SpaceEntity(
+    id, version, name, owner,
+    fixed_expenses_template_id,
+    income_sources_template_id,
+    savings_template_id,
+    users, picture, inserted_at
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteAll:
+DELETE FROM SpaceEntity;

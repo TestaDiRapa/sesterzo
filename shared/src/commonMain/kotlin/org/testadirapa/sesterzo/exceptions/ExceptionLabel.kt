@@ -1,8 +1,11 @@
 package org.testadirapa.sesterzo.exceptions
 
 enum class ExceptionLabel {
+	BudgetNotFound,
 	CannotDecryptWithAesKey,
 	CannotDecryptWithRsaKey,
+	CannotEncryptWithAesKey,
+	ForbiddenInSpace,
 	ImageTooLarge,
 	InvalidCaptcha,
 	InvalidJwt,
@@ -10,6 +13,7 @@ enum class ExceptionLabel {
 	InvalidRegistration,
 	InvalidRegistrationParameters,
 	InvalidPrivateKey,
+	MissignSpaceKey,
 	PublicKeyUpdateFailed,
 	QuotaExceeded,
 	RecoveryKeyExpired,

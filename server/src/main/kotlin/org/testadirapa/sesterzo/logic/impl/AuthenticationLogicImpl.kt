@@ -106,7 +106,7 @@ class AuthenticationLogicImpl(
 				email = process.email,
 				name = process.name
 			)
-		)
+		).id
 		return buildAuthResponse(createdUserId)
 	}
 

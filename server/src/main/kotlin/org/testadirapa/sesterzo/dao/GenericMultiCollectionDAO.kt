@@ -80,9 +80,10 @@ abstract class GenericMultiCollectionDAO<T : Identifiable>(
 	 * @param entity a [T] to create.
 	 * @return the id of the entity, if successfully created.
 	 */
-	suspend fun save(spaceId: String, entity: T): String =
-		getCollection(spaceId).insertOne(entity).insertedId?.asString()?.value
-			?: throw IllegalStateException("There was an error while creating the entity.")
+	suspend fun save(spaceId: String, entity: T): T =
+		getCollection(spaceId).insertOne(entity).insertedId?.asString()?.value?.let { id ->
+			getById(spaceId, id)
+		} ?: throw IllegalStateException("There was an error while creating the entity.")
 
 	/**
 	 * Replace an existing entity [T] in the database with the version passed as parameter.

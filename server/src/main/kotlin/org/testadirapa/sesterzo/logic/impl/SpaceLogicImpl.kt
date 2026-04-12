@@ -45,7 +45,7 @@ class SpaceLogicImpl(
 				type = BudgetElement.BudgetElementType.Savings,
 				encryptedSelf = null
 			)
-		)
+		).id
 		val incomeId = budgetElementDAO.save(
 			spaceId = spaceStub.id,
 			entity = EncryptedBudgetElement(
@@ -55,7 +55,7 @@ class SpaceLogicImpl(
 				type = BudgetElement.BudgetElementType.Income,
 				encryptedSelf = null
 			)
-		)
+		).id
 		val expensesId = budgetElementDAO.save(
 			spaceId = spaceStub.id,
 			entity = EncryptedBudgetElement(
@@ -65,7 +65,7 @@ class SpaceLogicImpl(
 				type = BudgetElement.BudgetElementType.FixedExpenses,
 				encryptedSelf = null
 			)
-		)
+		).id
 		budgetElementDAO.initIndexes()
 		spaceDAO.save(
 			Space(
@@ -79,10 +79,7 @@ class SpaceLogicImpl(
 				users = spaceStub.users,
 				picture = spaceStub.picture,
 			)
-		).let {
-			spaceDAO.getById(it)
-				?: throw IllegalStateException("Space creation failed")
-		}
+		)
 	}
 
 }

@@ -1,3 +1,9 @@
 package org.testadirapa.sesterzo.model
 
-interface DecryptedData
+import kotlinx.serialization.json.JsonObject
+
+interface DecryptedData<ENCRYPTED_TYPE> {
+
+	fun getJsonToEncrypt(): JsonObject
+	fun toEncryptedEntity(encryptedSelf: Base64String?) : ENCRYPTED_TYPE
+}

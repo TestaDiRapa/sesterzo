@@ -10,6 +10,7 @@ import com.icure.kryptom.utils.base32Decode
 import com.icure.kryptom.utils.base64Decode
 import org.testadirapa.sesterzo.exceptions.CannotDecryptWithAesKeyException
 import org.testadirapa.sesterzo.exceptions.CannotDecryptWithRsaKeyException
+import org.testadirapa.sesterzo.exceptions.CannotEncryptWithAesKeyException
 import org.testadirapa.sesterzo.exceptions.InvalidKeyFormatException
 import org.testadirapa.sesterzo.model.Base32String
 import org.testadirapa.sesterzo.model.Base64String
@@ -58,6 +59,16 @@ suspend fun aesDecrypt(
 		key = key
 	)
 } catch (_: Exception) { throw CannotDecryptWithAesKeyException() }
+
+suspend fun aesEncrypt(
+	dataToEncrypt: ByteArray,
+	key: AesKey<CbcWithPkcs7Padding>
+): ByteArray = try {
+	defaultCryptoService.aes.encrypt(
+		data = dataToEncrypt,
+		key = key
+	)
+} catch (_: Exception) { throw CannotEncryptWithAesKeyException() }
 
 suspend fun rsaDecrypt(
 	encryptedData: ByteArray,

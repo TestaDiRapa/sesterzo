@@ -13,7 +13,7 @@ enum class ExceptionLabel {
 	InvalidRegistration,
 	InvalidRegistrationParameters,
 	InvalidPrivateKey,
-	MissignSpaceKey,
+	MissingSpaceKey,
 	PublicKeyUpdateFailed,
 	QuotaExceeded,
 	RecoveryKeyExpired,

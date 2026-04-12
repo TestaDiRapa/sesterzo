@@ -6,8 +6,11 @@
     <string name="auth_code_label">Insert the code received by email.</string>
 
     <!--  Errors  -->
+    <string name="error_budget_not_found">Budget not found.</string>
     <string name="error_cannot_decrypt_aes">Cannot decrypt data with provided AES key.</string>
     <string name="error_cannot_decrypt_rsa">Cannot decrypt data with provided RSA key.</string>
+    <string name="error_cannot_encrypt_aes">Cannot encrypt data with provided AES key.</string>
+    <string name="error_forbidden_in_space">You are not allowed to access this budget.</string>
     <string name="error_generic">An unexpected error occurred.</string>
     <string name="error_image_too_large">Image is too large.</string>
     <string name="error_invalid_captcha">The provided captcha is invalid.</string>
@@ -16,6 +19,7 @@
     <string name="error_invalid_registration">Invalid token or process id.</string>
     <string name="error_invalid_private_key">The private key is invalid or does not match the public key.</string>
     <string name="error_invalid_registration_data">Invalid email or name.</string>
+    <string name="error_missing_budget_key">Missing budget key.</string>
     <string name="error_public_key_update_failed">Cannot set the public key for the current user.</string>
     <string name="error_quota_exceeded">You cannot create more spaces.</string>
     <string name="error_recovery_key_expired">This recovery key expired.</string>

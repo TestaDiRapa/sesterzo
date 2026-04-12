@@ -25,6 +25,7 @@ import org.testadirapa.sesterzo.viewmodel.state.CreateSpaceState
 import org.testadirapa.sesterzo.viewmodel.state.MainScreenState
 import org.testadirapa.sesterzo.viewmodel.state.RecoverKeyState
 import org.testadirapa.sesterzo.viewmodel.state.StartupState
+import kotlin.time.Duration.Companion.minutes
 
 class AppViewModel : ViewModel() {
 	private val logger = Logger.withTag("AppViewModel")
@@ -71,13 +72,15 @@ class AppViewModel : ViewModel() {
 						}
 					}
 					Intent.ConfirmBackup -> {
-						AppCtx.api.user.setBackupConfirmation().bodyOrThrow()
+						AppCtx.api.user.setBackupConfirmation()
 						_appState.update { mainScreenOrCreateSpace() }
 					}
 					is Intent.RestoreWithPrivateKey -> {
 						expectStateAs<RecoverKeyState>(appState.value) {
 							AppCtx.api = it.api.toFullApiWithPrivateKey(
 								storage = PlatformContext.storageFacade(),
+								cache = PlatformContext.persistentCache(),
+								cacheTtl = BuildKonfig.cacheTtl.minutes,
 								privateKey = intent.privateKey,
 							)
 							_appState.update { mainScreenOrCreateSpace() }
@@ -87,6 +90,8 @@ class AppViewModel : ViewModel() {
 						expectStateAs<RecoverKeyState>(appState.value) {
 							AppCtx.api = it.api.toFullApiWithRecoveryKey(
 								storage = PlatformContext.storageFacade(),
+								cache = PlatformContext.persistentCache(),
+								cacheTtl = BuildKonfig.cacheTtl.minutes,
 								recoveryKey = intent.recoveryKey,
 							)
 							_appState.update { mainScreenOrCreateSpace() }
@@ -124,7 +129,9 @@ class AppViewModel : ViewModel() {
 					baseUrl = BuildKonfig.apiUrl,
 					jwt = jwt,
 					refreshJwt = refreshJwt,
-					storage = PlatformContext.storageFacade()
+					storage = PlatformContext.storageFacade(),
+					cache = PlatformContext.persistentCache(),
+					cacheTtl = BuildKonfig.cacheTtl.minutes,
 				)
 				updateStateOnKeyState(api)
 			} else {
@@ -172,7 +179,7 @@ class AppViewModel : ViewModel() {
 	}
 
 	private suspend fun mainScreenOrCreateSpace() : AppState =
-		if (AppCtx.api.spaceApi.getSpaces().isEmpty()) {
+		if (AppCtx.api.space.getSpaces().isEmpty()) {
 			CreateSpaceState(isFirst = true)
 		} else {
 			MainScreenState

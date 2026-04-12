@@ -4,8 +4,8 @@ import app.cash.sqldelight.db.SqlDriver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testadira.sesterzo.AppDatabase
-import org.testadirapa.sesterzo.cache.model.SpaceEntity
-import db.SpaceEntity as SpaceRow
+import org.testadirapa.sesterzo.cache.model.CachedSpace
+import db.CachedSpace as SpaceRow
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.serialization.Serialization
 
@@ -31,10 +31,10 @@ class AndroidSpacePersistentCache(
 		)
 	}
 
-	private fun rowToEntity(row: SpaceRow): SpaceEntity {
-		return SpaceEntity(
+	private fun rowToEntity(row: SpaceRow): CachedSpace =
+		CachedSpace(
 			id = row.id,
-			space = Space(
+			entity = Space(
 				id = row.id,
 				version = row.version.toInt(),
 				name = row.name,
@@ -47,25 +47,30 @@ class AndroidSpacePersistentCache(
 			),
 			insertedAt = row.inserted_at
 		)
+
+	override suspend fun upsert(entity: Space) = withContext(Dispatchers.IO) {
+		upsertInternal(entity)
 	}
 
-	override suspend fun upsert(space: Space) = withContext(Dispatchers.IO) {
-		upsertInternal(space)
-	}
-
-	override suspend fun upsertAll(spaces: List<Space>) {
+	override suspend fun upsertAll(entities: List<Space>) {
 		withContext(Dispatchers.IO) {
 			db.transaction {
-				spaces.forEach { upsertInternal(it) }
+				entities.forEach { upsertInternal(it) }
 			}
 		}
 	}
 
-	override suspend fun getAll(): List<SpaceEntity> = withContext(Dispatchers.IO) {
+	override suspend fun getAll(): List<CachedSpace> = withContext(Dispatchers.IO) {
 		queries.selectAll().executeAsList().map { rowToEntity(it) }
 	}
 
-	override suspend fun getById(id: String): SpaceEntity? = withContext(Dispatchers.IO) {
+	override suspend fun clear(entity: Space) {
+		withContext(Dispatchers.IO) {
+			queries.deleteOne(entity.id)
+		}
+	}
+
+	override suspend fun getById(id: String): CachedSpace? = withContext(Dispatchers.IO) {
 		queries.selectById(id).executeAsOneOrNull()?.let { rowToEntity(it) }
 	}
 

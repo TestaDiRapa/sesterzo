@@ -2,51 +2,35 @@ package org.testadirapa.sesterzo.cache
 
 import com.juul.indexeddb.Database
 import com.juul.indexeddb.Key
-import org.testadirapa.sesterzo.cache.model.SpaceEntity
+import com.juul.indexeddb.KeyPath
+import com.juul.indexeddb.VersionChangeTransaction
+import org.testadirapa.sesterzo.cache.model.CachedSpace
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.models.JsSpace
 import org.testadirapa.sesterzo.models.toJs
 import org.testadirapa.sesterzo.models.toKt
 
 class JsSpacePersistentCache(
-	private val database: Database
-) : SpacePersistentCache {
+	database: Database
+) : JsAbstractPersistentCache<Space, CachedSpace>(database), SpacePersistentCache {
 
 	companion object {
-		const val STORE_NAME = "space"
-	}
+		private const val STORE_NAME = "space"
 
-	override suspend fun upsert(space: Space) {
-		database.writeTransaction(STORE_NAME) {
-			objectStore(STORE_NAME).put(space.toJs())
+		fun VersionChangeTransaction.initSpaceStorage(database: Database) = with(this) {
+			database.createObjectStore(STORE_NAME, KeyPath("id"))
 		}
 	}
 
-	override suspend fun upsertAll(spaces: List<Space>) {
-		database.writeTransaction(STORE_NAME) {
-			val store = objectStore(STORE_NAME)
-			spaces.forEach { space ->
-				store.put(space.toJs())
-			}
-		}
-	}
+	override val storeName: String get() = STORE_NAME
+
+	@OptIn(ExperimentalWasmJsInterop::class)
+	override fun toJs(entity: Space): JsAny = entity.toJs()
 
 	@Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
 	@OptIn(ExperimentalWasmJsInterop::class)
-	override suspend fun getAll(): List<SpaceEntity> = database.transaction(STORE_NAME) {
-		val store = objectStore(STORE_NAME)
-		store.getAll().map { (it as JsSpace).toKt() }
-	}
+	override fun toKt(dbEntity: JsAny): CachedSpace = (dbEntity as JsSpace).toKt()
 
-	@Suppress("UNCHECKED_CAST_TO_EXTERNAL_INTERFACE")
-	override suspend fun getById(id: String): SpaceEntity? = database.transaction(STORE_NAME) {
-		objectStore(STORE_NAME).get(Key(id)) as JsSpace?
-	}?.toKt()
-
-	override suspend fun clearAll() {
-		database.writeTransaction(STORE_NAME) {
-			objectStore(STORE_NAME).clear()
-		}
-	}
+	override fun keyOf(entity: Space): Key = Key(entity.id)
 
 }

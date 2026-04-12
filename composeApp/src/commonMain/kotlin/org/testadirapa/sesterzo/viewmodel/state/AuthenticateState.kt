@@ -4,9 +4,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import org.testadirapa.sesterzo.BuildKonfig
 import org.testadirapa.sesterzo.api.SesterzoApi
 import org.testadirapa.sesterzo.api.processes.Process
+import org.testadirapa.sesterzo.config.PlatformContext
 import org.testadirapa.sesterzo.handlers.MutableStateFlowCaptchaProgressHandler
 import org.testadirapa.sesterzo.model.dto.AuthResponse
 import org.testadirapa.sesterzo.storage.StorageFacade
+import kotlin.time.Duration.Companion.minutes
 
 class AuthenticateState : AppState {
 
@@ -33,5 +35,10 @@ class AuthenticateState : AppState {
 	}
 
 	suspend fun completeProcess(token: String, storageFacade: StorageFacade): Pair<AuthResponse, SesterzoApi> =
-		process.complete(token, storageFacade)
+		process.complete(
+			token = token,
+			storage = storageFacade,
+			cache = PlatformContext.persistentCache(),
+			cacheTtl = BuildKonfig.cacheTtl.minutes,
+		)
 }

@@ -1,0 +1,32 @@
+CREATE TABLE CachedUser (
+    id                          TEXT    NOT NULL PRIMARY KEY,
+    name                        TEXT    NOT NULL,
+    email                       TEXT    NOT NULL,
+    authenticationTokens        TEXT    NOT NULL,  -- JSON-encoded Map<String, AuthenticationToken>
+    publicKey                   TEXT,              -- nullable Base64String
+    hasBackup                   INTEGER    NOT NULL,
+    inserted_at                 INTEGER NOT NULL   -- Unix timestamp ms, added by us
+);
+
+selectAll:
+SELECT * FROM CachedUser
+ORDER BY inserted_at DESC;
+
+selectById:
+SELECT * FROM CachedUser
+WHERE id = :id;
+
+upsert:
+INSERT OR REPLACE INTO CachedUser(
+    id, name, email,
+    authenticationTokens, publicKey,
+    hasBackup, inserted_at
+)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteOne:
+DELETE FROM CachedUser
+WHERE id = :id;
+
+deleteAll:
+DELETE FROM CachedUser;

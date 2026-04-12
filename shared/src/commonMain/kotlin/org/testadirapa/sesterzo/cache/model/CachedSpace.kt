@@ -5,8 +5,8 @@ import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.Timestamp
 
 @Serializable
-data class SpaceEntity(
-	val id: String,
-	val space: Space,
-	val insertedAt: Timestamp
-)
+data class CachedSpace(
+	override val id: String,
+	override val entity: Space,
+	override val insertedAt: Timestamp
+) : EntityWithInsertionTs<Space>

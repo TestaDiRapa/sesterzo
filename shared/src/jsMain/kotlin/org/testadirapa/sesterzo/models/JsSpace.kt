@@ -1,6 +1,6 @@
 package org.testadirapa.sesterzo.models
 
-import org.testadirapa.sesterzo.cache.model.SpaceEntity
+import org.testadirapa.sesterzo.cache.model.CachedSpace
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.utils.currentTimeMillis
 import org.testadirapa.sesterzo.utils.emptyObject
@@ -36,9 +36,9 @@ fun Space.toJs(insertedAt: Double = currentTimeMillis()): JsSpace {
 	return js
 }
 
-fun JsSpace.toKt(): SpaceEntity = SpaceEntity(
+fun JsSpace.toKt(): CachedSpace = CachedSpace(
 	id = id,
-	space = Space(
+	entity = Space(
 		id = id,
 		version = version,
 		name = name,

@@ -9,5 +9,8 @@ class AndroidPersistentCache(
 	override val space: SpacePersistentCache by lazy {
 		AndroidSpacePersistentCache(driver)
 	}
+	override val user: UserPersistentCache by lazy {
+		AndroidUserPersistentCache(driver)
+	}
 
 }

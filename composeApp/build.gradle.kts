@@ -1,6 +1,7 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 
 plugins {
 	alias(libs.plugins.kotlinMultiplatform)
@@ -17,6 +18,7 @@ buildkonfig {
 
 	defaultConfigs {
 		buildConfigField(STRING, "apiUrl", localProps.getProperty("api.url"))
+		buildConfigField(INT, "cacheTtl", localProps.getProperty("api.cache.ttl"))
 	}
 }
 

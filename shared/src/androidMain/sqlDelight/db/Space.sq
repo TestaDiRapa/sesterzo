@@ -1,4 +1,4 @@
-CREATE TABLE SpaceEntity (
+CREATE TABLE CachedSpace (
     id                          TEXT    NOT NULL PRIMARY KEY,
     version                     INTEGER NOT NULL,
     name                        TEXT    NOT NULL,
@@ -12,15 +12,15 @@ CREATE TABLE SpaceEntity (
 );
 
 selectAll:
-SELECT * FROM SpaceEntity
+SELECT * FROM CachedSpace
 ORDER BY inserted_at DESC;
 
 selectById:
-SELECT * FROM SpaceEntity
+SELECT * FROM CachedSpace
 WHERE id = :id;
 
 upsert:
-INSERT OR REPLACE INTO SpaceEntity(
+INSERT OR REPLACE INTO CachedSpace(
     id, version, name, owner,
     fixed_expenses_template_id,
     income_sources_template_id,
@@ -29,5 +29,9 @@ INSERT OR REPLACE INTO SpaceEntity(
 )
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
+deleteOne:
+DELETE FROM CachedSpace
+WHERE id = :id;
+
 deleteAll:
-DELETE FROM SpaceEntity;
+DELETE FROM CachedSpace;

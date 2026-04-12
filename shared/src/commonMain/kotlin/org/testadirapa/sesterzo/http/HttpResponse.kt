@@ -16,6 +16,8 @@ class HttpResponse<T>(
 ) {
 
 	val isSuccess: Boolean get() = response.status.isSuccess()
+	val isServerError: Boolean get() = response.status.value >= 500
+	val isClientError: Boolean get() = response.status.value in 400..<500
 
 	@Suppress("UNCHECKED_CAST")
 	private suspend fun getBodyFromResponse(): T =

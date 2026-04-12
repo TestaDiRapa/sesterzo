@@ -45,7 +45,7 @@ fun CreateSpaceScreen(
 			onClick = {
 				println("CreateSpaceScreen clicked!")
 				scope.launch {
-					val result = PlatformContext.persistentCache().space.getById("id2")?.space
+					val result = PlatformContext.persistentCache().space.getById("id2")?.entity
 					println(result)
 					space = result
 				}

@@ -1,22 +1,25 @@
 package org.testadirapa.sesterzo.api
 
 import org.testadirapa.sesterzo.api.impl.FullRecoveryApiImpl
-import org.testadirapa.sesterzo.api.impl.RecoveryApiImpl
 import org.testadirapa.sesterzo.api.impl.SpaceApiImpl
 import org.testadirapa.sesterzo.api.impl.UserApiImpl
+import org.testadirapa.sesterzo.cache.PersistentCache
 import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
+import org.testadirapa.sesterzo.storage.StorageFacade
+import kotlin.time.Duration
 
 class FullSesterzoApiImpl(
-	private val httpConfig: HttpConfig,
+	httpConfig: HttpConfig,
+	cache: PersistentCache,
+	cacheTtl: Duration,
+	storage: StorageFacade,
 	override val authService: AuthService,
 	override val cryptoService: CryptoService
 ) : FullSesterzoApi {
 
 	override val currentUserId: String get() = cryptoService.userId
-
-	override val user: UserApi by lazy { UserApiImpl(httpConfig, authService) }
 
 	override val recovery: FullRecoveryApi by lazy {
 		FullRecoveryApiImpl(
@@ -26,11 +29,23 @@ class FullSesterzoApiImpl(
 		)
 	}
 
-	override val spaceApi: SpaceApi by lazy {
+	override val space: SpaceApi by lazy {
 		SpaceApiImpl(
 			httpConfig = httpConfig,
+			cache = cache.space,
+			ttl = cacheTtl,
 			authService = authService,
 			cryptoService = cryptoService
+		)
+	}
+
+	override val user: UserApi by lazy {
+		UserApiImpl(
+			httpConfig = httpConfig,
+			cache = cache.user,
+			ttl = cacheTtl,
+			localStorage = storage,
+			authService = authService
 		)
 	}
 

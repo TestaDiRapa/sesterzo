@@ -89,9 +89,15 @@ fun App() {
 						}
 					)
 					is CreateSpaceState -> CreateSpaceScreen(
+						isMobile = isMobile,
 						isFirst = currentState.isFirst,
+						isLoading = loadingState.value,
+						onError = { appViewModel.setError(it) },
+						onCreateSpace = { name, picture ->
+							appViewModel.acceptIntent(Intent.CreateFirstSpaceIntent(name, picture))
+						}
 					)
-					MainScreenState -> HomeScreen()
+					is MainScreenState -> HomeScreen()
 				}
 				ErrorAlert(
 					error = errorState.value,

@@ -24,7 +24,7 @@
     <string name="error_user_not_found">User not found.</string>
     <string name="error_user_update_failed">User update failed.</string>
 
-    <!--  Backup private key page  -->
+    <!--  Backup private key screen  -->
     <string name="backup_key_title">Back up your private key</string>
     <string name="backup_key_description_1">This is the master key used to encrypt all your data.</string>
     <string name="backup_key_description_2_1">1. Copy it and save it (do not lose it).</string>
@@ -41,14 +41,22 @@
     <string name="backup_key_switch_to_private_key">Backup the private key directly.</string>
     <string name="backup_key_switch_to_recovery_key">Use a recovery sentence.</string>
 
-    <!--  Recover private key page  -->
+    <!--  Create space screen  -->
+    <string name="create_space_first_space">Create your first budget</string>
+    <string name="create_space_other_space">Create a new budget</string>
+    <string name="create_space_space_name">Budget name</string>
+    <string name="create_space_space_name_placeholder">My budget</string>
+    <string name="create_space_space_name_error">Invalid budget name.</string>
+    <string name="create_space_create_button">Create budget</string>
+
+    <!--  Recover private key screen  -->
     <string name="recover_key_title">Your private key was not found on the device</string>
     <string name="recover_key_description_1">Recover your key using one of the following options:</string>
     <string name="recover_key_option_restore_key">Paste the private key directly</string>
     <string name="recover_key_option_recovery_key">Use a recovery key</string>
     <string name="recover_key_button_confirm">Confirm</string>
     <string name="recover_key_private_key_placeholder">MIIEvAIBADANBgkqhkiG9w...</string>
-    <string name="recover_key_recovery_key_placeholder">FRAKVGCXU4AKCUZSJFZ2T...</string>
+    <string name="recover_key_recovery_key_placeholder">skill green winter...</string>
     <string name="recover_key_invalid_key_format">Invalid key format</string>
 
     <!--  Registration page  -->

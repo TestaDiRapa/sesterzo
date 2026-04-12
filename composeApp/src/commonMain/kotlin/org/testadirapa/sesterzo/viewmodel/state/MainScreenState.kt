@@ -1,3 +1,5 @@
 package org.testadirapa.sesterzo.viewmodel.state
 
-data object MainScreenState : AppState
+data class MainScreenState(
+	val initialSpaceId: String
+) : AppState

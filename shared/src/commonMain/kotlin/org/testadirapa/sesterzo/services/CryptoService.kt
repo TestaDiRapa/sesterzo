@@ -84,4 +84,16 @@ class CryptoService private constructor(
 			}
 		}
 	}
+
+	suspend fun generateAndEncryptSpaceKey(): Base64String {
+		val rawSpaceKey = defaultCryptoService.aes.exportKey(
+			defaultCryptoService.aes.generateKey(AesAlgorithm.CbcWithPkcs7Padding)
+		)
+		return defaultCryptoService.rsa.encrypt(
+			data = rawSpaceKey,
+			publicKey = keyPair.public
+		).let {
+			base64Encode(it)
+		}
+	}
 }

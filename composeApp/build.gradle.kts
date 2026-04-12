@@ -62,6 +62,9 @@ kotlin {
 			implementation(libs.androidx.lifecycle.runtimeCompose)
 			implementation(libs.kermit)
 		}
+		androidMain.dependencies {
+			implementation(libs.androidx.activity.compose)
+		}
 		commonTest.dependencies {
 			implementation(libs.kotlin.test)
 		}

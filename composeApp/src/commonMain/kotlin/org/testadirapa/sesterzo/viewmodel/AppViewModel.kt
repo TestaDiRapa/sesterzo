@@ -97,6 +97,11 @@ class AppViewModel : ViewModel() {
 							_appState.update { mainScreenOrCreateSpace() }
 						}
 					}
+					is Intent.CreateFirstSpaceIntent -> {
+						val space = AppCtx.api.space.createSpace(intent.name, intent.picture)
+						AppCtx.propertyRepository.setDefaultSpace(space.id)
+						_appState.update { MainScreenState(initialSpaceId = space.id) }
+					}
 				}
 			}.onFailure { error ->
 				logger.e(error) { "Error processing intent: $intent" }
@@ -178,13 +183,18 @@ class AppViewModel : ViewModel() {
 		}
 	}
 
-	private suspend fun mainScreenOrCreateSpace() : AppState =
-		if (AppCtx.api.space.getSpaces().isEmpty()) {
+	private suspend fun mainScreenOrCreateSpace() : AppState {
+		val spaces = AppCtx.api.space.getSpaces()
+		return if (spaces.isEmpty()) {
 			CreateSpaceState(isFirst = true)
 		} else {
-			MainScreenState
+			MainScreenState(
+				initialSpaceId = AppCtx.propertyRepository.getDefaultSpace()
+					?: spaces.first().id,
+			)
 		}
 
+	}
 	fun setLoading() {
 		_loadingState.update { true }
 	}

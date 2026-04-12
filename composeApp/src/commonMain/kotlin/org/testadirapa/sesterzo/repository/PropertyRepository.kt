@@ -9,6 +9,7 @@ class PropertyRepository(
 	companion object {
 		private const val REFRESH_JWT_KEY = "org.testadirapa.sesterzo.refreshJwt"
 		private const val AUTH_JWT_KEY = "org.testadirapa.sesterzo.authJwt"
+		private const val DEFAULT_SPACE = "org.testadirapa.sesterzo.defaultSpace"
 	}
 
 	suspend fun clear() {
@@ -21,5 +22,8 @@ class PropertyRepository(
 
 	suspend fun getRefreshJwt(): String? = datastore.getItem(REFRESH_JWT_KEY)
 	suspend fun setRefreshJwt(jwt: String) { datastore.setItem(REFRESH_JWT_KEY, jwt) }
+
+	suspend fun getDefaultSpace(): String? = datastore.getItem(DEFAULT_SPACE)
+	suspend fun setDefaultSpace(spaceId: String) { datastore.setItem(DEFAULT_SPACE, spaceId) }
 
 }

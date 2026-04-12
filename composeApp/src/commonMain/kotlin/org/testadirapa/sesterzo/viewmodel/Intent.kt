@@ -10,4 +10,5 @@ sealed interface Intent {
 	data object ConfirmBackup : Intent
 	data class RestoreWithPrivateKey(val privateKey: Base64String) : Intent
 	data class RestoreWithRecoveryKey(val recoveryKey: Bip39RecoveryKey) : Intent
+	data class CreateFirstSpaceIntent(val name: String, val picture: ByteArray?) : Intent
 }

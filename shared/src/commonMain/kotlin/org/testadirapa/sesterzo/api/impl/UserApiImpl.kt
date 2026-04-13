@@ -72,7 +72,7 @@ class UserApiImpl(
 	override suspend fun getCurrentUser(): User {
 		val currentUserId = localStorage.getItem(CURRENT_USER_ID_KEY)
 		return if (currentUserId != null) {
-			cachedOrGet(currentUserId) { retrieveCurrentUser() }
+			cachedOrGet(currentUserId, bypassCache = false) { retrieveCurrentUser() }
 		} else {
 			val currentUser = retrieveCurrentUser().bodyOrThrow()
 			localStorage.setItem(CURRENT_USER_ID_KEY, currentUser.id)

@@ -27,10 +27,11 @@ abstract class CachedApi<W : Identifiable, R : Identifiable>(
 	 */
 	protected suspend inline fun getWithFallback(
 		id: String,
+		bypassCache: Boolean,
 		getFromNetwork: suspend (id: String) -> HttpResponse<W>,
 	): W? {
 		val cached = cache.getById(id)
-		return if (cached == null || isInvalid(cached)) {
+		return if (bypassCache || cached == null || isInvalid(cached)) {
 			val response = getFromNetwork(id)
 			when {
 				response.isSuccess -> response.bodyOrThrow().also { putInCache(it) }
@@ -44,10 +45,11 @@ abstract class CachedApi<W : Identifiable, R : Identifiable>(
 
 	protected suspend inline fun cachedOrGet(
 		id: String,
+		bypassCache: Boolean,
 		getFromNetwork: suspend (id: String) -> HttpResponse<W>,
 	): W {
 		val cached = cache.getById(id)
-		return if (cached == null || isInvalid(cached)) {
+		return if (bypassCache || cached == null || isInvalid(cached)) {
 			val response = getFromNetwork(id)
 			when {
 				response.isSuccess -> response.bodyOrThrow().also { putInCache(it) }

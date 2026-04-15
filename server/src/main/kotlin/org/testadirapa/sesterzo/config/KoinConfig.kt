@@ -26,12 +26,14 @@ import org.testadirapa.sesterzo.dao.impl.RecoveryDAOImpl
 import org.testadirapa.sesterzo.dao.impl.SpaceDAOImpl
 import org.testadirapa.sesterzo.dao.impl.UserDAOImpl
 import org.testadirapa.sesterzo.logic.AuthenticationLogic
+import org.testadirapa.sesterzo.logic.BudgetElementLogic
 import org.testadirapa.sesterzo.logic.BudgetLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
 import org.testadirapa.sesterzo.logic.RecoveryLogic
 import org.testadirapa.sesterzo.logic.SpaceLogic
 import org.testadirapa.sesterzo.logic.UserLogic
 import org.testadirapa.sesterzo.logic.impl.AuthenticationLogicImpl
+import org.testadirapa.sesterzo.logic.impl.BudgetElementLogicImpl
 import org.testadirapa.sesterzo.logic.impl.BudgetLogicImpl
 import org.testadirapa.sesterzo.logic.impl.CaptchaLogicImpl
 import org.testadirapa.sesterzo.logic.impl.RecoveryLogicImpl
@@ -64,6 +66,7 @@ fun applicationModules(
 
 	// Logics
 	single<BudgetLogic> { BudgetLogicImpl(budgetDAO = get()) }
+	single<BudgetElementLogic> { BudgetElementLogicImpl(budgetElementDAO = get()) }
 	single<CaptchaLogic> { CaptchaLogicImpl(config = CaptchaLogic.Config.fromConfig(config)) }
 	single<AuthenticationLogic> {
 		AuthenticationLogicImpl(

@@ -18,7 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.testadirapa.sesterzo.components.errors.ErrorAlert
 import org.testadirapa.sesterzo.screens.AuthScreen
 import org.testadirapa.sesterzo.screens.CreateSpaceScreen
-import org.testadirapa.sesterzo.screens.HomeScreen
+import org.testadirapa.sesterzo.screens.MainScreen
 import org.testadirapa.sesterzo.screens.LoadingScreen
 import org.testadirapa.sesterzo.screens.crypto.BackupPrivateKeyScreen
 import org.testadirapa.sesterzo.screens.crypto.RestorePrivateKeyScreen
@@ -97,7 +97,7 @@ fun App() {
 							appViewModel.acceptIntent(Intent.CreateFirstSpaceIntent(name, picture))
 						}
 					)
-					is MainScreenState -> HomeScreen()
+					is MainScreenState -> MainScreen()
 				}
 				ErrorAlert(
 					error = errorState.value,

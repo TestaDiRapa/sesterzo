@@ -6,6 +6,12 @@ class AndroidPersistentCache(
 	driver: SqlDriver
 ) : PersistentCache {
 
+	override val budget: BudgetPersistentCache by lazy {
+		AndroidBudgetPersistentCache(driver)
+	}
+	override val budgetElement: BudgetElementPersistentCache by lazy {
+		AndroidBudgetElementPersistentCache(driver)
+	}
 	override val space: SpacePersistentCache by lazy {
 		AndroidSpacePersistentCache(driver)
 	}

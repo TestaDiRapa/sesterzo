@@ -7,4 +7,6 @@ import org.testadirapa.sesterzo.model.EncryptedBudgetElement
 abstract class BudgetElementDAO(client: DBClient) : GenericMultiCollectionDAO<EncryptedBudgetElement>(client) {
 
 	override fun getCollection(spaceId: String): MongoCollection<EncryptedBudgetElement> = client.getCollection(spaceId)
+
+	abstract suspend fun getLatestVersionForId(spaceId: String, budgetElementId: String): EncryptedBudgetElement?
 }

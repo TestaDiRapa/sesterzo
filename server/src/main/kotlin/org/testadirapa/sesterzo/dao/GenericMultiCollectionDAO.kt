@@ -2,6 +2,8 @@ package org.testadirapa.sesterzo.dao
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.FindOneAndReplaceOptions
+import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.Flow
@@ -99,5 +101,20 @@ abstract class GenericMultiCollectionDAO<T : Identifiable>(
 			FindOneAndReplaceOptions().returnDocument(ReturnDocument.AFTER),
 		)
 
-	abstract suspend fun initIndexes()
+	abstract suspend fun initIndexes(spaceId: String)
+
+	protected suspend fun initIndex(
+		spaceId: String,
+		property: String,
+		name: String,
+		unique: Boolean,
+	) {
+		val collection = getCollection(spaceId)
+		if (collection.listIndexes().firstOrNull { it["name"] == name } == null) {
+			collection.createIndex(
+				Indexes.ascending(property),
+				IndexOptions().name(name).unique(unique),
+			)
+		}
+	}
 }

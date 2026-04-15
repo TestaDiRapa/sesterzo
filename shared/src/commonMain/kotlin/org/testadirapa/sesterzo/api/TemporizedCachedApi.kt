@@ -13,6 +13,9 @@ abstract class TemporizedCachedApi<T : Identifiable, C : EntityWithInsertionTs<T
 	private val ttl: Duration
 ) : CachedApi<T, C>(httpConfig, cache) {
 
+	/**
+	 * Overrides the default behaviour by taking into account the timestamp of insertion of the entity.
+	 */
 	override fun isInvalid(data: C): Boolean =
 		(Clock.System.now().toEpochMilliseconds() - data.insertedAt) >= ttl.inWholeMilliseconds
 

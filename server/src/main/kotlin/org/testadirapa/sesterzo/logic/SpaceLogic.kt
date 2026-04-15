@@ -21,4 +21,5 @@ interface SpaceLogic {
 	 * @throws QuotaExceededException if the user already created more than a fixed number of spaces.
 	 */
 	suspend fun createSpace(spaceStub: SpaceStub): Space
+	suspend fun getSpace(spaceId: String): Space
 }

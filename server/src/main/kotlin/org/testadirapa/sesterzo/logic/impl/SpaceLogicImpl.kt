@@ -6,7 +6,10 @@ import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.emitAll
 import org.testadirapa.sesterzo.dao.BudgetElementDAO
 import org.testadirapa.sesterzo.dao.SpaceDAO
+import org.testadirapa.sesterzo.exceptions.EntityNotFoundException
+import org.testadirapa.sesterzo.exceptions.ExceptionLabel
 import org.testadirapa.sesterzo.exceptions.ImageTooLargeException
+import org.testadirapa.sesterzo.exceptions.InvalidSpaceAuthorizationException
 import org.testadirapa.sesterzo.exceptions.QuotaExceededException
 import org.testadirapa.sesterzo.logic.SpaceLogic
 import org.testadirapa.sesterzo.model.BudgetElement
@@ -26,6 +29,14 @@ class SpaceLogicImpl(
 		emitAll(
 			spaceDAO.getByIds(it.spaces.keys)
 		)
+	}
+
+	override suspend fun getSpace(spaceId: String): Space = withSecurityContext {
+		if (spaceId !in spaces.keys) {
+			throw InvalidSpaceAuthorizationException(spaceId)
+		}
+		spaceDAO.getById(spaceId)
+			?: throw EntityNotFoundException(entityId = spaceId, label = ExceptionLabel.SpaceNotFound)
 	}
 
 	override suspend fun createSpace(spaceStub: SpaceStub): Space = withSecurityContext {
@@ -66,7 +77,7 @@ class SpaceLogicImpl(
 				encryptedSelf = null
 			)
 		).id
-		budgetElementDAO.initIndexes()
+		budgetElementDAO.initIndexes(spaceId = spaceStub.id)
 		spaceDAO.save(
 			Space(
 				id = spaceStub.id,

@@ -1,5 +1,7 @@
 package org.testadirapa.sesterzo.api
 
+import org.testadirapa.sesterzo.api.impl.BudgetApiImpl
+import org.testadirapa.sesterzo.api.impl.BudgetElementApiImpl
 import org.testadirapa.sesterzo.api.impl.FullRecoveryApiImpl
 import org.testadirapa.sesterzo.api.impl.SpaceApiImpl
 import org.testadirapa.sesterzo.api.impl.UserApiImpl
@@ -20,6 +22,28 @@ class FullSesterzoApiImpl(
 ) : FullSesterzoApi {
 
 	override val currentUserId: String get() = cryptoService.userId
+
+	override val budget: BudgetApi by lazy {
+		BudgetApiImpl(
+			httpConfig = httpConfig,
+			cache = cache.budget,
+			ttl = cacheTtl,
+			authService = authService,
+			cryptoService = cryptoService,
+			spaceApi = space,
+			budgetElementApi = budgetElement,
+		)
+	}
+
+	override val budgetElement: BudgetElementApi by lazy {
+		BudgetElementApiImpl(
+			httpConfig = httpConfig,
+			cache = cache.space,
+			ttl = cacheTtl,
+			authService = authService,
+			cryptoService = cryptoService
+		)
+	}
 
 	override val recovery: FullRecoveryApi by lazy {
 		FullRecoveryApiImpl(

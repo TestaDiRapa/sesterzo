@@ -46,6 +46,16 @@ class SpaceApiImpl(
 		accept(Application.Json)
 	}.wrap()
 
+	private suspend fun retrieveSpace(spaceId: String): HttpResponse<Space> = get {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, spaceId)
+			parameter("ts", GMTDate().timestamp)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+	}.wrap()
+
 	private suspend fun createSpaceFromStub(stub: SpaceStub): HttpResponse<Space> = post {
 		url {
 			takeFrom(baseUrl)
@@ -62,6 +72,11 @@ class SpaceApiImpl(
 	}.onEach {
 		cryptoService.decryptAndLoadSpaceKey(it)
 	}
+
+	override suspend fun getSpace(spaceId: String, bypassCache: Boolean): Space = cachedOrGet(
+		id = spaceId,
+		bypassCache = bypassCache,
+	) { retrieveSpace(spaceId) }
 
 	override suspend fun createSpace(
 		name: String,

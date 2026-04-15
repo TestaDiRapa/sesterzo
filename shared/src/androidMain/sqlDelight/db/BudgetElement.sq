@@ -1,0 +1,30 @@
+CREATE TABLE CachedBudgetElement (
+    id                          TEXT    NOT NULL PRIMARY KEY,
+    budgetElementId             TEXT    NOT NULL,
+    version                     INTEGER    NOT NULL,
+    spaceId                     TEXT    NOT NULL,
+    type                        TEXT    NOT NULL,
+    encryptedSelf               TEXT,              -- nullable Base64String
+    inserted_at                 INTEGER NOT NULL   -- Unix timestamp ms, added by us
+);
+
+selectAll:
+SELECT * FROM CachedBudgetElement
+ORDER BY inserted_at DESC;
+
+selectById:
+SELECT * FROM CachedBudgetElement
+WHERE id = :id;
+
+upsert:
+INSERT OR REPLACE INTO CachedBudgetElement(
+    id, budgetElementId, version, spaceId, type, encryptedSelf, inserted_at
+)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteOne:
+DELETE FROM CachedBudgetElement
+WHERE id = :id;
+
+deleteAll:
+DELETE FROM CachedBudgetElement;

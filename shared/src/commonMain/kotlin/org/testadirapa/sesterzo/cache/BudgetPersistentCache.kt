@@ -1,0 +1,6 @@
+package org.testadirapa.sesterzo.cache
+
+import org.testadirapa.sesterzo.cache.model.CachedBudget
+import org.testadirapa.sesterzo.model.EncryptedBudget
+
+interface BudgetPersistentCache : PersistenceOperator<EncryptedBudget, CachedBudget>

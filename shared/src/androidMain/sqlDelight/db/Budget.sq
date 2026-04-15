@@ -1,0 +1,35 @@
+CREATE TABLE CachedBudget (
+    id                          TEXT    NOT NULL PRIMARY KEY,
+    version                     INTEGER    NOT NULL,
+    spaceId                     TEXT    NOT NULL,
+    year                        INTEGER    NOT NULL,
+    month                       INTEGER    NOT NULL,
+    expensesReference           TEXT    NOT NULL,  -- JSON-encoded Map<String, AuthenticationToken>
+    incomeReference             TEXT    NOT NULL,  -- JSON-encoded Map<String, AuthenticationToken>
+    savingsReference            TEXT    NOT NULL,  -- JSON-encoded Map<String, AuthenticationToken>
+    encryptedSelf               TEXT,              -- nullable Base64String
+    inserted_at                 INTEGER NOT NULL   -- Unix timestamp ms, added by us
+);
+
+selectAll:
+SELECT * FROM CachedBudget
+ORDER BY inserted_at DESC;
+
+selectById:
+SELECT * FROM CachedBudget
+WHERE id = :id;
+
+upsert:
+INSERT OR REPLACE INTO CachedBudget(
+    id, version, spaceId, year, month,
+    expensesReference, incomeReference,
+    savingsReference, encryptedSelf, inserted_at
+)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteOne:
+DELETE FROM CachedBudget
+WHERE id = :id;
+
+deleteAll:
+DELETE FROM CachedBudget;

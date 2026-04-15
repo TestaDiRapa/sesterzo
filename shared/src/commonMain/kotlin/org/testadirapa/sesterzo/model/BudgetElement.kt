@@ -68,3 +68,5 @@ data class EncryptedBudgetElement(
 		} ?: emptyMap()
 	)
 }
+
+fun BudgetElement.toReference(): VersionableReference = VersionableReference(id = id, version = version)

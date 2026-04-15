@@ -7,6 +7,11 @@ import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.model.Identifiable
 
+/**
+ * Base class for all cached APIs. [W] is the type of data passed to the cache for writing while [R] is the type of
+ * data retrieved from the cache. They may differ for entities where it is important to know when they were inserted in
+ * the cache but without that information in the class.
+ */
 abstract class CachedApi<W : Identifiable, R : Identifiable>(
 	httpConfig: HttpConfig,
 	protected val cache: PersistenceOperator<W, R>
@@ -16,16 +21,48 @@ abstract class CachedApi<W : Identifiable, R : Identifiable>(
 		cache.upsert(data)
 	}
 
+	/**
+	 * Checks if an entity from the cache is invalid. Default is false (always valid), but is overridden in the temporized
+	 * implementation.
+	 */
 	protected open fun isInvalid(data: R): Boolean = false
 
+	/**
+	 * Converts the entity type read from the cache to entity type that can be written in the cache (usually the base
+	 * entity type, without information of when the element was inserted).
+	 */
 	protected abstract fun convert(data: R): W
 
 	/**
-	 * This method retrieves an entity by id. It falls back to a cached element if
-	 * - The element is present and valid
-	 * - The element is present, not valid, but the fetch from network returned a server error.
+	 * On a forbidden response from the server, clear the element that was attempted from the cache, or clear the
+	 * whole cache of that type if no element was specified.
+	 * When the permission to access a space is revoked from a user, this will help clearing the data on device at the
+	 * first failed request.
 	 */
-	protected suspend inline fun getWithFallback(
+	protected suspend fun <T> HttpResponse<T>.clearCacheOnForbidden(cachedEntity: R?): T {
+		if (cachedEntity != null) {
+			cache.clear(convert(cachedEntity))
+		} else {
+			cache.clearAll()
+		}
+		return bodyOrThrow()
+	}
+
+	/**
+	 * Retrieves an element, retrieving it from the network if:
+	 * - The [bypassCache] parameter is set to true.
+	 * - The element is missing in the cache.
+	 * - The element is available in the cache but not up-to-date anymore (according to [isInvalid]).
+	 * In this last case, the method will still return the outdated version if the server responds with a 500.
+	 * On a successful retrieve, the entity is updated in the cache.
+	 * On a 403, [clearCacheOnForbidden] is called on the entity.
+	 *
+	 * @param id the id of the entity to retrieve.
+	 * @param bypassCache forces the retrieval of the entity from the server.
+	 * @param getFromNetwork the call to the api function to retrieve the entity from the server.
+	 * @return the entity, or null if no entity with that id was found.
+	 */
+	protected suspend inline fun cachedOrGetIfPresent(
 		id: String,
 		bypassCache: Boolean,
 		getFromNetwork: suspend (id: String) -> HttpResponse<W>,
@@ -35,6 +72,7 @@ abstract class CachedApi<W : Identifiable, R : Identifiable>(
 			val response = getFromNetwork(id)
 			when {
 				response.isSuccess -> response.bodyOrThrow().also { putInCache(it) }
+				response.isForbidden -> response.clearCacheOnForbidden(cachedEntity = cached)
 				cached != null && response.isServerError -> convert(cached)
 				else -> response.bodyOrNullIfStatus(HttpStatusCode.NotFound)
 			}
@@ -43,6 +81,20 @@ abstract class CachedApi<W : Identifiable, R : Identifiable>(
 		}
 	}
 
+	/**
+	 * Retrieves an element, retrieving it from the network if:
+	 * - The [bypassCache] parameter is set to true.
+	 * - The element is missing in the cache.
+	 * - The element is available in the cache but not up-to-date anymore (according to [isInvalid]).
+	 * In this last case, the method will still return the outdated version if the server responds with a 500.
+	 * On a successful retrieve, the entity is updated in the cache.
+	 * On a 403, [clearCacheOnForbidden] is called on the entity.
+	 *
+	 * @param id the id of the entity to retrieve.
+	 * @param bypassCache forces the retrieval of the entity from the server.
+	 * @param getFromNetwork the call to the api function to retrieve the entity from the server.
+	 * @return the entity-
+	 */
 	protected suspend inline fun cachedOrGet(
 		id: String,
 		bypassCache: Boolean,
@@ -53,6 +105,7 @@ abstract class CachedApi<W : Identifiable, R : Identifiable>(
 			val response = getFromNetwork(id)
 			when {
 				response.isSuccess -> response.bodyOrThrow().also { putInCache(it) }
+				response.isForbidden -> response.clearCacheOnForbidden(cachedEntity = cached)
 				cached != null && response.isServerError -> convert(cached)
 				else -> response.bodyOrThrow()
 			}
@@ -61,22 +114,35 @@ abstract class CachedApi<W : Identifiable, R : Identifiable>(
 		}
 	}
 
+	/**
+	 * Retrieves all the entities for the type.
+	 * It will always attempt to retrieve the entities from the network.
+	 * - If the request fails with a 500, the cached elements are returned (if any).
+	 * - If the request fails with a 403, the cache is cleared and the method throws an exception.
+	 * - If the request succeeds, the element retrieved with the request are returned. The element that are present
+	 * in the cache but not in the result from the request are cleared from the cache.
+	 *
+	 * @param getFromNetwork the request to retrieve all the entities of a type from the network.
+	 * @return a list of entities.
+	 */
 	protected suspend inline fun getAllMerging(
 		getFromNetwork: suspend () -> HttpResponse<List<W>>,
 	): List<W> {
 		val cached = cache.getAll().associateBy { it.id }.toMutableMap()
 		val response = getFromNetwork()
-		return if (response.isSuccess || response.isClientError) {
-			response.bodyOrThrow().onEach {
-				cache.upsert(it)
-				cached.remove(it.id)
-			}.also { _ ->
-				cached.values.forEach {
-					cache.clear(convert(it))
+		return when {
+			response.isForbidden -> response.clearCacheOnForbidden(cachedEntity = null)
+			response.isSuccess || response.isClientError -> {
+				response.bodyOrThrow().onEach {
+					cache.upsert(it)
+					cached.remove(it.id)
+				}.also { _ ->
+					cached.values.forEach {
+						cache.clear(convert(it))
+					}
 				}
 			}
-		} else {
-			cached.values.map { convert(it) }
+			else -> cached.values.map { convert(it) }
 		}
 	}
 

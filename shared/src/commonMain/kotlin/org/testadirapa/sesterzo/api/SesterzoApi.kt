@@ -184,6 +184,8 @@ interface FullSesterzoApi : SesterzoApi {
 
 	val cryptoService: CryptoService
 
+	val budget: BudgetApi
+	val budgetElement: BudgetElementApi
 	override val recovery: FullRecoveryApi
 	val space: SpaceApi
 }

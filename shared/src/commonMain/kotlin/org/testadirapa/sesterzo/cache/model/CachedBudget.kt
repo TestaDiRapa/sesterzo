@@ -1,12 +1,12 @@
 package org.testadirapa.sesterzo.cache.model
 
 import kotlinx.serialization.Serializable
+import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.model.Timestamp
-import org.testadirapa.sesterzo.model.User
 
 @Serializable
-data class CachedUser(
+data class CachedBudget(
 	override val id: String,
-	override val entity: User,
+	override val entity: EncryptedBudget,
 	override val insertedAt: Timestamp
-) : EntityWithInsertionTs<User>
+) : EntityWithInsertionTs<EncryptedBudget>

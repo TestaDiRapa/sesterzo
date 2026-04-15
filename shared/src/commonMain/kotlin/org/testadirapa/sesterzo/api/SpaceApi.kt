@@ -7,4 +7,5 @@ interface SpaceApi {
 	suspend fun getSpaces(): List<Space>
 
 	suspend fun createSpace(name: String, picture: ByteArray?): Space
+	suspend fun getSpace(spaceId: String, bypassCache: Boolean): Space
 }

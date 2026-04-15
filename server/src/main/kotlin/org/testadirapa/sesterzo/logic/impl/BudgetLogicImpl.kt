@@ -28,4 +28,5 @@ class BudgetLogicImpl(
 		budgetId: String
 	): EncryptedBudget = budgetDAO.getById(spaceId = spaceId, id = budgetId)
 		?: throw EntityNotFoundException(budgetId, ExceptionLabel.BudgetNotFound)
+
 }

@@ -14,6 +14,7 @@ import org.testadirapa.sesterzo.config.AUTH_CTX
 import org.testadirapa.sesterzo.exceptions.InvalidSpaceAuthorizationException
 import org.testadirapa.sesterzo.exceptions.JwtException
 import org.testadirapa.sesterzo.model.UserSpaceRole
+import org.testadirapa.sesterzo.utils.getPathParameter
 
 private fun RoutingContext.extractJwtClaims(): JwtClaims =
 	call.principal<JWTPrincipal>()?.payload?.toJWTClaims() ?: throw JwtException("No JWT passed in the request")
@@ -47,7 +48,7 @@ private suspend fun RoutingContext.checkSpacePermissionsAndExecute(
 	requiredRole: UserSpaceRole,
 	block: suspend RoutingContext.(spaceId: String) -> Unit
 ) {
-	val spaceId = checkNotNull(call.parameters["spaceId"]) { "spaceId is required" }
+	val spaceId = call.getPathParameter("spaceId")
 	val claims = extractJwtClaims()
 	claims.hasAtLeastRoleInSpace(requiredRole, spaceId)
 	withSecurityContextInSpace(
@@ -58,7 +59,7 @@ private suspend fun RoutingContext.checkSpacePermissionsAndExecute(
 }
 
 private fun withSpaceSegment(path: String) = buildString {
-	append("/{spaceId}")
+	append("/inSpace/{spaceId}")
 	if(path.isNotBlank()) {
 		append("/")
 		append(path.trimStart('/'))

@@ -2,6 +2,7 @@ package org.testadirapa.sesterzo.exceptions
 
 enum class ExceptionLabel {
 	BudgetNotFound,
+	BudgetElementNotFound,
 	CannotDecryptWithAesKey,
 	CannotDecryptWithRsaKey,
 	CannotEncryptWithAesKey,
@@ -18,6 +19,7 @@ enum class ExceptionLabel {
 	QuotaExceeded,
 	RecoveryKeyExpired,
 	RecoveryKeyNotFound,
+	SpaceNotFound,
 	Unauthorized,
 	UserNotFound,
 	UserUpdateFailed

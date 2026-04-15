@@ -8,6 +8,7 @@ import org.testadirapa.sesterzo.logic.SpaceLogic
 import org.testadirapa.sesterzo.model.SpaceStub
 import org.testadirapa.sesterzo.security.authenticatedGet
 import org.testadirapa.sesterzo.security.authenticatedPost
+import org.testadirapa.sesterzo.utils.getPathParameter
 
 fun Routing.spaceController() = route("/space") {
 
@@ -15,6 +16,11 @@ fun Routing.spaceController() = route("/space") {
 
 	authenticatedGet("") {
 		call.respond(spaceLogic.getSpaces())
+	}
+
+	authenticatedGet("/{spaceId}") {
+		val spaceId = call.getPathParameter("spaceId")
+		call.respond(spaceLogic.getSpace(spaceId))
 	}
 
 	authenticatedPost("") {

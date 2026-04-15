@@ -7,6 +7,7 @@ import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
+import org.testadirapa.sesterzo.model.Budget.Companion.getBudgetId
 import org.testadirapa.sesterzo.serialization.Serialization
 import kotlin.collections.mapValues
 
@@ -17,6 +18,17 @@ sealed interface Budget : SpaceData, Versionable {
 	val expensesReference: VersionableReference
 	val incomeReference: VersionableReference
 	val savingsReference: VersionableReference
+
+	companion object {
+		fun getBudgetId(year: Int, month: Int): String = buildString {
+			append("budget-$year-")
+			if (month < 10) {
+				append("0$month")
+			} else {
+				append(month)
+			}
+		}
+	}
 }
 
 @Serializable
@@ -35,7 +47,7 @@ data class DecryptedBudget(
 
 	@SerialName("_id")
 	override val id: String
-		get() = "budget-${year}-${month}"
+		get() = getBudgetId(year = year, month = month)
 
 	override fun getJsonToEncrypt(): JsonObject = JsonObject(
 		mapOf(
@@ -71,7 +83,7 @@ data class EncryptedBudget(
 
 	@SerialName("_id")
 	override val id: String
-		get() = "budget-${year}-${month}"
+		get() = getBudgetId(year = year, month = month)
 
 	override fun toDecryptedData(decryptedFields: JsonObject): DecryptedBudget = DecryptedBudget(
 		version = version,

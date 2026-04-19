@@ -97,7 +97,10 @@ fun App() {
 							appViewModel.acceptIntent(Intent.CreateFirstSpaceIntent(name, picture))
 						}
 					)
-					is MainScreenState -> MainScreen()
+					is MainScreenState -> MainScreen(
+						isMobile = isMobile,
+						initialSpaceId = currentState.initialSpaceId
+					)
 				}
 				ErrorAlert(
 					error = errorState.value,

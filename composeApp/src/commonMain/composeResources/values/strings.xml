@@ -7,9 +7,11 @@
 
     <!--  Errors  -->
     <string name="error_budget_not_found">Budget not found.</string>
+    <string name="error_budget_element_not_found">Budget Element not found.</string>
     <string name="error_cannot_decrypt_aes">Cannot decrypt data with provided AES key.</string>
     <string name="error_cannot_decrypt_rsa">Cannot decrypt data with provided RSA key.</string>
     <string name="error_cannot_encrypt_aes">Cannot encrypt data with provided AES key.</string>
+    <string name="error_expense_deletion_failed">Expense deletion failed, please try again later.</string>
     <string name="error_forbidden_in_space">You are not allowed to access this budget.</string>
     <string name="error_generic">An unexpected error occurred.</string>
     <string name="error_image_too_large">Image is too large.</string>
@@ -24,6 +26,7 @@
     <string name="error_quota_exceeded">You cannot create more spaces.</string>
     <string name="error_recovery_key_expired">This recovery key expired.</string>
     <string name="error_recovery_key_not_found">Recovery key not found.</string>
+    <string name="error_space_not_found">Space not found.</string>
     <string name="error_unauthorized">Invalid email or token.</string>
     <string name="error_user_not_found">User not found.</string>
     <string name="error_user_update_failed">User update failed.</string>

@@ -69,4 +69,4 @@ data class EncryptedBudgetElement(
 	)
 }
 
-fun BudgetElement.toReference(): VersionableReference = VersionableReference(id = id, version = version)
+fun BudgetElement.toReference(): VersionableReference = VersionableReference(id = budgetElementId, version = version)

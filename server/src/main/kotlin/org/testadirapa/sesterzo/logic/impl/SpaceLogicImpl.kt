@@ -56,7 +56,7 @@ class SpaceLogicImpl(
 				type = BudgetElement.BudgetElementType.Savings,
 				encryptedSelf = null
 			)
-		).id
+		).budgetElementId
 		val incomeId = budgetElementDAO.save(
 			spaceId = spaceStub.id,
 			entity = EncryptedBudgetElement(
@@ -66,7 +66,7 @@ class SpaceLogicImpl(
 				type = BudgetElement.BudgetElementType.Income,
 				encryptedSelf = null
 			)
-		).id
+		).budgetElementId
 		val expensesId = budgetElementDAO.save(
 			spaceId = spaceStub.id,
 			entity = EncryptedBudgetElement(
@@ -76,7 +76,7 @@ class SpaceLogicImpl(
 				type = BudgetElement.BudgetElementType.FixedExpenses,
 				encryptedSelf = null
 			)
-		).id
+		).budgetElementId
 		budgetElementDAO.initIndexes(spaceId = spaceStub.id)
 		spaceDAO.save(
 			Space(

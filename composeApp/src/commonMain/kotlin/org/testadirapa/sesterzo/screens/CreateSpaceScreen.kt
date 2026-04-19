@@ -27,7 +27,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.input.FormButton
 import org.testadirapa.sesterzo.components.input.ImagePicker
 import org.testadirapa.sesterzo.components.input.TextField
-import org.testadirapa.sesterzo.components.ui.LogoWithName
 import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.validators.NotBlankValidator
 import sesterzo.composeapp.generated.resources.Res

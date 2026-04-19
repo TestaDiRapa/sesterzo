@@ -10,6 +10,7 @@ import org.testadirapa.sesterzo.exceptions.UnauthorizedException
 import org.testadirapa.sesterzo.model.UserSpaceRole
 import org.testadirapa.sesterzo.security.UserJwtClaims.Companion.SPACES_KEY
 import org.testadirapa.sesterzo.security.UserJwtClaims.Companion.USER_ID_KEY
+import org.testadirapa.sesterzo.serialization.Serialization
 import java.util.*
 import kotlin.collections.mapValues
 import kotlin.time.Duration.Companion.days
@@ -38,7 +39,9 @@ class JwtManager(
 			.withAudience(config.audience)
 			.withIssuer(config.issuer)
 			.withClaim(USER_ID_KEY, jwtClaims.userId)
-			.withClaim(SPACES_KEY, jwtClaims.spaces)
+			.withClaim(SPACES_KEY, jwtClaims.spaces.mapValues { (_, v) ->
+				Serialization.json.encodeToString(v)
+			})
 			.withExpiresAt(Date(System.currentTimeMillis() + authJWTDuration))
 			.sign(Algorithm.RSA256(config.authPublicKey, config.authPrivateKey))
 
@@ -118,7 +121,7 @@ fun Payload.toJWTClaims(): JwtClaims =
 		JwtClaims(
 			userId = getClaim(USER_ID_KEY).asString(),
 			spaces = getClaim(SPACES_KEY).asMap().mapValues { (_, v) ->
-				v as UserSpaceRole
+				Serialization.json.decodeFromString<UserSpaceRole>(v as String)
 			}
 		)
 	} catch (e: Exception) {

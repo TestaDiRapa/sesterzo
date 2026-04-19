@@ -9,6 +9,7 @@ import org.testadirapa.sesterzo.logic.BudgetLogic
 import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.security.authenticateGetInSpace
 import org.testadirapa.sesterzo.security.authenticatedPostInSpace
+import org.testadirapa.sesterzo.utils.getPathParameter
 import kotlin.getValue
 
 fun Routing.budgetController() = route("/budget") {
@@ -16,7 +17,7 @@ fun Routing.budgetController() = route("/budget") {
 	val budgetLogic by inject<BudgetLogic>()
 
 	authenticateGetInSpace("/{budgetId}") { spaceId ->
-		val budgetId = checkNotNull(call.parameters["budgetId"]) { "budgetId parameter missing" }
+		val budgetId = call.getPathParameter("budgetId")
 		call.respond(budgetLogic.getBudget(spaceId = spaceId, budgetId = budgetId))
 	}
 

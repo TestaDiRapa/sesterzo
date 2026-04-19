@@ -8,6 +8,7 @@ import io.ktor.server.routing.routing
 import org.testadirapa.sesterzo.controllers.authController
 import org.testadirapa.sesterzo.controllers.budgetController
 import org.testadirapa.sesterzo.controllers.budgetElementController
+import org.testadirapa.sesterzo.controllers.expenseController
 import org.testadirapa.sesterzo.controllers.recoveryController
 import org.testadirapa.sesterzo.controllers.spaceController
 import org.testadirapa.sesterzo.controllers.userController
@@ -20,6 +21,7 @@ fun Application.configureControllers() {
 		authController()
 		budgetController()
 		budgetElementController()
+		expenseController()
 		recoveryController()
 		spaceController()
 		userController()

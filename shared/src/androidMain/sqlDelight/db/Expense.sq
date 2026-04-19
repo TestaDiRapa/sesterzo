@@ -1,0 +1,33 @@
+CREATE TABLE Expense(
+    id                          TEXT    NOT NULL PRIMARY KEY,
+    updated                     INTEGER    NOT NULL,
+    deleted                     INTEGER    NOT NULL,  -- boolean flag
+    budgetId                    TEXT    NOT NULL,
+    spaceId                     TEXT    NOT NULL,
+    encryptedSelf               TEXT              -- nullable Base64String
+);
+
+selectAll:
+SELECT * FROM Expense;
+
+selectById:
+SELECT * FROM Expense
+WHERE id = :id;
+
+selectBySpaceBudget:
+SELECT * FROM Expense
+WHERE spaceId = :spaceId AND budgetId = :budgetId;
+
+upsert:
+INSERT OR REPLACE INTO Expense(
+    id, updated, deleted, budgetId,
+    spaceId, encryptedSelf
+)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteOne:
+DELETE FROM Expense
+WHERE id = :id;
+
+deleteAll:
+DELETE FROM Expense;

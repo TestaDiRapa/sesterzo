@@ -12,6 +12,9 @@ class AndroidPersistentCache(
 	override val budgetElement: BudgetElementPersistentCache by lazy {
 		AndroidBudgetElementPersistentCache(driver)
 	}
+	override val expense: ExpensePersistentCache by lazy {
+		AndroidExpensePersistentCache(driver)
+	}
 	override val space: SpacePersistentCache by lazy {
 		AndroidSpacePersistentCache(driver)
 	}

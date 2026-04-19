@@ -6,6 +6,7 @@ enum class ExceptionLabel {
 	CannotDecryptWithAesKey,
 	CannotDecryptWithRsaKey,
 	CannotEncryptWithAesKey,
+	ExpenseDeletionFailed,
 	ForbiddenInSpace,
 	ImageTooLarge,
 	InvalidCaptcha,

@@ -7,5 +7,5 @@ class BudgetDAOImpl(
 	client: DBClient,
 ) : BudgetDAO(client) {
 
-	override suspend fun initIndexes() {}
+	override suspend fun initIndexes(spaceId: String) {}
 }

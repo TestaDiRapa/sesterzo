@@ -12,9 +12,9 @@ import org.testadirapa.sesterzo.model.Identifiable
  * data retrieved from the cache. They may differ for entities where it is important to know when they were inserted in
  * the cache but without that information in the class.
  */
-abstract class CachedApi<W : Identifiable, R : Identifiable>(
+abstract class CachedApi<W : Identifiable, R : Identifiable, C : PersistenceOperator<W, R>>(
 	httpConfig: HttpConfig,
-	protected val cache: PersistenceOperator<W, R>
+	protected val cache: C
 ) : AbstractApi(httpConfig) {
 
 	protected suspend fun putInCache(data: W) {

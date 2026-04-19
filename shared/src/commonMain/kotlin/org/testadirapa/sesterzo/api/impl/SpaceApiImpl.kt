@@ -32,7 +32,7 @@ class SpaceApiImpl(
 	ttl: Duration,
 	private val authService: AuthService,
 	private val cryptoService: CryptoService,
-) : TemporizedCachedApi<Space, CachedSpace>(httpConfig, cache, ttl), SpaceApi {
+) : TemporizedCachedApi<Space, CachedSpace, SpacePersistentCache>(httpConfig, cache, ttl), SpaceApi {
 
 	override val baseSegment: String = "space"
 

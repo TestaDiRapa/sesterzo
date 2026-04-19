@@ -34,7 +34,7 @@ class BudgetApiImpl(
 	private val cryptoService: CryptoService,
 	private val spaceApi: SpaceApi,
 	private val budgetElementApi: BudgetElementApi
-) : TemporizedCachedApi<EncryptedBudget, CachedBudget>(httpConfig, cache, ttl), BudgetApi {
+) : TemporizedCachedApi<EncryptedBudget, CachedBudget, BudgetPersistentCache>(httpConfig, cache, ttl), BudgetApi {
 
 	override val baseSegment: String = "budget"
 

@@ -7,11 +7,11 @@ import org.testadirapa.sesterzo.model.Identifiable
 import kotlin.time.Clock
 import kotlin.time.Duration
 
-abstract class TemporizedCachedApi<T : Identifiable, C : EntityWithInsertionTs<T>>(
+abstract class TemporizedCachedApi<T : Identifiable, C : EntityWithInsertionTs<T>, P: PersistenceOperator<T, C>>(
 	httpConfig: HttpConfig,
-	cache: PersistenceOperator<T, C>,
+	cache: P,
 	private val ttl: Duration
-) : CachedApi<T, C>(httpConfig, cache) {
+) : CachedApi<T, C, P>(httpConfig, cache) {
 
 	/**
 	 * Overrides the default behaviour by taking into account the timestamp of insertion of the entity.

@@ -1,5 +1,6 @@
 package org.testadirapa.sesterzo.http
 
+import io.ktor.client.call.body
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
@@ -13,6 +14,7 @@ import io.ktor.client.statement.HttpResponse as KtorHttpResponse
 class HttpResponse<T>(
 	private val response: KtorHttpResponse,
 	val typeInfo: TypeInfo,
+	val patcher: (T) -> (T) = { it }
 ) {
 
 	val isSuccess: Boolean get() = response.status.isSuccess()
@@ -22,7 +24,9 @@ class HttpResponse<T>(
 
 	@Suppress("UNCHECKED_CAST")
 	private suspend fun getBodyFromResponse(): T =
-		response.call.bodyNullable(typeInfo) as T
+		(response.call.bodyNullable(typeInfo) as T).let {
+			patcher(it)
+		}
 
 	private suspend fun throwErrorFromResponse(): Nothing {
 		val responseBodyText = kotlin.runCatching {
@@ -58,3 +62,6 @@ class HttpResponse<T>(
 }
 
 inline fun <reified T> KtorHttpResponse.wrap(): HttpResponse<T> = HttpResponse(this, typeInfo<T>())
+
+inline fun <reified T> KtorHttpResponse.wrapPatching(noinline patcher: (T) -> (T)): HttpResponse<T> =
+	HttpResponse(this, typeInfo<T>(), patcher)

@@ -26,7 +26,8 @@ class BudgetElementApiImpl(
 	ttl: Duration,
 	private val authService: AuthService,
 	private val cryptoService: CryptoService,
-) : TemporizedCachedApi<EncryptedBudgetElement, CachedBudgetElement>(httpConfig, cache, ttl), BudgetElementApi {
+) : TemporizedCachedApi<EncryptedBudgetElement, CachedBudgetElement, BudgetElementPersistentCache>(httpConfig, cache, ttl),
+	BudgetElementApi {
 
 	override val baseSegment: String = "budgetElement"
 

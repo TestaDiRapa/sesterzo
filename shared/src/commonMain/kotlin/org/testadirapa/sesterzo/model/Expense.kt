@@ -49,8 +49,11 @@ data class EncryptedExpense(
 	override val deleted: Boolean,
 	override val budgetId: String,
 	override val encryptedSelf: Base64String?,
-	@Transient val spaceId: String? = null,
-) : Expense, EncryptedData<DecryptedExpense> {
+	@Transient val transientSpaceId: String? = null,
+) : Expense, SpaceData, EncryptedData<DecryptedExpense> {
+
+	override val spaceId: String
+		get() = checkNotNull(transientSpaceId) { "Expense was not patched with spaceId" }
 
 	override fun toDecryptedData(decryptedFields: JsonObject): DecryptedExpense = DecryptedExpense(
 		id = id,

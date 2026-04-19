@@ -29,7 +29,7 @@ class UserApiImpl(
 	ttl: Duration,
 	private val localStorage: StorageFacade,
 	private val authService: AuthService,
-) : TemporizedCachedApi<User, CachedUser>(httpConfig, cache, ttl), UserApi {
+) : TemporizedCachedApi<User, CachedUser, UserPersistentCache>(httpConfig, cache, ttl), UserApi {
 
 	companion object {
 		private const val CURRENT_USER_ID_KEY = "org.testadirapa.sesterzo.currentUserId"

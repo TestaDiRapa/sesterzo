@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testadira.sesterzo.AppDatabase
 import org.testadirapa.sesterzo.model.EncryptedExpense
+import kotlin.math.exp
 import db.Expense as ExpenseRow
 
 class AndroidExpensePersistentCache(
@@ -20,7 +21,7 @@ class AndroidExpensePersistentCache(
 			updated = expense.updated,
 			deleted = if (expense.deleted) 1L else 0L,
 			budgetId = expense.budgetId,
-			spaceId = checkNotNull(expense.spaceId) { "Cannot cache an Expense without spaceId" },
+			spaceId = expense.spaceId,
 			encryptedSelf = expense.encryptedSelf
 		)
 	}
@@ -31,7 +32,7 @@ class AndroidExpensePersistentCache(
 			updated = row.updated,
 			deleted = row.deleted == 1L,
 			budgetId = row.budgetId,
-			spaceId = row.spaceId,
+			transientSpaceId = row.spaceId,
 			encryptedSelf = row.encryptedSelf
 		)
 

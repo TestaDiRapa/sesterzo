@@ -2,6 +2,7 @@ package org.testadirapa.sesterzo.api
 
 import org.testadirapa.sesterzo.api.impl.BudgetApiImpl
 import org.testadirapa.sesterzo.api.impl.BudgetElementApiImpl
+import org.testadirapa.sesterzo.api.impl.ExpenseApiImpl
 import org.testadirapa.sesterzo.api.impl.FullRecoveryApiImpl
 import org.testadirapa.sesterzo.api.impl.SpaceApiImpl
 import org.testadirapa.sesterzo.api.impl.UserApiImpl
@@ -38,8 +39,17 @@ class FullSesterzoApiImpl(
 	override val budgetElement: BudgetElementApi by lazy {
 		BudgetElementApiImpl(
 			httpConfig = httpConfig,
-			cache = cache.space,
+			cache = cache.budgetElement,
 			ttl = cacheTtl,
+			authService = authService,
+			cryptoService = cryptoService
+		)
+	}
+
+	override val expense: ExpenseApi by lazy {
+		ExpenseApiImpl(
+			httpConfig = httpConfig,
+			cache = cache.expense,
 			authService = authService,
 			cryptoService = cryptoService
 		)

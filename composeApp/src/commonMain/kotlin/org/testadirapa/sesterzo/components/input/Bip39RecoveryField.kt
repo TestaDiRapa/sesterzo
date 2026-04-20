@@ -68,7 +68,7 @@ fun Bip39RecoveryField(
 				.fillMaxWidth()
 				.border(
 					width = 1.dp,
-					color = SesterzoColors.Gray100,
+					color = SesterzoColors.Outline,
 					shape = RoundedCornerShape(8.dp),
 				)
 				.padding(12.dp),

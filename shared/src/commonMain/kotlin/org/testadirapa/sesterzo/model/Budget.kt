@@ -82,8 +82,7 @@ data class EncryptedBudget(
 ) : Budget, EncryptedData<DecryptedBudget> {
 
 	@SerialName("_id")
-	override val id: String
-		get() = getBudgetId(year = year, month = month)
+	override val id: String = getBudgetId(year = year, month = month)
 
 	override fun toDecryptedData(decryptedFields: JsonObject): DecryptedBudget = DecryptedBudget(
 		version = version,

@@ -5,7 +5,6 @@ import io.ktor.util.date.GMTDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.testadirapa.sesterzo.model.UserSpaceRole
-import org.testadirapa.sesterzo.security.JwtPayload.Companion.isJwtExpiredOrInvalid
 import org.testadirapa.sesterzo.security.UserJwtClaims.Companion.SPACES_KEY
 import org.testadirapa.sesterzo.security.UserJwtClaims.Companion.USER_ID_KEY
 import org.testadirapa.sesterzo.serialization.Serialization

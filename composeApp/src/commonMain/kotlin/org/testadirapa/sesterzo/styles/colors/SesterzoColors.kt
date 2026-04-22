@@ -41,6 +41,7 @@ object SesterzoColors {
 	val SpaceSide     = Color(0xFFC3A8E8)
 	val SpaceTravel   = Color(0xFFE89B7C)
 
+	// Light colors
 	val LightBg0        = Color(0xFFFAF6EE)
 	val LightSurface1   = Color(0xFFFFFFFF)
 	val LightSurface2   = Color(0xFFF3EEE2)
@@ -78,10 +79,15 @@ val LightColorScheme = lightColorScheme(
 	onPrimary = Color.White,
 	primaryContainer = SesterzoColors.LightAmber50,
 	onPrimaryContainer = SesterzoColors.LightAmber500,
+
+	tertiaryContainer = SesterzoColors.LightAmber300,
+	onTertiaryContainer = SesterzoColors.LightAmber100,
+
 	background = SesterzoColors.LightBg0,
 	onBackground = SesterzoColors.LightTextPrim,
 	surface = SesterzoColors.LightSurface1,
 	onSurface = SesterzoColors.LightTextPrim,
+
 	surfaceVariant = SesterzoColors.LightSurface2,
 	onSurfaceVariant = SesterzoColors.LightTextSec,
 	surfaceContainer = SesterzoColors.LightSurface2,
@@ -95,28 +101,31 @@ val LightColorScheme = lightColorScheme(
 )
 
 val DarkColorScheme = darkColorScheme(
-	primary            = SesterzoColors.Amber300,
-	onPrimary          = SesterzoColors.OnAmber,
-	primaryContainer   = SesterzoColors.AmberContainer,
+	primary = SesterzoColors.Amber300,
+	onPrimary = SesterzoColors.OnAmber,
+	primaryContainer = SesterzoColors.AmberContainer,
 	onPrimaryContainer = SesterzoColors.Amber100,
 
-	secondary          = SesterzoColors.Saved300,
-	onSecondary        = SesterzoColors.OnAmber,
+	secondary = SesterzoColors.Saved300,
+	onSecondary = SesterzoColors.OnAmber,
 
-	background         = SesterzoColors.Bg0,
-	onBackground       = SesterzoColors.TextPrim,
-	surface            = SesterzoColors.Surface1,
-	onSurface          = SesterzoColors.TextPrim,
-	surfaceVariant     = SesterzoColors.Surface2,
-	onSurfaceVariant   = SesterzoColors.TextSec,
-	surfaceContainer   = SesterzoColors.Surface2,
+	tertiaryContainer = SesterzoColors.Amber500,
+	onTertiaryContainer = SesterzoColors.Amber50,
+
+	background = SesterzoColors.Bg0,
+	onBackground = SesterzoColors.TextPrim,
+	surface = SesterzoColors.Surface1,
+	onSurface = SesterzoColors.TextPrim,
+	surfaceVariant = SesterzoColors.Surface2,
+	onSurfaceVariant = SesterzoColors.TextSec,
+	surfaceContainer = SesterzoColors.Surface2,
 	surfaceContainerHigh = SesterzoColors.Surface3,
 
-	outline            = SesterzoColors.Outline,
-	outlineVariant     = SesterzoColors.OutlineVar,
+	outline = SesterzoColors.Outline,
+	outlineVariant = SesterzoColors.OutlineVar,
 
-	error              = SesterzoColors.Spent300,
-	onError            = SesterzoColors.OnAmber,
-	errorContainer     = SesterzoColors.SpentContainer,
-	onErrorContainer   = SesterzoColors.Spent300,
+	error = SesterzoColors.Spent300,
+	onError = SesterzoColors.OnAmber,
+	errorContainer = SesterzoColors.SpentContainer,
+	onErrorContainer = SesterzoColors.Spent300,
 )

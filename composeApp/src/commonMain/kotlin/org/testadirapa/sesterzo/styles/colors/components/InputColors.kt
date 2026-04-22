@@ -2,11 +2,12 @@ package org.testadirapa.sesterzo.styles.colors.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import org.testadirapa.sesterzo.styles.colors.SesterzoColors
 
 @Composable
-fun outlinedTextFieldColors() =
+fun outlinedTextFieldColors(): TextFieldColors =
 	if(isSystemInDarkTheme()) {
 		OutlinedTextFieldDefaults.colors(
 			focusedBorderColor   = SesterzoColors.Amber300,

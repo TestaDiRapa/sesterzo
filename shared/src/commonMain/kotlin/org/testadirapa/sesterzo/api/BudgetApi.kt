@@ -1,14 +1,15 @@
 package org.testadirapa.sesterzo.api
 
-import io.ktor.util.date.GMTDate
+import kotlinx.datetime.LocalDate
 import org.testadirapa.sesterzo.model.DecryptedBudget
+import org.testadirapa.sesterzo.utils.currentDate
 
 interface BudgetApi {
 	suspend fun getBudget(spaceId: String, budgetId: String, bypassCache: Boolean): DecryptedBudget?
 	suspend fun createBudget(spaceId: String, budget: DecryptedBudget): DecryptedBudget
 	suspend fun getOrCreateMonthBudget(
 		spaceId: String,
-		budgetDate: GMTDate = GMTDate(),
+		budgetDate: LocalDate = currentDate(),
 		bypassCache: Boolean
 	): DecryptedBudget
 }

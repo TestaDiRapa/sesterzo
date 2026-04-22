@@ -5,6 +5,9 @@
     <!--  Auth page  -->
     <string name="auth_code_label">Insert the code received by email.</string>
 
+    <!--  Budget page  -->
+    <string name="now">NOW</string>
+
     <!--  Errors  -->
     <string name="error_budget_not_found">Budget not found.</string>
     <string name="error_budget_element_not_found">Budget Element not found.</string>
@@ -97,4 +100,18 @@
 
     <!--  Dividers  -->
     <string name="divider_or">or</string>
+
+    <!--  Months  -->
+    <string name="january">January</string>
+    <string name="february">February</string>
+    <string name="march">March</string>
+    <string name="april">April</string>
+    <string name="may">May</string>
+    <string name="june">June</string>
+    <string name="july">July</string>
+    <string name="august">August</string>
+    <string name="september">September</string>
+    <string name="october">October</string>
+    <string name="november">November</string>
+    <string name="december">December</string>
 </resources>

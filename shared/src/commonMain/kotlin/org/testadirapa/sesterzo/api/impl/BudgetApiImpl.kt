@@ -9,6 +9,8 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.date.GMTDate
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 import org.testadirapa.sesterzo.api.BudgetApi
 import org.testadirapa.sesterzo.api.BudgetElementApi
 import org.testadirapa.sesterzo.api.SpaceApi
@@ -69,11 +71,11 @@ class BudgetApiImpl(
 
 	override suspend fun getOrCreateMonthBudget(
 		spaceId: String,
-		budgetDate: GMTDate,
+		budgetDate: LocalDate,
 		bypassCache: Boolean
 	): DecryptedBudget {
 		val year = budgetDate.year
-		val month = budgetDate.month.ordinal + 1
+		val month = budgetDate.month.number
 		val id = getBudgetId(year = year, month = month)
 		return getBudget(
 			spaceId = spaceId,

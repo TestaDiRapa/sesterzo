@@ -63,7 +63,7 @@ class BudgetApiImpl(
 	}.wrap()
 
 	override suspend fun getBudget(spaceId: String, budgetId: String, bypassCache: Boolean): DecryptedBudget? = cachedOrGetIfPresent(
-		id = budgetId,
+		id = "$spaceId-$budgetId",
 		bypassCache = bypassCache,
 	) { retrieveBudgetInSpace(spaceId, budgetId) }?.let {
 		cryptoService.decrypt(it)

@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,9 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.IconButtonShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
@@ -26,19 +30,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.Key.Companion.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.utils.currentDate
+import org.testadirapa.sesterzo.utils.newClipEntry
 import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.app_name
 import sesterzo.composeapp.generated.resources.april
 import sesterzo.composeapp.generated.resources.arrow_down
+import sesterzo.composeapp.generated.resources.arrow_left
+import sesterzo.composeapp.generated.resources.arrow_right
 import sesterzo.composeapp.generated.resources.arrow_up
 import sesterzo.composeapp.generated.resources.august
 import sesterzo.composeapp.generated.resources.content_copy_icon
@@ -55,9 +60,12 @@ import sesterzo.composeapp.generated.resources.october
 import sesterzo.composeapp.generated.resources.september
 
 @Composable
-fun BudgetSelector(
+fun BudgetMonthSelector(
 	date: LocalDate,
 	onDateClick: () -> Unit,
+	onNext: (() -> Unit)?,
+	onPrev: (() -> Unit)?,
+	onCreate: () -> Unit,
 ) {
 	Card(
 		modifier = Modifier
@@ -70,12 +78,50 @@ fun BudgetSelector(
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.SpaceEvenly,
 		) {
-			Text("next")
+			if (onNext != null) {
+				IconButton(
+					onClick = onNext,
+					colors = iconButtonColors(),
+					shape = RoundedCornerShape(2.dp)
+				) {
+					Icon(
+						painter = painterResource(Res.drawable.arrow_left),
+						contentDescription = "Next",
+						tint = colorScheme.onSurfaceVariant,
+					)
+				}
+			} else {
+				IconButton(
+					onClick = onCreate,
+					colors = IconButtonDefaults.iconButtonColors(
+						containerColor = colorScheme.primaryContainer,
+						contentColor = colorScheme.onPrimaryContainer,
+					),
+					shape = RoundedCornerShape(2.dp)
+				) {
+					Icon(
+						painter = painterResource(Res.drawable.arrow_left),
+						contentDescription = "New budget",
+						tint = colorScheme.onPrimaryContainer,
+					)
+				}
+			}
 			BudgetTitleWithButton(
 				date = date,
 				onDateClick = onDateClick,
 			)
-			Text("previous")
+			IconButton(
+				onClick = onPrev ?: {},
+				enabled = onPrev != null,
+				colors = iconButtonColors(),
+				shape = RoundedCornerShape(2.dp)
+			) {
+				Icon(
+					painter = painterResource(Res.drawable.arrow_right),
+					contentDescription = "Previous",
+					tint = colorScheme.onSurfaceVariant,
+				)
+			}
 		}
 	}
 }
@@ -128,6 +174,13 @@ private fun BudgetTitleWithButton(
 		)
 	}
 }
+
+@Composable
+private fun iconButtonColors(): IconButtonColors = IconButtonDefaults.iconButtonColors(
+	containerColor = colorScheme.surfaceVariant,
+	contentColor = colorScheme.onSurfaceVariant,
+	disabledContainerColor = colorScheme.surfaceContainerHigh,
+)
 
 @Composable
 private fun monthName(month: Month): String = when (month) {

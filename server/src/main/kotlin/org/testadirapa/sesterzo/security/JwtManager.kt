@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.interfaces.Payload
 import io.ktor.server.auth.jwt.*
+import kotlinx.serialization.json.JsonPrimitive
 import org.testadirapa.sesterzo.exceptions.JwtException
 import org.testadirapa.sesterzo.exceptions.UnauthorizedException
 import org.testadirapa.sesterzo.model.UserSpaceRole
@@ -40,7 +41,7 @@ class JwtManager(
 			.withIssuer(config.issuer)
 			.withClaim(USER_ID_KEY, jwtClaims.userId)
 			.withClaim(SPACES_KEY, jwtClaims.spaces.mapValues { (_, v) ->
-				Serialization.json.encodeToString(v)
+				Serialization.json.encodeToString(v).removeSurrounding("\"")
 			})
 			.withExpiresAt(Date(System.currentTimeMillis() + authJWTDuration))
 			.sign(Algorithm.RSA256(config.authPublicKey, config.authPrivateKey))
@@ -121,7 +122,9 @@ fun Payload.toJWTClaims(): JwtClaims =
 		JwtClaims(
 			userId = getClaim(USER_ID_KEY).asString(),
 			spaces = getClaim(SPACES_KEY).asMap().mapValues { (_, v) ->
-				Serialization.json.decodeFromString<UserSpaceRole>(v as String)
+				Serialization.json.decodeFromString<UserSpaceRole>(
+					JsonPrimitive(v as String).toString()
+				)
 			}
 		)
 	} catch (e: Exception) {

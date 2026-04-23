@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.seconds
 @Serializable
 data class JwtPayload(
 	@SerialName(USER_ID_KEY) override val userId: String,
-	@SerialName(SPACES_KEY) override val spaces: Map<String, UserSpaceRole>,
+	@SerialName(SPACES_KEY) override val spaces: Map<String, UserSpaceRole> = emptyMap(),
 	val exp: Long,
 ) : UserJwtClaims {
 
@@ -29,6 +29,6 @@ data class JwtPayload(
 		fun isJwtExpiredOrInvalid(jwt: String, refreshPadding: Duration = 0L.seconds): Boolean = runCatching {
 			val payload = decodeClaims(jwt)
 			(payload.exp * 1000) < (GMTDate().timestamp - refreshPadding.inWholeMilliseconds)
-		}.getOrDefault(false)
+		}.getOrDefault(true)
 	}
 }

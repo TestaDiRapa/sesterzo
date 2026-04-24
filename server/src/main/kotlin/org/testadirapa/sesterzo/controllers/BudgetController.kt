@@ -9,6 +9,7 @@ import org.testadirapa.sesterzo.logic.BudgetLogic
 import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.security.authenticateGetInSpace
 import org.testadirapa.sesterzo.security.authenticatedPostInSpace
+import org.testadirapa.sesterzo.utils.getIntPathParameter
 import org.testadirapa.sesterzo.utils.getPathParameter
 import kotlin.getValue
 
@@ -26,4 +27,8 @@ fun Routing.budgetController() = route("/budget") {
 		call.respond(budgetLogic.createBudget(spaceId = spaceId, budget = budget))
 	}
 
+	authenticateGetInSpace("/forYear/{year}") { spaceId ->
+		val year = call.getIntPathParameter("year")
+		call.respond(budgetLogic.getBudgetsForYear(spaceId = spaceId, year = year))
+	}
 }

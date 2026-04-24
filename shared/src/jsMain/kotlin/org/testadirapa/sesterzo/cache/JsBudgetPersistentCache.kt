@@ -4,8 +4,10 @@ import com.juul.indexeddb.Database
 import com.juul.indexeddb.Key
 import com.juul.indexeddb.KeyPath
 import com.juul.indexeddb.VersionChangeTransaction
+import com.juul.indexeddb.only
 import org.testadirapa.sesterzo.cache.model.CachedBudget
 import org.testadirapa.sesterzo.model.EncryptedBudget
+import org.testadirapa.sesterzo.model.EncryptedExpense
 import org.testadirapa.sesterzo.models.JsBudget
 import org.testadirapa.sesterzo.models.toJs
 import org.testadirapa.sesterzo.models.toKt
@@ -18,7 +20,8 @@ class JsBudgetPersistentCache(
 		private const val STORE_NAME = "budget"
 
 		fun VersionChangeTransaction.initBudgetStorage(database: Database) = with(this) {
-			database.createObjectStore(STORE_NAME, KeyPath("id"))
+			val store = database.createObjectStore(STORE_NAME, KeyPath("id"))
+			store.createIndex("year", KeyPath("year"), unique = false)
 		}
 	}
 
@@ -33,4 +36,12 @@ class JsBudgetPersistentCache(
 
 	override fun keyOf(entity: EncryptedBudget): Key = Key(entity.id)
 
+	@OptIn(ExperimentalWasmJsInterop::class)
+	override suspend fun getByYearInSpace(spaceId: String, year: Int): List<CachedBudget> = database.transaction(storeName) {
+		objectStore(storeName)
+			.index("year")
+			.getAll(query = only(year))
+			.mapNotNull { budget -> budget?.let { toKt(dbEntity = it) } }
+			.filter { it.entity.spaceId == spaceId }
+	}
 }

@@ -93,7 +93,7 @@ abstract class CachedApi<W : Identifiable, R : Identifiable, C : PersistenceOper
 	 * @param id the id of the entity to retrieve.
 	 * @param bypassCache forces the retrieval of the entity from the server.
 	 * @param getFromNetwork the call to the api function to retrieve the entity from the server.
-	 * @return the entity-
+	 * @return the entity.
 	 */
 	protected suspend inline fun cachedOrGet(
 		id: String,
@@ -123,27 +123,57 @@ abstract class CachedApi<W : Identifiable, R : Identifiable, C : PersistenceOper
 	 * in the cache but not in the result from the request are cleared from the cache.
 	 *
 	 * @param getFromNetwork the request to retrieve all the entities of a type from the network.
-	 * @return a list of entities.
+	 * @return a [List] of [W].
 	 */
 	protected suspend inline fun getAllMerging(
 		getFromNetwork: suspend () -> HttpResponse<List<W>>,
+	): List<W> = parseResponse(
+		cached = cache.getAll().associateBy { it.id }.toMutableMap(),
+		response = getFromNetwork()
+	)
+
+	/**
+	 * Retrieves a subset of the entities from the cache, falling back to the server based on the result of [bypassCacheCondition].
+	 * The handling of the request follows the same logic as [getAllMerging].
+	 *
+	 * @param getFromCache retrieves the entities from the cache.
+	 * @param getFromNetwork the request to retrieve all the entities of a type from the network.
+	 * @param bypassCacheCondition a function that takes as input the cached elements and returns true if the method has
+	 * to bypass the cached entities.
+	 * @return a [List] of [W].
+	 */
+	protected suspend inline fun getAllMergingIf(
+		getFromCache: suspend () -> List<R>,
+		getFromNetwork: suspend () -> HttpResponse<List<W>>,
+		bypassCacheCondition: suspend (List<W>) -> Boolean,
 	): List<W> {
-		val cached = cache.getAll().associateBy { it.id }.toMutableMap()
-		val response = getFromNetwork()
-		return when {
-			response.isForbidden -> response.clearCacheOnForbidden(cachedEntity = null)
-			response.isSuccess || response.isClientError -> {
-				response.bodyOrThrow().onEach {
-					cache.upsert(it)
-					cached.remove(it.id)
-				}.also { _ ->
-					cached.values.forEach {
-						cache.clear(convert(it))
-					}
+		val cached = getFromCache()
+			.associateByTo(LinkedHashMap()) { it.id }
+			.toMutableMap()
+		val cachedConverted = cached.values.map { convert(it) }
+		return if (!bypassCacheCondition(cachedConverted)) {
+				cachedConverted
+		} else {
+			parseResponse(cached = cached, response = getFromNetwork())
+		}
+	}
+
+	protected suspend inline fun parseResponse(
+		cached: MutableMap<String, R>,
+		response: HttpResponse<List<W>>
+	): List<W> = when {
+		response.isForbidden -> response.clearCacheOnForbidden(cachedEntity = null)
+		response.isSuccess || response.isClientError -> {
+			response.bodyOrThrow().onEach {
+				cache.upsert(it)
+				cached.remove(it.id)
+			}.also { _ ->
+				cached.values.forEach {
+					cache.clear(convert(it))
 				}
 			}
-			else -> cached.values.map { convert(it) }
 		}
+		else -> cached.values.map { convert(it) }
 	}
 
 }

@@ -19,6 +19,10 @@ selectById:
 SELECT * FROM CachedBudget
 WHERE id = :id;
 
+selectBySpaceYear:
+SELECT * FROM CachedBudget
+WHERE spaceId = :spaceId AND year = :year;
+
 upsert:
 INSERT OR REPLACE INTO CachedBudget(
     id, version, spaceId, year, month,

@@ -3,4 +3,6 @@ package org.testadirapa.sesterzo.cache
 import org.testadirapa.sesterzo.cache.model.CachedBudget
 import org.testadirapa.sesterzo.model.EncryptedBudget
 
-interface BudgetPersistentCache : PersistenceOperator<EncryptedBudget, CachedBudget>
+interface BudgetPersistentCache : PersistenceOperator<EncryptedBudget, CachedBudget> {
+	suspend fun getByYearInSpace(spaceId: String, year: Int): List<CachedBudget>
+}

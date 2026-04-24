@@ -31,8 +31,8 @@ fun MobileBudgetScreen(
 			BudgetMonthSelector(
 				date = selectedMonth,
 				onDateClick = {},
-				onPrev = null,
-				onNext = null,
+				onPrev = {},
+				onNext = { },
 				onCreate = {}
 			)
 			BudgetComponent(

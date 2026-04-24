@@ -62,6 +62,16 @@ class BudgetApiImpl(
 		setBody(budget)
 	}.wrap()
 
+	private suspend fun retrieveInSpaceForYear(spaceId: String, year: Int): HttpResponse<List<EncryptedBudget>> = get {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, "inSpace", spaceId, "forYear", "$year")
+			parameter("ts", GMTDate().timestamp)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+	}.wrap()
+
 	override suspend fun getBudget(spaceId: String, budgetId: String, bypassCache: Boolean): DecryptedBudget? = cachedOrGetIfPresent(
 		id = "$spaceId-$budgetId",
 		bypassCache = bypassCache,
@@ -116,4 +126,13 @@ class BudgetApiImpl(
 		putInCache(encryptedBudget)
 		cryptoService.decrypt(encryptedBudget)
 	}
+
+	override suspend fun getBudgetsInSpaceForYear(spaceId: String, year: Int): List<DecryptedBudget> = getAllMergingIf(
+		getFromCache = { cache.getByYearInSpace(spaceId = spaceId, year = year) },
+		getFromNetwork = { retrieveInSpaceForYear(spaceId = spaceId, year = year) },
+		bypassCacheCondition = { cached ->
+			cached.map { it.month }.toSet() != setOf(1 .. 12)
+		}
+	).map { cryptoService.decrypt(it) }
+
 }

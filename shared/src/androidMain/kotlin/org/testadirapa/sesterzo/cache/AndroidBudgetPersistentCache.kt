@@ -77,4 +77,8 @@ class AndroidBudgetPersistentCache(
 			queries.deleteAll()
 		}
 	}
+
+	override suspend fun getByYearInSpace(spaceId: String, year: Int): List<CachedBudget> = withContext(Dispatchers.IO) {
+		queries.selectBySpaceYear(spaceId = spaceId, year = year.toLong()).executeAsList().map { rowToEntity(it) }
+	}
 }

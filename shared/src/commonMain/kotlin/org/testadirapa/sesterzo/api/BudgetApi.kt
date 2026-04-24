@@ -12,4 +12,6 @@ interface BudgetApi {
 		budgetDate: LocalDate = currentDate(),
 		bypassCache: Boolean
 	): DecryptedBudget
+
+	suspend fun getBudgetsInSpaceForYear(spaceId: String, year: Int): List<DecryptedBudget>
 }

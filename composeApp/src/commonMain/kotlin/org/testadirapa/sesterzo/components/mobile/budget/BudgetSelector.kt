@@ -57,6 +57,7 @@ import sesterzo.composeapp.generated.resources.may
 import sesterzo.composeapp.generated.resources.november
 import sesterzo.composeapp.generated.resources.now
 import sesterzo.composeapp.generated.resources.october
+import sesterzo.composeapp.generated.resources.plus
 import sesterzo.composeapp.generated.resources.september
 
 @Composable
@@ -82,7 +83,7 @@ fun BudgetMonthSelector(
 				IconButton(
 					onClick = onNext,
 					colors = iconButtonColors(),
-					shape = RoundedCornerShape(2.dp)
+					shape = RoundedCornerShape(8.dp)
 				) {
 					Icon(
 						painter = painterResource(Res.drawable.arrow_left),
@@ -97,10 +98,10 @@ fun BudgetMonthSelector(
 						containerColor = colorScheme.primaryContainer,
 						contentColor = colorScheme.onPrimaryContainer,
 					),
-					shape = RoundedCornerShape(2.dp)
+					shape = RoundedCornerShape(8.dp)
 				) {
 					Icon(
-						painter = painterResource(Res.drawable.arrow_left),
+						painter = painterResource(Res.drawable.plus),
 						contentDescription = "New budget",
 						tint = colorScheme.onPrimaryContainer,
 					)
@@ -114,7 +115,7 @@ fun BudgetMonthSelector(
 				onClick = onPrev ?: {},
 				enabled = onPrev != null,
 				colors = iconButtonColors(),
-				shape = RoundedCornerShape(2.dp)
+				shape = RoundedCornerShape(8.dp)
 			) {
 				Icon(
 					painter = painterResource(Res.drawable.arrow_right),

@@ -24,7 +24,7 @@ import org.testadirapa.sesterzo.screens.crypto.BackupPrivateKeyScreen
 import org.testadirapa.sesterzo.screens.crypto.RestorePrivateKeyScreen
 import org.testadirapa.sesterzo.styles.SesterzoTheme
 import org.testadirapa.sesterzo.viewmodel.AppViewModel
-import org.testadirapa.sesterzo.viewmodel.Intent
+import org.testadirapa.sesterzo.viewmodel.intents.AppIntent
 import org.testadirapa.sesterzo.viewmodel.state.AuthenticateState
 import org.testadirapa.sesterzo.viewmodel.state.BackupPrivateKeyState
 import org.testadirapa.sesterzo.viewmodel.state.CreateSpaceState
@@ -35,7 +35,7 @@ import org.testadirapa.sesterzo.viewmodel.state.StartupState
 @Composable
 @Preview
 fun App() {
-	val appViewModel = viewModel { AppViewModel() }
+	val appViewModel = viewModel(key = "app") { AppViewModel() }
 	val state by appViewModel.appState.collectAsState()
 	val errorState = appViewModel.errorState.collectAsState()
 	val loadingState = appViewModel.loadingState.collectAsState()
@@ -60,46 +60,47 @@ fun App() {
 						isMobile = isMobile,
 						onStartRegistration = { email, name ->
 							appViewModel.acceptIntent(
-								Intent.StartRegistration(email, name)
+								AppIntent.StartRegistration(email, name)
 							)
 						},
 						onStartLogin = { email ->
 							appViewModel.acceptIntent(
-								Intent.StartLogin(email)
+								AppIntent.StartLogin(email)
 							)
 						},
 						onCompleteAuth = { token ->
-							appViewModel.acceptIntent(Intent.CompleteAuthentication(token))
+							appViewModel.acceptIntent(AppIntent.CompleteAuthentication(token))
 						},
 						captchaProgressState = currentState.captchaStateFlow
 					)
 					BackupPrivateKeyState -> BackupPrivateKeyScreen(
 						isMobile = isMobile,
-						onUserAccept = { appViewModel.acceptIntent(Intent.ConfirmBackup) },
-						onError = { appViewModel.setError(it) }
+						onUserAccept = { appViewModel.acceptIntent(AppIntent.ConfirmBackup) },
+						onError = { appViewModel.onError(it) }
 					)
 					is RecoverKeyState -> RestorePrivateKeyScreen(
 						isLoading = loadingState.value,
 						isMobile = isMobile,
 						onRestoreWithPrivateKey = { key ->
-							appViewModel.acceptIntent(Intent.RestoreWithPrivateKey(key))
+							appViewModel.acceptIntent(AppIntent.RestoreWithPrivateKey(key))
 						},
 						onRestoreWithRecoveryKey = { key ->
-							appViewModel.acceptIntent(Intent.RestoreWithRecoveryKey(key))
+							appViewModel.acceptIntent(AppIntent.RestoreWithRecoveryKey(key))
 						}
 					)
 					is CreateSpaceState -> CreateSpaceScreen(
 						isMobile = isMobile,
 						isFirst = currentState.isFirst,
 						isLoading = loadingState.value,
-						onError = { appViewModel.setError(it) },
+						onError = { appViewModel.onError(it) },
 						onCreateSpace = { name, picture ->
-							appViewModel.acceptIntent(Intent.CreateFirstSpaceIntent(name, picture))
+							appViewModel.acceptIntent(AppIntent.CreateFirstSpaceIntent(name, picture))
 						}
 					)
 					is MainScreenState -> MainScreen(
 						isMobile = isMobile,
-						initialSpaceId = currentState.initialSpaceId
+						initialSpaceId = currentState.initialSpaceId,
+						onError = appViewModel::onError,
 					)
 				}
 				ErrorAlert(

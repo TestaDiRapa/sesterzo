@@ -6,11 +6,13 @@ import org.testadirapa.sesterzo.screens.main.mobile.MobileMainScreen
 @Composable
 fun MainScreen(
 	isMobile: Boolean,
-	initialSpaceId: String
+	initialSpaceId: String,
+	onError: (e: Throwable) -> Unit,
 ) {
 	if (isMobile) {
 		MobileMainScreen(
 			initialSpaceId = initialSpaceId,
+			onError = onError
 		)
 	} else {
 		TODO()

@@ -1,6 +1,5 @@
 package org.testadirapa.sesterzo.viewmodel
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import kotlinx.coroutines.Job
@@ -18,6 +17,7 @@ import org.testadirapa.sesterzo.repository.PropertyRepository
 import org.testadirapa.sesterzo.utils.expectStateAs
 import org.testadirapa.sesterzo.viewmodel.errors.ErrorState
 import org.testadirapa.sesterzo.viewmodel.errors.toErrorState
+import org.testadirapa.sesterzo.viewmodel.intents.AppIntent
 import org.testadirapa.sesterzo.viewmodel.state.AppState
 import org.testadirapa.sesterzo.viewmodel.state.AuthenticateState
 import org.testadirapa.sesterzo.viewmodel.state.BackupPrivateKeyState
@@ -27,8 +27,8 @@ import org.testadirapa.sesterzo.viewmodel.state.RecoverKeyState
 import org.testadirapa.sesterzo.viewmodel.state.StartupState
 import kotlin.time.Duration.Companion.minutes
 
-class AppViewModel : ViewModel() {
-	private val logger = Logger.withTag("AppViewModel")
+class AppViewModel : AbstractViewModel<AppIntent>() {
+	override val logger = Logger.withTag("AppViewModel")
 
 	private val _appState = MutableStateFlow<AppState>(StartupState)
 	val appState: StateFlow<AppState> = _appState
@@ -36,82 +36,70 @@ class AppViewModel : ViewModel() {
 	private val _errorState = MutableStateFlow<ErrorState?>(null)
 	val errorState: StateFlow<ErrorState?> = _errorState
 
-	private val _loadingState = MutableStateFlow(false)
-	val loadingState: StateFlow<Boolean> = _loadingState
-
 	private var jwtMonitorJob: Job? = null
 
 	init {
 		checkStorageAndMaybeInit()
 	}
 
-	fun acceptIntent(intent: Intent) {
-		setLoading()
-		viewModelScope.launch {
-			runCatching {
-				when (intent) {
-					is Intent.StartRegistration -> {
-						expectStateAs<AuthenticateState>(appState.value) {
-							it.startRegistrationProcess(email = intent.email, name = intent.name)
-						}
-					}
-					is Intent.StartLogin -> {
-						expectStateAs<AuthenticateState>(appState.value) {
-							it.startLoginProcess(email = intent.email)
-						}
-					}
-					is Intent.CompleteAuthentication -> {
-						expectStateAs<AuthenticateState>(appState.value) {
-							val (tokens, api) = it.completeProcess(
-								token = intent.token,
-								storageFacade = PlatformContext.storageFacade()
-							)
-							AppCtx.propertyRepository.setJwt(tokens.jwt)
-							AppCtx.propertyRepository.setRefreshJwt(tokens.refreshJwt)
-							updateStateOnKeyState(api)
-						}
-					}
-					Intent.ConfirmBackup -> {
-						AppCtx.api.user.setBackupConfirmation()
-						_appState.update { mainScreenOrCreateSpace() }
-					}
-					is Intent.RestoreWithPrivateKey -> {
-						expectStateAs<RecoverKeyState>(appState.value) {
-							AppCtx.api = it.api.toFullApiWithPrivateKey(
-								storage = PlatformContext.storageFacade(),
-								cache = PlatformContext.persistentCache(),
-								cacheTtl = BuildKonfig.cacheTtl.minutes,
-								privateKey = intent.privateKey,
-							)
-							_appState.update { mainScreenOrCreateSpace() }
-						}
-					}
-					is Intent.RestoreWithRecoveryKey -> {
-						expectStateAs<RecoverKeyState>(appState.value) {
-							AppCtx.api = it.api.toFullApiWithRecoveryKey(
-								storage = PlatformContext.storageFacade(),
-								cache = PlatformContext.persistentCache(),
-								cacheTtl = BuildKonfig.cacheTtl.minutes,
-								recoveryKey = intent.recoveryKey,
-							)
-							_appState.update { mainScreenOrCreateSpace() }
-						}
-					}
-					is Intent.CreateFirstSpaceIntent -> {
-						val space = AppCtx.api.space.createSpace(intent.name, intent.picture)
-						AppCtx.propertyRepository.setDefaultSpace(space.id)
-						_appState.update { MainScreenState(initialSpaceId = space.id) }
-					}
+	override suspend fun processIntent(intent: AppIntent) {
+		when (intent) {
+			is AppIntent.StartRegistration -> {
+				expectStateAs<AuthenticateState>(appState.value) {
+					it.startRegistrationProcess(email = intent.email, name = intent.name)
 				}
-			}.onFailure { error ->
-				logger.e(error) { "Error processing intent: $intent" }
-				_errorState.update { error.toErrorState() }
+			}
+			is AppIntent.StartLogin -> {
+				expectStateAs<AuthenticateState>(appState.value) {
+					it.startLoginProcess(email = intent.email)
+				}
+			}
+			is AppIntent.CompleteAuthentication -> {
+				expectStateAs<AuthenticateState>(appState.value) {
+					val (tokens, api) = it.completeProcess(
+						token = intent.token,
+						storageFacade = PlatformContext.storageFacade()
+					)
+					AppCtx.propertyRepository.setJwt(tokens.jwt)
+					AppCtx.propertyRepository.setRefreshJwt(tokens.refreshJwt)
+					updateStateOnKeyState(api)
+				}
+			}
+			AppIntent.ConfirmBackup -> {
+				AppCtx.api.user.setBackupConfirmation()
+				_appState.update { mainScreenOrCreateSpace() }
+			}
+			is AppIntent.RestoreWithPrivateKey -> {
+				expectStateAs<RecoverKeyState>(appState.value) {
+					AppCtx.api = it.api.toFullApiWithPrivateKey(
+						storage = PlatformContext.storageFacade(),
+						cache = PlatformContext.persistentCache(),
+						cacheTtl = BuildKonfig.cacheTtl.minutes,
+						privateKey = intent.privateKey,
+					)
+					_appState.update { mainScreenOrCreateSpace() }
+				}
+			}
+			is AppIntent.RestoreWithRecoveryKey -> {
+				expectStateAs<RecoverKeyState>(appState.value) {
+					AppCtx.api = it.api.toFullApiWithRecoveryKey(
+						storage = PlatformContext.storageFacade(),
+						cache = PlatformContext.persistentCache(),
+						cacheTtl = BuildKonfig.cacheTtl.minutes,
+						recoveryKey = intent.recoveryKey,
+					)
+					_appState.update { mainScreenOrCreateSpace() }
+				}
+			}
+			is AppIntent.CreateFirstSpaceIntent -> {
+				val space = AppCtx.api.space.createSpace(intent.name, intent.picture)
+				AppCtx.propertyRepository.setDefaultSpace(space.id)
+				_appState.update { MainScreenState(initialSpaceId = space.id) }
 			}
 		}
-		unsetLoading()
 	}
 
-	fun setError(error: Throwable) {
+	override fun onError(error: Throwable) {
 		viewModelScope.launch {
 			_errorState.update { error.toErrorState() }
 		}
@@ -195,11 +183,5 @@ class AppViewModel : ViewModel() {
 		}
 
 	}
-	fun setLoading() {
-		_loadingState.update { true }
-	}
 
-	fun unsetLoading() {
-		_loadingState.update { false }
-	}
 }

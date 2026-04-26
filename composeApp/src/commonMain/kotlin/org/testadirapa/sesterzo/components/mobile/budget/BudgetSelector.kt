@@ -12,14 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.IconButtonShapes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
@@ -32,13 +30,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.testadirapa.sesterzo.utils.currentDate
-import org.testadirapa.sesterzo.utils.newClipEntry
+import org.testadirapa.sesterzo.utils.BudgetReference
+import org.testadirapa.sesterzo.utils.currentBudgetReference
+import org.testadirapa.sesterzo.utils.nextReference
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.april
 import sesterzo.composeapp.generated.resources.arrow_down
@@ -46,7 +43,6 @@ import sesterzo.composeapp.generated.resources.arrow_left
 import sesterzo.composeapp.generated.resources.arrow_right
 import sesterzo.composeapp.generated.resources.arrow_up
 import sesterzo.composeapp.generated.resources.august
-import sesterzo.composeapp.generated.resources.content_copy_icon
 import sesterzo.composeapp.generated.resources.december
 import sesterzo.composeapp.generated.resources.february
 import sesterzo.composeapp.generated.resources.january
@@ -62,11 +58,11 @@ import sesterzo.composeapp.generated.resources.september
 
 @Composable
 fun BudgetMonthSelector(
-	date: LocalDate,
+	budgetReference: BudgetReference,
 	onDateClick: () -> Unit,
 	onNext: (() -> Unit)?,
 	onPrev: (() -> Unit)?,
-	onCreate: () -> Unit,
+	onCreate: (reference: BudgetReference) -> Unit,
 ) {
 	Card(
 		modifier = Modifier
@@ -93,7 +89,7 @@ fun BudgetMonthSelector(
 				}
 			} else {
 				IconButton(
-					onClick = onCreate,
+					onClick = { onCreate(budgetReference.nextReference()) },
 					colors = IconButtonDefaults.iconButtonColors(
 						containerColor = colorScheme.primaryContainer,
 						contentColor = colorScheme.onPrimaryContainer,
@@ -108,7 +104,7 @@ fun BudgetMonthSelector(
 				}
 			}
 			BudgetTitleWithButton(
-				date = date,
+				budgetReference = budgetReference,
 				onDateClick = onDateClick,
 			)
 			IconButton(
@@ -129,7 +125,7 @@ fun BudgetMonthSelector(
 
 @Composable
 private fun BudgetTitleWithButton(
-	date: LocalDate,
+	budgetReference: BudgetReference,
 	onDateClick: () -> Unit,
 ) {
 	var isExpanded by remember { mutableStateOf(false) }
@@ -141,12 +137,12 @@ private fun BudgetTitleWithButton(
 		}
 	) {
 		Text(
-			text = "${monthName(date.month)} ${date.year}",
+			text = "${monthName(budgetReference.month)} ${budgetReference.year}",
 			style = MaterialTheme.typography.bodyLarge,
 			fontWeight = FontWeight.Bold,
 			color = colorScheme.onBackground,
 		)
-		if (currentDate().let { it.year == date.year && it.month == date.month }) {
+		if (currentBudgetReference().let { it.year == budgetReference.year && it.month == budgetReference.month }) {
 			Spacer(Modifier.width(4.dp))
 			Box(
 				modifier = Modifier

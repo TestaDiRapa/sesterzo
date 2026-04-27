@@ -14,8 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
@@ -89,6 +94,45 @@ fun BudgetCalendarSelector(
 				currentBudget = currentBudget,
 				budgetsByMonth = budgetsByMonth
 			)
+			Spacer(Modifier.height(16.dp))
+			HorizontalDivider()
+			Row(
+				modifier = Modifier.fillMaxWidth(),
+				horizontalArrangement = Arrangement.SpaceEvenly,
+			) {
+				Button(
+					onClick = { },
+					colors = ButtonColors(
+						containerColor = colorScheme.surface,
+						contentColor = colorScheme.onSurface,
+						disabledContainerColor = colorScheme.surface,
+						disabledContentColor = colorScheme.onSurface,
+					)
+				) {
+					Text(
+						text = "< ${year - 1}",
+						style = MaterialTheme.typography.bodyMedium,
+						color = colorScheme.onSurface,
+					)
+				}
+				Spacer(Modifier.width(60.dp))
+				Spacer(Modifier.width(60.dp))
+				Button(
+					onClick = { },
+					colors = ButtonColors(
+						containerColor = colorScheme.surface,
+						contentColor = colorScheme.onSurface,
+						disabledContainerColor = colorScheme.surface,
+						disabledContentColor = colorScheme.onSurface,
+					)
+				) {
+					Text(
+						text = "${year + 1} >",
+						style = MaterialTheme.typography.bodyMedium,
+						color = colorScheme.onSurface,
+					)
+				}
+			}
 		}
 	}
 }

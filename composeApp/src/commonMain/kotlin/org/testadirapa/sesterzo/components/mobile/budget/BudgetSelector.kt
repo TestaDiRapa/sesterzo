@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -52,6 +53,7 @@ fun BudgetMonthSelector(
 	onPrev: (() -> Unit)?,
 	onCreate: (reference: BudgetReference) -> Unit,
 ) {
+	val iconButtonsModifier = Modifier.width(24.dp).height(24.dp)
 	Card(
 		modifier = Modifier
 			.fillMaxWidth(),
@@ -59,9 +61,11 @@ fun BudgetMonthSelector(
 		colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
 	) {
 		Row(
-			modifier = Modifier.fillMaxWidth().height(60.dp),
+			modifier = Modifier
+				.fillMaxWidth().height(60.dp)
+				.padding(horizontal = 8.dp),
 			verticalAlignment = Alignment.CenterVertically,
-			horizontalArrangement = Arrangement.SpaceEvenly,
+			horizontalArrangement = Arrangement.SpaceBetween,
 		) {
 			IconButton(
 				onClick = onPrev ?: {},
@@ -70,6 +74,7 @@ fun BudgetMonthSelector(
 				shape = RoundedCornerShape(8.dp)
 			) {
 				Icon(
+					modifier = iconButtonsModifier,
 					painter = painterResource(Res.drawable.arrow_left),
 					contentDescription = "Previous",
 					tint = colorScheme.onSurfaceVariant,
@@ -86,6 +91,7 @@ fun BudgetMonthSelector(
 					shape = RoundedCornerShape(8.dp)
 				) {
 					Icon(
+						modifier = iconButtonsModifier,
 						painter = painterResource(Res.drawable.arrow_right),
 						contentDescription = "Next",
 						tint = colorScheme.onSurfaceVariant,
@@ -101,6 +107,7 @@ fun BudgetMonthSelector(
 					shape = RoundedCornerShape(8.dp)
 				) {
 					Icon(
+						modifier = iconButtonsModifier,
 						painter = painterResource(Res.drawable.plus),
 						contentDescription = "New budget",
 						tint = colorScheme.onPrimaryContainer,
@@ -149,6 +156,7 @@ private fun BudgetTitleWithButton(
 			}
 		}
 		Icon(
+			modifier = Modifier.height(18.dp).width(18.dp),
 			painter = if (isExpanded) {
 					painterResource(Res.drawable.arrow_up)
 				} else {

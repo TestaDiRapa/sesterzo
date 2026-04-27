@@ -31,4 +31,16 @@ fun Routing.budgetController() = route("/budget") {
 		val year = call.getIntPathParameter("year")
 		call.respond(budgetLogic.getBudgetsForYear(spaceId = spaceId, year = year))
 	}
+
+	authenticateGetInSpace("/before/{year}/{month}") { spaceId ->
+		val year = call.getIntPathParameter("year")
+		val month = call.getIntPathParameter("month")
+		call.respond(budgetLogic.getFirstBudgetBefore(spaceId = spaceId, year = year, month = month))
+	}
+
+	authenticateGetInSpace("/after/{year}/{month}") { spaceId ->
+		val year = call.getIntPathParameter("year")
+		val month = call.getIntPathParameter("month")
+		call.respond(budgetLogic.getFirstBudgetAfter(spaceId = spaceId, year = year, month = month))
+	}
 }

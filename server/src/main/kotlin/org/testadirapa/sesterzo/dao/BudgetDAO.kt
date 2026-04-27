@@ -9,4 +9,6 @@ abstract class BudgetDAO(client: DBClient) : GenericMultiCollectionDAO<Encrypted
 
 	override fun getCollection(spaceId: String): MongoCollection<EncryptedBudget> = client.getCollection(spaceId)
 	abstract fun getBudgetsForYear(spaceId: String, year: Int): Flow<EncryptedBudget>
+	abstract suspend fun getFirstBudgetAfter(spaceId: String, year: Int, month: Int): EncryptedBudget?
+	abstract suspend fun getFirstBudgetBefore(spaceId: String, year: Int, month: Int): EncryptedBudget?
 }

@@ -30,31 +30,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlinx.datetime.Month
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.currentBudgetReference
+import org.testadirapa.sesterzo.utils.monthName
 import org.testadirapa.sesterzo.utils.nextReference
 import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.april
 import sesterzo.composeapp.generated.resources.arrow_down
 import sesterzo.composeapp.generated.resources.arrow_left
 import sesterzo.composeapp.generated.resources.arrow_right
 import sesterzo.composeapp.generated.resources.arrow_up
-import sesterzo.composeapp.generated.resources.august
-import sesterzo.composeapp.generated.resources.december
-import sesterzo.composeapp.generated.resources.february
-import sesterzo.composeapp.generated.resources.january
-import sesterzo.composeapp.generated.resources.july
-import sesterzo.composeapp.generated.resources.june
-import sesterzo.composeapp.generated.resources.march
-import sesterzo.composeapp.generated.resources.may
-import sesterzo.composeapp.generated.resources.november
 import sesterzo.composeapp.generated.resources.now
-import sesterzo.composeapp.generated.resources.october
 import sesterzo.composeapp.generated.resources.plus
-import sesterzo.composeapp.generated.resources.september
 
 @Composable
 fun BudgetMonthSelector(
@@ -75,6 +63,22 @@ fun BudgetMonthSelector(
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.SpaceEvenly,
 		) {
+			IconButton(
+				onClick = onPrev ?: {},
+				enabled = onPrev != null,
+				colors = iconButtonColors(),
+				shape = RoundedCornerShape(8.dp)
+			) {
+				Icon(
+					painter = painterResource(Res.drawable.arrow_left),
+					contentDescription = "Previous",
+					tint = colorScheme.onSurfaceVariant,
+				)
+			}
+			BudgetTitleWithButton(
+				budgetReference = budgetReference,
+				onDateClick = onDateClick,
+			)
 			if (onNext != null) {
 				IconButton(
 					onClick = onNext,
@@ -82,7 +86,7 @@ fun BudgetMonthSelector(
 					shape = RoundedCornerShape(8.dp)
 				) {
 					Icon(
-						painter = painterResource(Res.drawable.arrow_left),
+						painter = painterResource(Res.drawable.arrow_right),
 						contentDescription = "Next",
 						tint = colorScheme.onSurfaceVariant,
 					)
@@ -103,22 +107,6 @@ fun BudgetMonthSelector(
 					)
 				}
 			}
-			BudgetTitleWithButton(
-				budgetReference = budgetReference,
-				onDateClick = onDateClick,
-			)
-			IconButton(
-				onClick = onPrev ?: {},
-				enabled = onPrev != null,
-				colors = iconButtonColors(),
-				shape = RoundedCornerShape(8.dp)
-			) {
-				Icon(
-					painter = painterResource(Res.drawable.arrow_right),
-					contentDescription = "Previous",
-					tint = colorScheme.onSurfaceVariant,
-				)
-			}
 		}
 	}
 }
@@ -137,7 +125,7 @@ private fun BudgetTitleWithButton(
 		}
 	) {
 		Text(
-			text = "${monthName(budgetReference.month)} ${budgetReference.year}",
+			text = "${monthName(budgetReference.month, abbreviated = false)} ${budgetReference.year}",
 			style = MaterialTheme.typography.bodyLarge,
 			fontWeight = FontWeight.Bold,
 			color = colorScheme.onBackground,
@@ -178,19 +166,3 @@ private fun iconButtonColors(): IconButtonColors = IconButtonDefaults.iconButton
 	contentColor = colorScheme.onSurfaceVariant,
 	disabledContainerColor = colorScheme.surfaceContainerHigh,
 )
-
-@Composable
-private fun monthName(month: Month): String = when (month) {
-	Month.JANUARY -> stringResource(Res.string.january)
-	Month.FEBRUARY -> stringResource(Res.string.february)
-	Month.MARCH -> stringResource(Res.string.march)
-	Month.APRIL -> stringResource(Res.string.april)
-	Month.MAY -> stringResource(Res.string.may)
-	Month.JUNE -> stringResource(Res.string.june)
-	Month.JULY -> stringResource(Res.string.july)
-	Month.AUGUST -> stringResource(Res.string.august)
-	Month.SEPTEMBER -> stringResource(Res.string.september)
-	Month.OCTOBER -> stringResource(Res.string.october)
-	Month.NOVEMBER -> stringResource(Res.string.november)
-	Month.DECEMBER -> stringResource(Res.string.december)
-}

@@ -37,3 +37,15 @@ WHERE id = :id;
 
 deleteAll:
 DELETE FROM CachedBudget;
+
+getFirstBudgetAfter:
+SELECT * FROM CachedBudget
+WHERE spaceId = :spaceId AND (year > :year OR (year = :year AND month > :month))
+ORDER BY year ASC, month ASC
+LIMIT 1;
+
+getFirstBudgetBefore:
+SELECT * FROM CachedBudget
+WHERE spaceId = :spaceId AND (year < :year OR (year = :year AND month < :month))
+ORDER BY year DESC, month DESC
+LIMIT 1;

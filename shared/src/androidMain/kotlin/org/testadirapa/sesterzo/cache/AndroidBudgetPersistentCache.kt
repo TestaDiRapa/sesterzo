@@ -81,4 +81,20 @@ class AndroidBudgetPersistentCache(
 	override suspend fun getByYearInSpace(spaceId: String, year: Int): List<CachedBudget> = withContext(Dispatchers.IO) {
 		queries.selectBySpaceYear(spaceId = spaceId, year = year.toLong()).executeAsList().map { rowToEntity(it) }
 	}
+
+	override suspend fun getFirstBudgetAfter(spaceId: String, year: Int, month: Int): CachedBudget? = withContext(Dispatchers.IO) {
+		queries.getFirstBudgetAfter(
+			spaceId = spaceId,
+			year = year.toLong(),
+			month = month.toLong()
+		).executeAsOneOrNull()?.let { rowToEntity(it) }
+	}
+
+	override suspend fun getFirstBudgetBefore(spaceId: String, year: Int, month: Int): CachedBudget? = withContext(Dispatchers.IO) {
+		queries.getFirstBudgetBefore(
+			spaceId = spaceId,
+			year = year.toLong(),
+			month = month.toLong()
+		).executeAsOneOrNull()?.let { rowToEntity(it) }
+	}
 }

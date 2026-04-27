@@ -50,6 +50,26 @@ class BudgetApiImpl(
 		accept(Application.Json)
 	}.wrap()
 
+	private suspend fun retrieveFirstBudgetAfter(spaceId: String, budgetReference: BudgetReference): HttpResponse<EncryptedBudget> = get {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, "inSpace", spaceId, "after", budgetReference.year.toString(), budgetReference.month.number.toString())
+			parameter("ts", GMTDate().timestamp)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+	}.wrap()
+
+	private suspend fun retrieveFirstBudgetBefore(spaceId: String, budgetReference: BudgetReference): HttpResponse<EncryptedBudget> = get {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, "inSpace", spaceId, "before", budgetReference.year.toString(), budgetReference.month.number.toString())
+			parameter("ts", GMTDate().timestamp)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+	}.wrap()
+
 	private suspend fun createBudgetInSpace(spaceId: String, budget: EncryptedBudget): HttpResponse<EncryptedBudget> = post {
 		url {
 			takeFrom(baseUrl)
@@ -121,12 +141,35 @@ class BudgetApiImpl(
 		}
 	}
 
-	override suspend fun getBudgetsInSpaceForYear(spaceId: String, year: Int): List<DecryptedBudget> = getAllMergingIf(
+	override suspend fun getBudgetsInSpaceForYear(spaceId: String, year: Int, bypassCache: Boolean): List<DecryptedBudget> = getAllMergingIf(
 		getFromCache = { cache.getByYearInSpace(spaceId = spaceId, year = year) },
 		getFromNetwork = { retrieveInSpaceForYear(spaceId = spaceId, year = year) },
 		bypassCacheCondition = { cached ->
-			cached.map { it.month }.toSet() != setOf(1 .. 12)
+			bypassCache || cached.map { it.month }.toSet() != setOf(1 .. 12)
 		}
 	).map { cryptoService.decrypt(it) }
 
+	override suspend fun getFirstBudgetAfter(
+		spaceId: String,
+		budgetReference: BudgetReference,
+		bypassCache: Boolean
+	): DecryptedBudget? = cachedOrGetIfPresent(
+		getFromCache = {
+			cache.getFirstBudgetAfter(spaceId = spaceId, year = budgetReference.year, month = budgetReference.month.number)
+		},
+		bypassCache = bypassCache,
+		getFromNetwork = { retrieveFirstBudgetAfter(spaceId = spaceId, budgetReference = budgetReference) }
+	)?.let { cryptoService.decrypt(it) }
+
+	override suspend fun getFirstBudgetBefore(
+		spaceId: String,
+		budgetReference: BudgetReference,
+		bypassCache: Boolean
+	): DecryptedBudget? = cachedOrGetIfPresent(
+		getFromCache = {
+			cache.getFirstBudgetBefore(spaceId = spaceId, year = budgetReference.year, month = budgetReference.month.number)
+		},
+		bypassCache = bypassCache,
+		getFromNetwork = { retrieveFirstBudgetBefore(spaceId = spaceId, budgetReference = budgetReference) }
+	)?.let { cryptoService.decrypt(it) }
 }

@@ -13,5 +13,16 @@ interface BudgetApi {
 		bypassCache: Boolean
 	): DecryptedBudget
 
-	suspend fun getBudgetsInSpaceForYear(spaceId: String, year: Int): List<DecryptedBudget>
+	suspend fun getBudgetsInSpaceForYear(spaceId: String, year: Int, bypassCache: Boolean): List<DecryptedBudget>
+	suspend fun getFirstBudgetAfter(
+		spaceId: String,
+		budgetReference: BudgetReference,
+		bypassCache: Boolean
+	): DecryptedBudget?
+
+	suspend fun getFirstBudgetBefore(
+		spaceId: String,
+		budgetReference: BudgetReference,
+		bypassCache: Boolean
+	): DecryptedBudget?
 }

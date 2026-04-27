@@ -32,4 +32,12 @@ class BudgetLogicImpl(
 
 	override fun getBudgetsForYear(spaceId: String, year: Int): Flow<EncryptedBudget> =
 		budgetDAO.getBudgetsForYear(spaceId = spaceId, year = year)
+
+	override suspend fun getFirstBudgetAfter(spaceId: String, year: Int, month: Int): EncryptedBudget =
+		budgetDAO.getFirstBudgetAfter(spaceId = spaceId, year = year, month = month)
+			?: throw EntityNotFoundException("Budget after $year $month", ExceptionLabel.BudgetNotFound)
+
+	override suspend fun getFirstBudgetBefore(spaceId: String, year: Int, month: Int): EncryptedBudget =
+		budgetDAO.getFirstBudgetBefore(spaceId = spaceId, year = year, month = month)
+			?: throw EntityNotFoundException("Budget before $year $month", ExceptionLabel.BudgetNotFound)
 }

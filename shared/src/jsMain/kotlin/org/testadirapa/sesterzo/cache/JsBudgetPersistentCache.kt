@@ -4,10 +4,11 @@ import com.juul.indexeddb.Database
 import com.juul.indexeddb.Key
 import com.juul.indexeddb.KeyPath
 import com.juul.indexeddb.VersionChangeTransaction
+import com.juul.indexeddb.bound
 import com.juul.indexeddb.only
 import org.testadirapa.sesterzo.cache.model.CachedBudget
+import org.testadirapa.sesterzo.model.Budget
 import org.testadirapa.sesterzo.model.EncryptedBudget
-import org.testadirapa.sesterzo.model.EncryptedExpense
 import org.testadirapa.sesterzo.models.JsBudget
 import org.testadirapa.sesterzo.models.toJs
 import org.testadirapa.sesterzo.models.toKt
@@ -43,5 +44,29 @@ class JsBudgetPersistentCache(
 			.getAll(query = only(year))
 			.mapNotNull { budget -> budget?.let { toKt(dbEntity = it) } }
 			.filter { it.entity.spaceId == spaceId }
+	}
+
+	@OptIn(ExperimentalWasmJsInterop::class)
+	override suspend fun getFirstBudgetAfter(spaceId: String, year: Int, month: Int): CachedBudget? = database.transaction(storeName) {
+		objectStore(storeName)
+			.getAll(
+				query = bound(
+					"$spaceId-${Budget.getBudgetId(year = year, month = month)}",
+					"$spaceId-${Budget.getBudgetId(year = 9999, month = 12)}",
+					lowerOpen = true
+				)
+			).firstOrNull()?.let { toKt(it) }
+	}
+
+	@OptIn(ExperimentalWasmJsInterop::class)
+	override suspend fun getFirstBudgetBefore(spaceId: String, year: Int, month: Int): CachedBudget? = database.transaction(storeName) {
+		objectStore(storeName)
+			.getAll(
+				query = bound(
+					"$spaceId-${Budget.getBudgetId(year = 1000, month = 12)}",
+					"$spaceId-${Budget.getBudgetId(year = year, month = month)}",
+					upperOpen = true
+				)
+			).lastOrNull()?.let { toKt(it) }
 	}
 }

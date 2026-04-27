@@ -12,7 +12,6 @@ import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.dao.ExpenseDAO
 import org.testadirapa.sesterzo.model.EncryptedExpense
 import org.testadirapa.sesterzo.model.Timestamp
-import org.testadirapa.sesterzo.model.User
 
 class ExpenseDAOImpl(
 	client: DBClient

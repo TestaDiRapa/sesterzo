@@ -9,6 +9,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.testadirapa.sesterzo.components.mobile.budget.BudgetCalendarSelector
 import org.testadirapa.sesterzo.components.mobile.budget.BudgetComponent
 import org.testadirapa.sesterzo.components.mobile.budget.BudgetMonthSelector
 import org.testadirapa.sesterzo.utils.toReference
@@ -39,6 +40,11 @@ fun MobileBudgetScreen(
 					onPrev = budgetView.previousBudget?.let { { viewModel.acceptIntent(BudgetIntent.NavigateToPrevious)} },
 					onNext = budgetView.nextBudget?.let { { viewModel.acceptIntent(BudgetIntent.NavigateToNext)} },
 					onCreate = { reference -> viewModel.acceptIntent(BudgetIntent.CreateBudget(reference)) }
+				)
+				BudgetCalendarSelector(
+					spaceId = spaceId,
+					currentBudget = budgetView.currentBudget.toReference(),
+					onError = onError,
 				)
 				BudgetComponent(
 					refreshKey = Clock.System.now().toEpochMilliseconds(),

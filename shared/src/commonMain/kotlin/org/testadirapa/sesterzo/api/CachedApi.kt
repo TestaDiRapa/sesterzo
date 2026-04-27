@@ -66,10 +66,23 @@ abstract class CachedApi<W : Identifiable, R : Identifiable, C : PersistenceOper
 		id: String,
 		bypassCache: Boolean,
 		getFromNetwork: suspend (id: String) -> HttpResponse<W>,
+	): W? = cachedOrGetIfPresent(
+		getFromCache = { cache.getById(id) },
+		bypassCache = bypassCache,
+		getFromNetwork = { getFromNetwork(id) },
+	)
+
+	/**
+	 * Works exactly like [cachedOrGetIfPresent] but receiving in the [getFromCache] parameter the cache retriever.
+	 */
+	protected suspend inline fun cachedOrGetIfPresent(
+		getFromCache: suspend () -> R?,
+		bypassCache: Boolean,
+		getFromNetwork: suspend () -> HttpResponse<W>,
 	): W? {
-		val cached = cache.getById(id)
+		val cached = getFromCache()
 		return if (bypassCache || cached == null || isInvalid(cached)) {
-			val response = getFromNetwork(id)
+			val response = getFromNetwork()
 			when {
 				response.isSuccess -> response.bodyOrThrow().also { putInCache(it) }
 				response.isForbidden -> response.clearCacheOnForbidden(cachedEntity = cached)

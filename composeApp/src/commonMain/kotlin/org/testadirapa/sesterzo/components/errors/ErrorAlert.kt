@@ -4,8 +4,14 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,26 +38,34 @@ fun ErrorAlert(
 		exit = slideOutVertically { -it },
 		modifier = modifier.zIndex(1f)
 	) {
-		Row(
-			verticalAlignment = Alignment.CenterVertically,
+		Column(
 			modifier = Modifier
-				.background(
-					color = MaterialTheme.colorScheme.errorContainer,
-					shape = MaterialTheme.shapes.medium
-				)
-				.padding(horizontal = 16.dp, vertical = 8.dp)
+				.padding(horizontal = 16.dp)
+				.fillMaxSize()
 		) {
-			IconButton(onClick = onDismiss) {
-				Icon(
-					painter = painterResource(Res.drawable.cancel_icon),
-					contentDescription = "Dismiss",
-					tint = MaterialTheme.colorScheme.onErrorContainer
+			Spacer(modifier = Modifier.fillMaxWidth().height(32.dp))
+			Row(
+				verticalAlignment = Alignment.CenterVertically,
+				modifier = Modifier
+					.background(
+						color = MaterialTheme.colorScheme.errorContainer,
+						shape = MaterialTheme.shapes.medium
+					)
+					.fillMaxWidth()
+					.padding(horizontal = 16.dp, vertical = 8.dp)
+			) {
+				IconButton(onClick = onDismiss) {
+					Icon(
+						painter = painterResource(Res.drawable.cancel_icon),
+						contentDescription = "Dismiss",
+						tint = MaterialTheme.colorScheme.onErrorContainer
+					)
+				}
+				Text(
+					text = error?.message ?: "Unknown error",
+					color = MaterialTheme.colorScheme.onErrorContainer
 				)
 			}
-			Text(
-				text = error?.message ?: "Unknown error",
-				color = MaterialTheme.colorScheme.onErrorContainer
-			)
 		}
 	}
 }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -23,10 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +43,7 @@ import sesterzo.composeapp.generated.resources.plus
 @Composable
 fun BudgetMonthSelector(
 	budgetReference: BudgetReference,
+	isExpanded: Boolean,
 	onDateClick: () -> Unit,
 	onNext: (() -> Unit)?,
 	onPrev: (() -> Unit)?,
@@ -82,6 +78,7 @@ fun BudgetMonthSelector(
 			}
 			BudgetTitleWithButton(
 				budgetReference = budgetReference,
+				isExpanded = isExpanded,
 				onDateClick = onDateClick,
 			)
 			if (onNext != null) {
@@ -121,13 +118,12 @@ fun BudgetMonthSelector(
 @Composable
 private fun BudgetTitleWithButton(
 	budgetReference: BudgetReference,
+	isExpanded: Boolean,
 	onDateClick: () -> Unit,
 ) {
-	var isExpanded by remember { mutableStateOf(false) }
 	Row(
 		verticalAlignment = Alignment.CenterVertically,
 		modifier = Modifier.clickable {
-			isExpanded = !isExpanded
 			onDateClick()
 		}
 	) {

@@ -10,8 +10,6 @@ import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.currentBudgetReference
-import org.testadirapa.sesterzo.utils.nextReference
-import org.testadirapa.sesterzo.utils.previousReference
 import org.testadirapa.sesterzo.utils.toReference
 import org.testadirapa.sesterzo.viewmodel.intents.BudgetIntent
 
@@ -28,7 +26,7 @@ class BudgetViewModel(
 		viewModelScope.launch {
 			setLoading()
 			runCatching {
-				initBudgetView()
+				initBudgetView(currentBudgetReference())
 			}.onFailure(errorHandler)
 			unsetLoading()
 		}
@@ -38,6 +36,7 @@ class BudgetViewModel(
 		when(intent) {
 			BudgetIntent.NavigateToNext -> navigateToNextBudget()
 			BudgetIntent.NavigateToPrevious -> navigateToPreviousBudget()
+			is BudgetIntent.NavigateTo -> initBudgetView(intent.budgetReference)
 			is BudgetIntent.CreateBudget -> createBudget(reference = intent.newReference)
 		}
 	}
@@ -51,7 +50,7 @@ class BudgetViewModel(
 			spaceId = spaceId,
 			budgetReference = reference,
 		)
-		initBudgetView()
+		initBudgetView(currentBudgetReference())
 	}
 
 	private suspend fun navigateToNextBudget() {
@@ -92,21 +91,20 @@ class BudgetViewModel(
 		}
 	}
 
-	suspend fun initBudgetView() {
-		val currentBudgetReference = currentBudgetReference()
+	private suspend fun initBudgetView(budgetReference: BudgetReference) {
 		val currentBudget = AppCtx.api.budget.getOrCreateMonthBudget(
 			spaceId = spaceId,
-			budgetReference = currentBudgetReference,
+			budgetReference = budgetReference,
 			bypassCache = false
 		)
 		val previousBudget = AppCtx.api.budget.getFirstBudgetBefore(
 			spaceId = spaceId,
-			budgetReference = currentBudgetReference,
+			budgetReference = budgetReference,
 			bypassCache = false
 		)
 		val nextBudget = AppCtx.api.budget.getFirstBudgetAfter(
 			spaceId = spaceId,
-			budgetReference = currentBudgetReference,
+			budgetReference = budgetReference,
 			bypassCache = false
 		)
 		_budgetViewState.update {

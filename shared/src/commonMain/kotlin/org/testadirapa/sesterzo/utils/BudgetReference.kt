@@ -16,6 +16,8 @@ fun currentBudgetReference(): BudgetReference = Clock.System.now().toLocalDateTi
 	LocalDate(year = it.year, month = it.month.number, day = 1)
 }
 
+fun budgetReferenceOf(year: Int, month: Int): BudgetReference = LocalDate(year = year, month = month, day = 1)
+
 fun Budget.toReference() = LocalDate(year = year, month = month, day = 1)
 fun Budget.nextReference() = toReference().nextReference()
 fun Budget.previousReference() = toReference().previousReference()

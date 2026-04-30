@@ -83,6 +83,8 @@ val LightColorScheme = lightColorScheme(
 	tertiaryContainer = SesterzoColors.LightAmber300,
 	onTertiaryContainer = SesterzoColors.LightAmber100,
 
+	onTertiary = SesterzoColors.LightTextTert,
+
 	background = SesterzoColors.LightBg0,
 	onBackground = SesterzoColors.LightTextPrim,
 	surface = SesterzoColors.LightSurface1,
@@ -109,6 +111,7 @@ val DarkColorScheme = darkColorScheme(
 	secondary = SesterzoColors.Saved300,
 	onSecondary = SesterzoColors.OnAmber,
 
+	onTertiary = SesterzoColors.TextTert,
 	tertiaryContainer = SesterzoColors.Amber500,
 	onTertiaryContainer = SesterzoColors.Amber50,
 

@@ -19,6 +19,7 @@ buildkonfig {
 	defaultConfigs {
 		buildConfigField(STRING, "apiUrl", localProps.getProperty("api.url"))
 		buildConfigField(INT, "cacheTtl", localProps.getProperty("api.cache.ttl"))
+		buildConfigField(INT, "spaceLimit", localProps.getProperty("space.limit"))
 	}
 }
 

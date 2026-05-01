@@ -1,6 +1,5 @@
 package org.testadirapa.sesterzo.components.input
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -13,11 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.testadirapa.sesterzo.components.ui.SpaceThumbnailSelector
 import org.testadirapa.sesterzo.utils.toImageBitmap
 
 @Composable
@@ -38,36 +36,10 @@ fun ImagePicker(
 		contentAlignment = Alignment.BottomEnd,
 		modifier = modifier.size(144.dp),
 	) {
-		Box(
-			contentAlignment = Alignment.Center,
-			modifier = Modifier
-				.size(144.dp)
-				.clip(CircleShape)
-		) {
-			if (imageBitmap != null) {
-				Image(
-					painter = BitmapPainter(imageBitmap),
-					contentDescription = "Selected image",
-					contentScale = ContentScale.Crop,
-					modifier = Modifier.matchParentSize(),
-				)
-			} else {
-				Box(
-					contentAlignment = Alignment.Center,
-					modifier = Modifier
-						.matchParentSize()
-						.background(MaterialTheme.colorScheme.tertiaryContainer),
-				) {
-					Text(
-						text = placeholderLetter,
-						color = MaterialTheme.colorScheme.onTertiaryContainer,
-						fontSize = 66.sp,
-						fontWeight = FontWeight.Bold,
-					)
-				}
-			}
-		}
-
+		SpaceThumbnailSelector(
+			placeholderLetter = placeholderLetter,
+			imageBitmap = imageBitmap,
+		)
 		Box(
 			contentAlignment = Alignment.Center,
 			modifier = Modifier

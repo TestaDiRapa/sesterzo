@@ -8,6 +8,16 @@
     <!--  Budget page  -->
     <string name="now">NOW</string>
 
+    <!--  Space switcher  -->
+    <string name="swich_space_label">SWITCH SPACE</string>
+    <string name="your_spaces">Your spaces</string>
+    <string name="just_you">Just you</string>
+    <string name="members">members</string>
+    <string name="create_new_space">Create new space</string>
+    <string name="create_new_space_subtitle">For your household, side project, or hobby</string>
+    <string name="join_space">Join a space</string>
+    <string name="join_space_subtitle">Coming soon</string>
+
     <!--  Errors  -->
     <string name="error_budget_not_found">Budget not found.</string>
     <string name="error_budget_element_not_found">Budget Element not found.</string>
@@ -128,4 +138,7 @@
     <string name="october_abbreviated">Oct</string>
     <string name="november_abbreviated">Nov</string>
     <string name="december_abbreviated">Dec</string>
+
+    <!--  Other  -->
+    <string name="out_of">of</string>
 </resources>

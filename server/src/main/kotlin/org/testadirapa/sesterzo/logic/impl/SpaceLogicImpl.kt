@@ -89,6 +89,7 @@ class SpaceLogicImpl(
 				savingsTemplateId = savingsId,
 				users = spaceStub.users,
 				picture = spaceStub.picture,
+				color = spaceStub.color,
 			)
 		)
 	}

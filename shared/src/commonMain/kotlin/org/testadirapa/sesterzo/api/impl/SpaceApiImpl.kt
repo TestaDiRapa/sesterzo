@@ -80,12 +80,14 @@ class SpaceApiImpl(
 
 	override suspend fun createSpace(
 		name: String,
-		picture: ByteArray?
+		picture: ByteArray?,
+		fallbackColor: ULong?,
 	): Space {
 		val stub = SpaceStub(
 			id = defaultCryptoService.strongRandom.randomUUID(),
 			name = name,
 			picture = picture?.let { base64Encode(it) },
+			color = fallbackColor,
 			users = mapOf(
 				cryptoService.userId to UserAccessKey(
 					accessLevel = UserSpaceRole.Admin,

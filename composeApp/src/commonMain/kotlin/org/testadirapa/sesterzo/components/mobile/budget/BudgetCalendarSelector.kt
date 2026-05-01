@@ -1,8 +1,5 @@
 package org.testadirapa.sesterzo.components.mobile.budget
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
@@ -39,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +43,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Month
 import kotlinx.datetime.number
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.components.loading.PulsingRoundedSquare
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.budgetReferenceOf
@@ -192,8 +188,11 @@ private fun MonthsGrid(
 			) {
 				monthEntries.forEachIndexed { index, month ->
 					if (isLoading) {
-						PulsingMonthCard(
+						PulsingRoundedSquare(
 							index = monthIndex * 4 + index,
+							total = 12,
+							width = 70.dp,
+							height = 45.dp,
 						)
 					} else {
 						MonthCard(
@@ -275,40 +274,6 @@ private fun MonthCard(
 			}
 		}
 	}
-}
-
-@Composable
-fun PulsingMonthCard(index: Int) {
-	val animatable = remember { Animatable(initialValue = (index * (1f / 12f)) % 1f) }
-
-	LaunchedEffect(Unit) {
-		animatable.animateTo(
-			targetValue = 1f,
-			animationSpec = tween(
-				durationMillis = (animatable.value * 800).toInt(),
-				easing = FastOutSlowInEasing
-			)
-		)
-		// Then loop forever from 0
-		animatable.animateTo(
-			targetValue = 0f,
-			animationSpec = tween(0) // instant reset
-		)
-		while (true) {
-			animatable.animateTo(1f, animationSpec = tween(800, easing = FastOutSlowInEasing))
-			animatable.animateTo(0f, animationSpec = tween(800, easing = FastOutSlowInEasing))
-		}
-	}
-
-	// Map 0..1 to your alpha range
-	val alpha = 0.2f + animatable.value * 0.4f
-
-	Box(
-		modifier = Modifier
-			.size(width = 70.dp, height = 45.dp)
-			.clip(RoundedCornerShape(12.dp))
-			.background(Color.White.copy(alpha = alpha))
-	)
 }
 
 private suspend fun getBudgetsInYear(

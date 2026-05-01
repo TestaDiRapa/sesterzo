@@ -58,7 +58,8 @@ fun BudgetMonthSelector(
 	) {
 		Row(
 			modifier = Modifier
-				.fillMaxWidth().height(60.dp)
+				.fillMaxWidth()
+				.height(60.dp)
 				.padding(horizontal = 8.dp),
 			verticalAlignment = Alignment.CenterVertically,
 			horizontalArrangement = Arrangement.SpaceBetween,

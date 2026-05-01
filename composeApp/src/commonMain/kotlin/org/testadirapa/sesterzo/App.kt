@@ -99,7 +99,7 @@ fun App() {
 					)
 					is MainScreenState -> MainScreen(
 						isMobile = isMobile,
-						initialSpaceId = currentState.initialSpaceId,
+						initialSpace = currentState.initialSpace,
 						onError = appViewModel::onError,
 					)
 				}

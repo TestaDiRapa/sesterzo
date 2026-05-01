@@ -14,6 +14,7 @@ import org.testadirapa.sesterzo.api.RecoverableSesterzoApi
 import org.testadirapa.sesterzo.api.SesterzoApi
 import org.testadirapa.sesterzo.config.PlatformContext
 import org.testadirapa.sesterzo.repository.PropertyRepository
+import org.testadirapa.sesterzo.styles.colors.randomSpaceColor
 import org.testadirapa.sesterzo.utils.expectStateAs
 import org.testadirapa.sesterzo.viewmodel.errors.ErrorState
 import org.testadirapa.sesterzo.viewmodel.errors.toErrorState
@@ -92,9 +93,13 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 				}
 			}
 			is AppIntent.CreateFirstSpaceIntent -> {
-				val space = AppCtx.api.space.createSpace(intent.name, intent.picture)
+				val space = AppCtx.api.space.createSpace(
+					name = intent.name,
+					picture = intent.picture,
+					fallbackColor = randomSpaceColor().color.value
+				)
 				AppCtx.propertyRepository.setDefaultSpace(space.id)
-				_appState.update { MainScreenState(initialSpaceId = space.id) }
+				_appState.update { MainScreenState(initialSpace = space) }
 			}
 		}
 	}
@@ -177,8 +182,9 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 			CreateSpaceState(isFirst = true)
 		} else {
 			MainScreenState(
-				initialSpaceId = AppCtx.propertyRepository.getDefaultSpace()
-					?: spaces.first().id,
+				initialSpace = AppCtx.propertyRepository.getDefaultSpace()?.let {
+					AppCtx.api.space.getSpace(spaceId = it, bypassCache = false)
+				} ?: spaces.first(),
 			)
 		}
 

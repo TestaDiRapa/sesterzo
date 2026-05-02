@@ -117,14 +117,17 @@ fun MobileSpaceSwitcher(
 						onClick = onJoin,
 					)
 				}
-			} else if (isLoading && !sheetState.isAnimationRunning) {
-				(0 until 4).forEach { idx ->
-					PulsingRoundedSquare(
-						index = idx,
-						total = 4,
-						height = 36.dp,
-						width = null
-					)
+			} else {
+				Column(Modifier.padding(horizontal = 12.dp)) {
+					(0 until 4).forEach { idx ->
+						PulsingRoundedSquare(
+							index = idx,
+							total = 4,
+							height = 50.dp,
+							width = null
+						)
+						Spacer(Modifier.height(8.dp))
+					}
 				}
 			}
 		}

@@ -92,14 +92,26 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 					_appState.update { mainScreenOrCreateSpace() }
 				}
 			}
-			is AppIntent.CreateFirstSpaceIntent -> {
+			is AppIntent.CreateSpaceIntent -> {
 				val space = AppCtx.api.space.createSpace(
 					name = intent.name,
 					picture = intent.picture,
-					fallbackColor = randomSpaceColor().color.value
+					fallbackColor = randomSpaceColor().rgbColor
 				)
 				AppCtx.propertyRepository.setDefaultSpace(space.id)
 				_appState.update { MainScreenState(initialSpace = space) }
+			}
+			is AppIntent.NavigateToSpaceCreationIntent -> {
+				_appState.update {
+					CreateSpaceState(currentSpace = intent.currentSpace)
+				}
+			}
+			is AppIntent.NavigateToMainScreen -> {
+				_appState.update {
+					MainScreenState(
+						initialSpace = intent.space
+					)
+				}
 			}
 		}
 	}
@@ -179,7 +191,7 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 	private suspend fun mainScreenOrCreateSpace() : AppState {
 		val spaces = AppCtx.api.space.getSpaces()
 		return if (spaces.isEmpty()) {
-			CreateSpaceState(isFirst = true)
+			CreateSpaceState(currentSpace = null)
 		} else {
 			MainScreenState(
 				initialSpace = AppCtx.propertyRepository.getDefaultSpace()?.let {

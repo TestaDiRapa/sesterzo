@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -35,7 +36,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.BuildKonfig
 import org.testadirapa.sesterzo.components.loading.PulsingRoundedSquare
-import org.testadirapa.sesterzo.components.space.ActionRow
+import org.testadirapa.sesterzo.components.ui.ActionRow
 import org.testadirapa.sesterzo.components.space.SpaceRow
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.Timestamp
@@ -73,7 +74,6 @@ fun MobileSpaceSwitcher(
 		}.onFailure {
 			onError(it)
 		}
-
 	}
 
 	ModalBottomSheet(
@@ -86,7 +86,7 @@ fun MobileSpaceSwitcher(
 		Column(Modifier.padding(bottom = 28.dp)) {
 			SheetHeader(count = spaces.size)
 
-			if (!isLoading) {
+			if (!isLoading && !sheetState.isAnimationRunning) {
 				Column(Modifier.padding(horizontal = 12.dp)) {
 					spaces.forEach { space ->
 						SpaceRow(
@@ -117,7 +117,7 @@ fun MobileSpaceSwitcher(
 						onClick = onJoin,
 					)
 				}
-			} else {
+			} else if (isLoading && !sheetState.isAnimationRunning) {
 				(0 until 4).forEach { idx ->
 					PulsingRoundedSquare(
 						index = idx,
@@ -171,6 +171,7 @@ private fun PlusBadge() {
 		contentAlignment = Alignment.Center,
 	) {
 		Icon(
+			modifier = Modifier.height(24.dp).width(24.dp),
 			painter = painterResource(Res.drawable.plus),
 			contentDescription = null,
 			tint = MaterialTheme.colorScheme.primary,
@@ -188,6 +189,7 @@ private fun JoinBadge() {
 		contentAlignment = Alignment.Center,
 	) {
 		Icon(
+			modifier = Modifier.height(24.dp).width(24.dp),
 			painter = painterResource(Res.drawable.join),
 			contentDescription = null,
 			tint = MaterialTheme.colorScheme.onSurfaceVariant,

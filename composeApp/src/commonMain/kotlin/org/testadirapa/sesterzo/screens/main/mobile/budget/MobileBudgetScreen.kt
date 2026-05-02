@@ -36,7 +36,7 @@ fun MobileBudgetScreen(
 	onError: (e: Throwable) -> Unit
 ) {
 	var calendarOpen by remember { mutableStateOf(false) }
-	val viewModel = viewModel(key = "budget") {
+	val viewModel = viewModel(key = "$spaceId-budget") {
 		BudgetViewModel(spaceId = spaceId, errorHandler = onError)
 	}
 	val budgetView = viewModel.budgetViewState.collectAsState()

@@ -14,5 +14,5 @@ data class Space(
 	val savingsTemplateId: String,
 	val users: Map<String, AccessKey>,
 	val picture: Base64String?,
-	val color: ULong? = null
+	val color: RGBColor? = null
 ) : Versionable

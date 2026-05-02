@@ -18,6 +18,7 @@ external interface JsSpace : JsAny {
 	var savingsTemplateId: String
 	var users: Record<String, JsAccessKey>
 	var picture: String?
+	var color: JsRGBColor?
 	var insertedAt: Double
 }
 
@@ -32,6 +33,7 @@ fun Space.toJs(insertedAt: Double = currentTimeMillis()): JsSpace {
 	js.savingsTemplateId = savingsTemplateId
 	js.users = mapToObject(users) { it.toJs() }
 	js.picture = picture
+	js.color = color?.toJs()
 	js.insertedAt = insertedAt
 	return js
 }
@@ -47,6 +49,7 @@ fun JsSpace.toKt(): CachedSpace = CachedSpace(
 		incomeSourcesTemplateId = incomeSourcesTemplateId,
 		savingsTemplateId = savingsTemplateId,
 		users = objectToMap(users) { it.toKt() },
+		color = color?.toKt(),
 		picture = picture
 	),
 	insertedAt = insertedAt.toLong()

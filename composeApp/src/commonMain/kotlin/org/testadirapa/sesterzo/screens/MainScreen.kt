@@ -9,11 +9,13 @@ fun MainScreen(
 	isMobile: Boolean,
 	initialSpace: Space,
 	onError: (e: Throwable) -> Unit,
+	onCreateSpace: (Space) -> Unit,
 ) {
 	if (isMobile) {
 		MobileMainScreen(
 			initialSpace = initialSpace,
-			onError = onError
+			onError = onError,
+			onCreateSpace = onCreateSpace,
 		)
 	} else {
 		TODO()

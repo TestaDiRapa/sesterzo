@@ -1,4 +1,4 @@
-package org.testadirapa.sesterzo.components.space
+package org.testadirapa.sesterzo.components.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -33,7 +33,7 @@ fun ActionRow(
 		modifier = Modifier
 			.fillMaxWidth()
 			.clickable(onClick = onClick)
-			.padding(horizontal = 24.dp, vertical = 12.dp),
+			.padding(horizontal = 24.dp, vertical = 6.dp),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
 		leading()
@@ -45,7 +45,6 @@ fun ActionRow(
 					subtitle,
 					fontSize = 11.5.sp,
 					color = MaterialTheme.colorScheme.onSurfaceVariant,
-					modifier = Modifier.padding(top = 2.dp),
 				)
 			}
 		}

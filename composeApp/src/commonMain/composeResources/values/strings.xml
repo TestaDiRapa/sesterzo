@@ -9,13 +9,13 @@
     <string name="now">NOW</string>
 
     <!--  Space switcher  -->
-    <string name="swich_space_label">SWITCH SPACE</string>
-    <string name="your_spaces">Your spaces</string>
+    <string name="swich_space_label">SWITCH BUDGET</string>
+    <string name="your_spaces">Your budgets</string>
     <string name="just_you">Just you</string>
     <string name="members">members</string>
-    <string name="create_new_space">Create new space</string>
+    <string name="create_new_space">Create new budget</string>
     <string name="create_new_space_subtitle">For your household, side project, or hobby</string>
-    <string name="join_space">Join a space</string>
+    <string name="join_space">Join a budget</string>
     <string name="join_space_subtitle">Coming soon</string>
 
     <!--  Errors  -->

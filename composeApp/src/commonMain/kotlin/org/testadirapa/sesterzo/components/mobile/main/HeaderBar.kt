@@ -21,8 +21,12 @@ import kotlin.time.Clock
 @Composable
 fun HeaderBar(
 	space: Space,
+	onCreateSpace: (Space) -> Unit,
+	onSwitchSpace: (Space) -> Unit,
+	onError: (Throwable) -> Unit
 ) {
 	var sheetOpen by remember { mutableStateOf(false) }
+	var openKey by remember { mutableStateOf(0L) }
 
 	Column {
 		Spacer(modifier = Modifier.fillMaxWidth().height(8.dp))
@@ -34,20 +38,28 @@ fun HeaderBar(
 		) {
 			SpaceMenuBadge(
 				space = space,
-				onClick = { sheetOpen = true },
+				onClick = {
+					openKey = Clock.System.now().toEpochMilliseconds()
+					sheetOpen = true
+				},
 			)
 		}
 		Spacer(modifier = Modifier.fillMaxWidth().height(8.dp))
 
-		MobileSpaceSwitcher(
-			activeId = space.id,
-			openKey = Clock.System.now().toEpochMilliseconds(),
-			onSelect = {},
-			onCreate = {},
-			onJoin = {},
-			onDismiss = { sheetOpen = false },
-			onError = {}
-		)
+		if (sheetOpen) {
+			MobileSpaceSwitcher(
+				activeId = space.id,
+				openKey = openKey,
+				onSelect = {
+					onSwitchSpace(it)
+					sheetOpen = false
+				},
+				onCreate = { onCreateSpace(space) },
+				onJoin = {},
+				onDismiss = { sheetOpen = false },
+				onError = onError
+			)
+		}
 	}
 
 }

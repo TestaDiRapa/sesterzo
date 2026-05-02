@@ -14,11 +14,17 @@ import org.testadirapa.sesterzo.screens.main.mobile.budget.MobileBudgetScreen
 fun MobileMainScreen(
 	initialSpace: Space,
 	onError: (e: Throwable) -> Unit,
+	onCreateSpace: (Space) -> Unit,
 ) {
 	var space by remember { mutableStateOf(initialSpace) }
 	Column {
 		HeaderBar(
 			space = space,
+			onCreateSpace = onCreateSpace,
+			onSwitchSpace = {
+				space = it
+			},
+			onError = onError,
 		)
 		MobileBudgetScreen(
 			spaceId = space.id,

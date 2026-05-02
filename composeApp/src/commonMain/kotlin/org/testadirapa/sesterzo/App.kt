@@ -90,17 +90,23 @@ fun App() {
 					)
 					is CreateSpaceState -> CreateSpaceScreen(
 						isMobile = isMobile,
-						isFirst = currentState.isFirst,
+						currentSpace = currentState.currentSpace,
 						isLoading = loadingState.value,
 						onError = { appViewModel.onError(it) },
 						onCreateSpace = { name, picture ->
-							appViewModel.acceptIntent(AppIntent.CreateFirstSpaceIntent(name, picture))
+							appViewModel.acceptIntent(AppIntent.CreateSpaceIntent(name, picture))
+						},
+						onCancel = {
+							appViewModel.acceptIntent(AppIntent.NavigateToMainScreen(it))
 						}
 					)
 					is MainScreenState -> MainScreen(
 						isMobile = isMobile,
 						initialSpace = currentState.initialSpace,
 						onError = appViewModel::onError,
+						onCreateSpace = {
+							appViewModel.acceptIntent(AppIntent.NavigateToSpaceCreationIntent(it))
+						}
 					)
 				}
 				ErrorAlert(

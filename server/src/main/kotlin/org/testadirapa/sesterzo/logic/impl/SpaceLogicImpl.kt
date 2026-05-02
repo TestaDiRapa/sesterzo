@@ -43,7 +43,7 @@ class SpaceLogicImpl(
 		if(!spaceStub.picture.isSizeUnderThreshold()) {
 			throw ImageTooLargeException()
 		}
-		val existingUserSpaces = spaceDAO.getByOwner(currentUserId).count()
+		val existingUserSpaces = spaceDAO.getByParticipant(currentUserId).count()
 		if (existingUserSpaces > 5) {
 			throw QuotaExceededException()
 		}

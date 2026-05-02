@@ -51,7 +51,7 @@ fun SpaceRow(
 			.background(activeBg)
 			.border(1.dp, activeBorder, RoundedCornerShape(12.dp))
 			.clickable(onClick = onClick)
-			.padding(horizontal = 12.dp, vertical = 12.dp),
+			.padding(horizontal = 12.dp, vertical = 6.dp),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
 		SpaceAvatar(space = space, size = 36.dp)
@@ -69,7 +69,6 @@ fun SpaceRow(
 					overflow = TextOverflow.Ellipsis,
 				)
 			}
-			Spacer(Modifier.height(4.dp))
 			Row(verticalAlignment = Alignment.CenterVertically) {
 				Text(
 					text = if (space.users.size == 1) {

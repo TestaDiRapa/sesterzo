@@ -18,6 +18,7 @@ import org.testadirapa.sesterzo.cache.model.CachedSpace
 import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrap
+import org.testadirapa.sesterzo.model.RGBColor
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.SpaceStub
 import org.testadirapa.sesterzo.model.UserAccessKey
@@ -81,7 +82,7 @@ class SpaceApiImpl(
 	override suspend fun createSpace(
 		name: String,
 		picture: ByteArray?,
-		fallbackColor: ULong?,
+		fallbackColor: RGBColor?,
 	): Space {
 		val stub = SpaceStub(
 			id = defaultCryptoService.strongRandom.randomUUID(),

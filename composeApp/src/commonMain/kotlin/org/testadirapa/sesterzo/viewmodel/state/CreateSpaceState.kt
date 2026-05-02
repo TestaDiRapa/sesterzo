@@ -1,3 +1,5 @@
 package org.testadirapa.sesterzo.viewmodel.state
 
-data class CreateSpaceState(val isFirst: Boolean) : AppState
+import org.testadirapa.sesterzo.model.Space
+
+data class CreateSpaceState(val currentSpace: Space?) : AppState

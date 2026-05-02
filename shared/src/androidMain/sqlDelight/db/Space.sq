@@ -8,6 +8,7 @@ CREATE TABLE CachedSpace (
     savings_template_id         TEXT    NOT NULL,
     users                       TEXT    NOT NULL,  -- JSON-encoded Map<String, AccessKey>
     picture                     TEXT,              -- nullable Base64String
+    color                       TEXT,              -- JSON-encoded RGBcolor
     inserted_at                 INTEGER NOT NULL   -- Unix timestamp ms, added by us
 );
 
@@ -25,9 +26,9 @@ INSERT OR REPLACE INTO CachedSpace(
     fixed_expenses_template_id,
     income_sources_template_id,
     savings_template_id,
-    users, picture, inserted_at
+    users, picture, color, inserted_at
 )
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 deleteOne:
 DELETE FROM CachedSpace

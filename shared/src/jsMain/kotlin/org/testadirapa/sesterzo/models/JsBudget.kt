@@ -12,7 +12,6 @@ external interface JsBudget : JsAny {
 	var spaceId: String
 	var year: Int
 	var month: Int
-	var fuzzyDate: Int
 	var expensesReference: JsVersionableReference
 	var incomeReference: JsVersionableReference
 	var savingsReference: JsVersionableReference

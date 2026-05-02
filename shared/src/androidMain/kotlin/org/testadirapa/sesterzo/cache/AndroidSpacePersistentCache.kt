@@ -27,6 +27,7 @@ class AndroidSpacePersistentCache(
 			savings_template_id = space.savingsTemplateId,
 			users = Serialization.json.encodeToString(space.users),
 			picture = space.picture,
+			color = space.color?.let { Serialization.json.encodeToString(it) },
 			inserted_at = System.currentTimeMillis()
 		)
 	}
@@ -43,6 +44,7 @@ class AndroidSpacePersistentCache(
 				incomeSourcesTemplateId = row.income_sources_template_id,
 				savingsTemplateId = row.savings_template_id,
 				users = Serialization.json.decodeFromString(row.users),
+				color = row.color?.let { Serialization.json.decodeFromString(it) },
 				picture = row.picture
 			),
 			insertedAt = row.inserted_at

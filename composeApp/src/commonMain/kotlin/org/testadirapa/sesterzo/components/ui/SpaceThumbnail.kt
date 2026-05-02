@@ -42,14 +42,15 @@ fun SpaceThumbnailBadge(
 @Composable
 fun SpaceThumbnailSelector(
 	placeholderLetter: String,
-	imageBitmap: ImageBitmap?
+	imageBitmap: ImageBitmap?,
+	background: SpaceColor
 ) {
 	SpaceThumbnail(
 		placeholderLetter = placeholderLetter,
 		imageBitmap = imageBitmap,
 		boxSize = 144.dp,
 		fontSize = 66.sp,
-		background = SpaceColor.Amber
+		background = background
 	)
 }
 

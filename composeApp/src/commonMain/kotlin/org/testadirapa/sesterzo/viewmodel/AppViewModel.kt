@@ -96,7 +96,7 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 				val space = AppCtx.api.space.createSpace(
 					name = intent.name,
 					picture = intent.picture,
-					fallbackColor = randomSpaceColor().rgbColor
+					fallbackColor = intent.color.rgbColor
 				)
 				AppCtx.propertyRepository.setDefaultSpace(space.id)
 				_appState.update { MainScreenState(initialSpace = space) }

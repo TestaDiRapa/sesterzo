@@ -16,12 +16,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.testadirapa.sesterzo.components.ui.SpaceThumbnailSelector
+import org.testadirapa.sesterzo.styles.colors.SpaceColor
 import org.testadirapa.sesterzo.utils.toImageBitmap
 
 @Composable
 fun ImagePicker(
 	imageBytes: ByteArray?,
 	placeholderLetter: String,
+	placeholderBackground: SpaceColor,
 	onImageSelected: (ByteArray) -> Unit,
 	onError: (String) -> Unit = {},
 	modifier: Modifier = Modifier,
@@ -39,6 +41,7 @@ fun ImagePicker(
 		SpaceThumbnailSelector(
 			placeholderLetter = placeholderLetter,
 			imageBitmap = imageBitmap,
+			background = placeholderBackground,
 		)
 		Box(
 			contentAlignment = Alignment.Center,

@@ -93,8 +93,8 @@ fun App() {
 						currentSpace = currentState.currentSpace,
 						isLoading = loadingState.value,
 						onError = { appViewModel.onError(it) },
-						onCreateSpace = { name, picture ->
-							appViewModel.acceptIntent(AppIntent.CreateSpaceIntent(name, picture))
+						onCreateSpace = { name, picture, color ->
+							appViewModel.acceptIntent(AppIntent.CreateSpaceIntent(name, picture, color))
 						},
 						onCancel = {
 							appViewModel.acceptIntent(AppIntent.NavigateToMainScreen(it))

@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.config
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.response.respond
 import io.ktor.util.logging.KtorSimpleLogger
@@ -25,6 +26,7 @@ fun Application.configureExceptions() {
 		exception<Throwable> { call, cause ->
 			when (cause) {
 				is HttpException -> call.respond(cause.statusCode, cause.toStatusResponse())
+				is BadRequestException -> call.respond(HttpStatusCode.BadRequest, cause.toErrorResponse(HttpStatusCode.BadRequest))
 				is AccessDeniedException -> call.respond(HttpStatusCode.Forbidden, cause.toErrorResponse(HttpStatusCode.Forbidden))
 				is IllegalAccessException -> call.respond(HttpStatusCode.Forbidden, cause.toErrorResponse(HttpStatusCode.Forbidden))
 				is IOException -> call.respond(HttpStatusCode.BadRequest, cause.toErrorResponse(HttpStatusCode.BadRequest))

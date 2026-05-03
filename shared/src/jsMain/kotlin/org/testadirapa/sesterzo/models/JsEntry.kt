@@ -1,9 +1,9 @@
 package org.testadirapa.sesterzo.models
 
-import org.testadirapa.sesterzo.model.EncryptedExpense
+import org.testadirapa.sesterzo.model.EncryptedEntry
 import org.testadirapa.sesterzo.utils.emptyObject
 
-external interface JsExpense {
+external interface JsEntry {
 	var id: String
 	var updated: Double
 	var deleted: Boolean
@@ -11,8 +11,8 @@ external interface JsExpense {
 	var encryptedSelf: String?
 }
 
-fun EncryptedExpense.toJs(): JsExpense {
-	val js = emptyObject<JsExpense>()
+fun EncryptedEntry.toJs(): JsEntry {
+	val js = emptyObject<JsEntry>()
 	js.id = id
 	js.updated = updated.toDouble()
 	js.deleted = deleted
@@ -21,7 +21,7 @@ fun EncryptedExpense.toJs(): JsExpense {
 	return js
 }
 
-fun JsExpense.toKt(): EncryptedExpense = EncryptedExpense(
+fun JsEntry.toKt(): EncryptedEntry = EncryptedEntry(
 	id = id,
 	updated = updated.toLong(),
 	deleted = deleted,

@@ -1,4 +1,4 @@
-CREATE TABLE Expense(
+CREATE TABLE Entry(
     id                          TEXT    NOT NULL PRIMARY KEY,
     updated                     INTEGER    NOT NULL,
     deleted                     INTEGER    NOT NULL,  -- boolean flag
@@ -8,26 +8,26 @@ CREATE TABLE Expense(
 );
 
 selectAll:
-SELECT * FROM Expense;
+SELECT * FROM Entry;
 
 selectById:
-SELECT * FROM Expense
+SELECT * FROM Entry
 WHERE id = :id;
 
 selectBySpaceBudget:
-SELECT * FROM Expense
+SELECT * FROM Entry
 WHERE spaceId = :spaceId AND budgetId = :budgetId;
 
 upsert:
-INSERT OR REPLACE INTO Expense(
+INSERT OR REPLACE INTO Entry(
     id, updated, deleted, budgetId,
     spaceId, encryptedSelf
 )
 VALUES (?, ?, ?, ?, ?, ?);
 
 deleteOne:
-DELETE FROM Expense
+DELETE FROM Entry
 WHERE id = :id;
 
 deleteAll:
-DELETE FROM Expense;
+DELETE FROM Entry;

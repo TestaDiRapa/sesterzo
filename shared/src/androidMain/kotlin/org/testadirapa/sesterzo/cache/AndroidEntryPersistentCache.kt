@@ -4,18 +4,17 @@ import app.cash.sqldelight.db.SqlDriver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testadira.sesterzo.AppDatabase
-import org.testadirapa.sesterzo.model.EncryptedExpense
-import kotlin.math.exp
-import db.Expense as ExpenseRow
+import org.testadirapa.sesterzo.model.EncryptedEntry
+import db.Entry as EntryRow
 
-class AndroidExpensePersistentCache(
+class AndroidEntryPersistentCache(
 	driver: SqlDriver
-) : ExpensePersistentCache {
+) : EntryPersistentCache {
 
 	private val db = AppDatabase(driver)
-	private val queries = db.expenseQueries
+	private val queries = db.entryQueries
 
-	private fun upsertInternal(expense: EncryptedExpense) {
+	private fun upsertInternal(expense: EncryptedEntry) {
 		queries.upsert(
 			id = expense.id,
 			updated = expense.updated,
@@ -26,8 +25,8 @@ class AndroidExpensePersistentCache(
 		)
 	}
 
-	private fun rowToEntity(row: ExpenseRow): EncryptedExpense =
-		EncryptedExpense(
+	private fun rowToEntity(row: EntryRow): EncryptedEntry =
+		EncryptedEntry(
 			id = row.id,
 			updated = row.updated,
 			deleted = row.deleted == 1L,
@@ -36,11 +35,11 @@ class AndroidExpensePersistentCache(
 			encryptedSelf = row.encryptedSelf
 		)
 
-	override suspend fun upsert(entity: EncryptedExpense) = withContext(Dispatchers.IO) {
+	override suspend fun upsert(entity: EncryptedEntry) = withContext(Dispatchers.IO) {
 		upsertInternal(entity)
 	}
 
-	override suspend fun upsertAll(entities: List<EncryptedExpense>) {
+	override suspend fun upsertAll(entities: List<EncryptedEntry>) {
 		withContext(Dispatchers.IO) {
 			db.transaction {
 				entities.forEach { upsertInternal(it) }
@@ -48,17 +47,17 @@ class AndroidExpensePersistentCache(
 		}
 	}
 
-	override suspend fun getAll(): List<EncryptedExpense> = withContext(Dispatchers.IO) {
+	override suspend fun getAll(): List<EncryptedEntry> = withContext(Dispatchers.IO) {
 		queries.selectAll().executeAsList().map { rowToEntity(it) }
 	}
 
-	override suspend fun clear(entity: EncryptedExpense) {
+	override suspend fun clear(entity: EncryptedEntry) {
 		withContext(Dispatchers.IO) {
 			queries.deleteOne(entity.id)
 		}
 	}
 
-	override suspend fun getById(id: String): EncryptedExpense? = withContext(Dispatchers.IO) {
+	override suspend fun getById(id: String): EncryptedEntry? = withContext(Dispatchers.IO) {
 		queries.selectById(id).executeAsOneOrNull()?.let { rowToEntity(it) }
 	}
 
@@ -68,7 +67,7 @@ class AndroidExpensePersistentCache(
 		}
 	}
 
-	override suspend fun getAllForBudgetInSpace(spaceId: String, budgetId: String): List<EncryptedExpense> = withContext(Dispatchers.IO) {
+	override suspend fun getAllForBudgetInSpace(spaceId: String, budgetId: String): List<EncryptedEntry> = withContext(Dispatchers.IO) {
 		queries.selectBySpaceBudget(budgetId = budgetId, spaceId = spaceId).executeAsList().map { rowToEntity(it) }
 	}
 }

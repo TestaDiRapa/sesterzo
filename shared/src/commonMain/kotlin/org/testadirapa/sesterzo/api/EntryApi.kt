@@ -1,12 +1,12 @@
 package org.testadirapa.sesterzo.api
 
-import org.testadirapa.sesterzo.model.DecryptedExpense
+import org.testadirapa.sesterzo.model.DecryptedEntry
 
-interface ExpenseApi {
+interface EntryApi {
 
 	/**
-	 * Retrieves all the expenses in a space for a budget, where [DecryptedExpense.deleted] is false and in descending
-	 * order by [DecryptedExpense.updated].
+	 * Retrieves all the expenses in a space for a budget, where [DecryptedEntry.deleted] is false and in descending
+	 * order by [DecryptedEntry.updated].
 	 *
 	 * - If [bypassCache] is true, it will retrieve all the expenses from the server.
 	 * - Else, it will first load all the cached expenses and retrieve the ones created or updated after the most recent
@@ -18,7 +18,7 @@ interface ExpenseApi {
 	 * @param spaceId the id of the space.
 	 * @param budgetId the id of the budget.
 	 * @param bypassCache whether to bypass the local cache.
-	 * @return a [List] of [DecryptedExpense] that are not deleted, in descending order by [DecryptedExpense.updated].
+	 * @return a [List] of [DecryptedEntry] that are not deleted, in descending order by [DecryptedEntry.updated].
 	 */
-	suspend fun getInSpaceForBudget(spaceId: String, budgetId: String, bypassCache: Boolean): List<DecryptedExpense>
+	suspend fun getInSpaceForBudget(spaceId: String, budgetId: String, bypassCache: Boolean): List<DecryptedEntry>
 }

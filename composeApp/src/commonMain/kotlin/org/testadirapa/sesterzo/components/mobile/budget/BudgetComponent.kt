@@ -12,7 +12,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.model.DecryptedBudget
-import org.testadirapa.sesterzo.model.DecryptedExpense
+import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.model.Timestamp
 
 @Composable
@@ -23,16 +23,16 @@ fun BudgetComponent(
 ) {
 	val scope = rememberCoroutineScope()
 	var budget by remember { mutableStateOf(budget) }
-	var expenses by remember { mutableStateOf<List<DecryptedExpense>>(emptyList()) }
+	var expenses by remember { mutableStateOf<List<DecryptedEntry>>(emptyList()) }
 	LaunchedEffect(Unit) {
-		expenses = AppCtx.api.expense.getInSpaceForBudget(
+		expenses = AppCtx.api.entry.getInSpaceForBudget(
 			spaceId = spaceId,
 			budgetId = budget.id,
 			bypassCache = false // TODO
 		)
 	}
 	LaunchedEffect(refreshKey) {
-		expenses = AppCtx.api.expense.getInSpaceForBudget(
+		expenses = AppCtx.api.entry.getInSpaceForBudget(
 			spaceId = spaceId,
 			budgetId = budget.id,
 			bypassCache = false // TODO

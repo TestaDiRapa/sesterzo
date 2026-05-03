@@ -9,13 +9,13 @@ import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import org.testadirapa.sesterzo.components.mongodb.DBClient
-import org.testadirapa.sesterzo.dao.ExpenseDAO
-import org.testadirapa.sesterzo.model.EncryptedExpense
+import org.testadirapa.sesterzo.dao.EntryDAO
+import org.testadirapa.sesterzo.model.EncryptedEntry
 import org.testadirapa.sesterzo.model.Timestamp
 
-class ExpenseDAOImpl(
+class EntryDAOImpl(
 	client: DBClient
-) : ExpenseDAO(client) {
+) : EntryDAO(client) {
 
 	companion object {
 		private const val BY_BUDGET_UPDATE_INDEX_NAME = "by_budget_update"
@@ -25,36 +25,36 @@ class ExpenseDAOImpl(
 		val collection = getCollection(spaceId)
 		if (collection.listIndexes().firstOrNull { it["name"] == BY_BUDGET_UPDATE_INDEX_NAME } == null) {
 			collection.createIndex(
-				Indexes.descending(EncryptedExpense::budgetId.name, EncryptedExpense::updated.name),
+				Indexes.descending(EncryptedEntry::budgetId.name, EncryptedEntry::updated.name),
 				IndexOptions().name(BY_BUDGET_UPDATE_INDEX_NAME),
 			)
 		}
 	}
 
-	override fun getExpensesForBudget(spaceId: String, budgetId: String): Flow<EncryptedExpense> =
+	override fun getEntriesForBudget(spaceId: String, budgetId: String): Flow<EncryptedEntry> =
 		find(
 			spaceId = spaceId,
-			filter = Filters.eq(EncryptedExpense::budgetId.name, budgetId)
+			filter = Filters.eq(EncryptedEntry::budgetId.name, budgetId)
 		)
 
-	override fun getExpensesForBudgetAfter(
+	override fun getEntriesForBudgetAfter(
 		spaceId: String,
 		budgetId: String,
 		after: Timestamp
-	): Flow<EncryptedExpense> = find(
+	): Flow<EncryptedEntry> = find(
 		spaceId = spaceId,
 		filter = Filters.and(
-			Filters.eq(EncryptedExpense::budgetId.name, budgetId),
-			Filters.gte(EncryptedExpense::updated.name, after),
+			Filters.eq(EncryptedEntry::budgetId.name, budgetId),
+			Filters.gte(EncryptedEntry::updated.name, after),
 		)
 	)
 
-	override suspend fun softDeleteExpense(spaceId: String, expenseId: String): EncryptedExpense? =
+	override suspend fun softDeleteEntry(spaceId: String, entryId: String): EncryptedEntry? =
 		getCollection(spaceId).findOneAndUpdate(
-			filter = Filters.eq("_id", expenseId),
+			filter = Filters.eq("_id", entryId),
 			update = Updates.combine(
-				Updates.set(EncryptedExpense::updated.name, System.currentTimeMillis()),
-				Updates.set(EncryptedExpense::deleted.name, true)
+				Updates.set(EncryptedEntry::updated.name, System.currentTimeMillis()),
+				Updates.set(EncryptedEntry::deleted.name, true)
 			),
 			options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 		)

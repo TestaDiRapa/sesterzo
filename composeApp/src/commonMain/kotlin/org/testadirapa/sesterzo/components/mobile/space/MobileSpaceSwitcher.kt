@@ -88,7 +88,7 @@ fun MobileSpaceSwitcher(
 
 			if (!isLoading && !sheetState.isAnimationRunning) {
 				Column(Modifier.padding(horizontal = 12.dp)) {
-					spaces.forEach { space ->
+					spaces.sortedBy { it.name }.forEach { space ->
 						SpaceRow(
 							space = space,
 							active = space.id == activeId,

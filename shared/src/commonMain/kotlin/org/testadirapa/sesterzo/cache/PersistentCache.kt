@@ -4,7 +4,7 @@ interface PersistentCache {
 
 	val budget: BudgetPersistentCache
 	val budgetElement: BudgetElementPersistentCache
-	val expense: ExpensePersistentCache
+	val entry: EntryPersistentCache
 	val space: SpacePersistentCache
 	val user: UserPersistentCache
 

@@ -8,32 +8,32 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.takeFrom
 import io.ktor.util.date.GMTDate
 import org.testadirapa.sesterzo.api.CachedApi
-import org.testadirapa.sesterzo.api.ExpenseApi
-import org.testadirapa.sesterzo.cache.ExpensePersistentCache
+import org.testadirapa.sesterzo.api.EntryApi
+import org.testadirapa.sesterzo.cache.EntryPersistentCache
 import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrapPatching
-import org.testadirapa.sesterzo.model.DecryptedExpense
-import org.testadirapa.sesterzo.model.EncryptedExpense
+import org.testadirapa.sesterzo.model.DecryptedEntry
+import org.testadirapa.sesterzo.model.EncryptedEntry
 import org.testadirapa.sesterzo.model.Timestamp
 import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
 import kotlin.collections.map
 
-class ExpenseApiImpl(
+class EntryApiImpl(
 	httpConfig: HttpConfig,
-	cache: ExpensePersistentCache,
+	cache: EntryPersistentCache,
 	private val authService: AuthService,
 	private val cryptoService: CryptoService,
-) : CachedApi<EncryptedExpense, EncryptedExpense, ExpensePersistentCache>(httpConfig, cache), ExpenseApi {
+) : CachedApi<EncryptedEntry, EncryptedEntry, EntryPersistentCache>(httpConfig, cache), EntryApi {
 
-	override val baseSegment: String = "expense"
-	override fun convert(data: EncryptedExpense): EncryptedExpense = data
+	override val baseSegment: String = "entry"
+	override fun convert(data: EncryptedEntry): EncryptedEntry = data
 
 	private suspend fun retrieveAllInSpaceForBudget(
 		spaceId: String,
 		budgetId: String
-	): HttpResponse<List<EncryptedExpense>> = get {
+	): HttpResponse<List<EncryptedEntry>> = get {
 		url {
 			takeFrom(baseUrl)
 			appendPathSegments(baseSegment, "inSpace", spaceId, "forBudget", budgetId, "all")
@@ -47,7 +47,7 @@ class ExpenseApiImpl(
 		spaceId: String,
 		budgetId: String,
 		after: Timestamp
-	): HttpResponse<List<EncryptedExpense>> = get {
+	): HttpResponse<List<EncryptedEntry>> = get {
 		url {
 			takeFrom(baseUrl)
 			appendPathSegments(baseSegment, "inSpace", spaceId, "forBudget", budgetId, "after", "$after")
@@ -57,7 +57,7 @@ class ExpenseApiImpl(
 		accept(Application.Json)
 	}.wrapPatching { expenses -> expenses.map { it.copy(transientSpaceId = spaceId) } }
 
-	override suspend fun getInSpaceForBudget(spaceId: String, budgetId: String, bypassCache: Boolean): List<DecryptedExpense> {
+	override suspend fun getInSpaceForBudget(spaceId: String, budgetId: String, bypassCache: Boolean): List<DecryptedEntry> {
 		val cached = cache.getAllForBudgetInSpace(spaceId = spaceId, budgetId = budgetId).sortedByDescending { it.updated }
 		return if (bypassCache || cached.isEmpty()) {
 			retrieveAllInSpaceForBudget(spaceId = spaceId, budgetId = budgetId)

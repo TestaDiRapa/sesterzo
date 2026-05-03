@@ -2,7 +2,7 @@ package org.testadirapa.sesterzo.api
 
 import org.testadirapa.sesterzo.api.impl.BudgetApiImpl
 import org.testadirapa.sesterzo.api.impl.BudgetElementApiImpl
-import org.testadirapa.sesterzo.api.impl.ExpenseApiImpl
+import org.testadirapa.sesterzo.api.impl.EntryApiImpl
 import org.testadirapa.sesterzo.api.impl.FullRecoveryApiImpl
 import org.testadirapa.sesterzo.api.impl.SpaceApiImpl
 import org.testadirapa.sesterzo.api.impl.UserApiImpl
@@ -46,10 +46,10 @@ class FullSesterzoApiImpl(
 		)
 	}
 
-	override val expense: ExpenseApi by lazy {
-		ExpenseApiImpl(
+	override val entry: EntryApi by lazy {
+		EntryApiImpl(
 			httpConfig = httpConfig,
-			cache = cache.expense,
+			cache = cache.entry,
 			authService = authService,
 			cryptoService = cryptoService
 		)

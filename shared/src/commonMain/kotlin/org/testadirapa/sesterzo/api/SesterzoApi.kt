@@ -186,7 +186,7 @@ interface FullSesterzoApi : SesterzoApi {
 
 	val budget: BudgetApi
 	val budgetElement: BudgetElementApi
-	val expense: ExpenseApi
+	val entry: EntryApi
 	override val recovery: FullRecoveryApi
 	val space: SpaceApi
 }

@@ -4,20 +4,20 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
-import org.testadirapa.sesterzo.logic.ExpenseLogic
+import org.testadirapa.sesterzo.logic.EntryLogic
 import org.testadirapa.sesterzo.security.authenticateGetInSpace
 import org.testadirapa.sesterzo.security.authenticatedDeleteInSpace
 import org.testadirapa.sesterzo.utils.getPathParameter
 import kotlin.getValue
 
-fun Routing.expenseController() = route("/expense") {
+fun Routing.expenseController() = route("/entry") {
 
-	val expenseLogic by inject<ExpenseLogic>()
+	val entryLogic by inject<EntryLogic>()
 
 	authenticateGetInSpace("/forBudget/{budgetId}/all") { spaceId ->
 		val budgetId = call.getPathParameter("budgetId")
 		call.respond(
-			expenseLogic.getExpensesForBudget(spaceId = spaceId, budgetId = budgetId)
+			entryLogic.getEntriesForBudget(spaceId = spaceId, budgetId = budgetId)
 		)
 	}
 
@@ -25,14 +25,14 @@ fun Routing.expenseController() = route("/expense") {
 		val budgetId = call.getPathParameter("budgetId")
 		val timestamp = call.getPathParameter("timestamp").toLong()
 		call.respond(
-			expenseLogic.getExpensesForBudgetAfter(spaceId = spaceId, budgetId = budgetId, after = timestamp)
+			entryLogic.getEntriesForBudgetAfter(spaceId = spaceId, budgetId = budgetId, after = timestamp)
 		)
 	}
 
-	authenticatedDeleteInSpace("/{expenseId}") { spaceId ->
-		val expenseId = call.getPathParameter("expenseId")
+	authenticatedDeleteInSpace("/{entryId}") { spaceId ->
+		val entryId = call.getPathParameter("entryId")
 		call.respond(
-			expenseLogic.deleteExpense(spaceId = spaceId, expenseId = expenseId)
+			entryLogic.deleteEntry(spaceId = spaceId, expenseId = entryId)
 		)
 	}
 }

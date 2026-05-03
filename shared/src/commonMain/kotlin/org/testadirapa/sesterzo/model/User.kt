@@ -11,4 +11,5 @@ data class User(
 	val authenticationTokens: Map<String, AuthenticationToken> = emptyMap(),
 	val publicKey: Base64String? = null,
 	val hasBackup: Boolean = false,
+	val preferredCurrency: Currency = Currency.EUR,
 ) : Identifiable

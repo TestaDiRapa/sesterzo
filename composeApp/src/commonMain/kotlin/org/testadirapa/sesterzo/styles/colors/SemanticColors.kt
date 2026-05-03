@@ -7,6 +7,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 data class FinanceColors(
+	val free: Color,
 	val income: Color,
 	val spent: Color,
 	val saved: Color,
@@ -20,9 +21,10 @@ val LocalFinanceColors = staticCompositionLocalOf<FinanceColors> {
 }
 
 val DarkFinanceColors = FinanceColors(
-	income    = SesterzoColors.Income300,
+ 	income    = SesterzoColors.Income300,
 	spent     = SesterzoColors.Spent300,
 	saved     = SesterzoColors.Saved300,
+	free      = SesterzoColors.TextTert,
 	onTrackBg = Color(0x1F86C8A2),
 	overBg    = Color(0x1FE88B7C),
 	savedBg   = Color(0x1F9EC9B8),
@@ -32,6 +34,7 @@ val LightFinanceColors = FinanceColors(
 	income    = SesterzoColors.LightIncome500,    // text uses 500 on white
 	spent     = SesterzoColors.LightSpent500,
 	saved     = SesterzoColors.LightSaved500,
+	free      = SesterzoColors.LightTextTert,
 	onTrackBg = Color(0xFFE6F2EB), // solid 8–10% tint
 	overBg    = Color(0xFFFCE8E3),
 	savedBg   = Color(0xFFE7EFEB),

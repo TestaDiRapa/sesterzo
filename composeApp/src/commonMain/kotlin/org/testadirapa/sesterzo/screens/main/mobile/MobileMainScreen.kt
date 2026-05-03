@@ -47,7 +47,10 @@ fun MobileMainScreen(
 				)
 			}
 			Page.Template -> {
-				MobileTemplateScreen()
+				MobileTemplateScreen(
+					space = space,
+					onError = onError,
+				)
 			}
 		}
 	}

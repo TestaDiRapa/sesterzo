@@ -98,6 +98,13 @@
     <string name="login_button">Log in</string>
     <string name="login_complete_button">Complete Login</string>
 
+    <!--  Template page  -->
+    <string name="template_page_income">INCOME</string>
+    <string name="template_page_month_abbreviated">mo</string>
+    <string name="template_page_expenses">Expenses</string>
+    <string name="template_page_savings">Savings</string>
+    <string name="template_page_free">Free</string>
+
     <!--  Email field  -->
     <string name="email_field">Email</string>
     <string name="email_field_placeholder">test@example.com</string>

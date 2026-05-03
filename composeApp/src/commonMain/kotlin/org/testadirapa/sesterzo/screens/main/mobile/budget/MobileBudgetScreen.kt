@@ -6,12 +6,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,7 +33,8 @@ import kotlin.time.Clock
 @Composable
 fun MobileBudgetScreen(
 	spaceId: String,
-	onError: (e: Throwable) -> Unit
+	onError: (e: Throwable) -> Unit,
+	contentPadding: PaddingValues = PaddingValues(),
 ) {
 	var calendarOpen by remember { mutableStateOf(false) }
 	val viewModel = viewModel(key = "$spaceId-budget") {
@@ -41,13 +42,12 @@ fun MobileBudgetScreen(
 	}
 	val budgetView = viewModel.budgetViewState.collectAsState()
 	budgetView.value?.let { budgetView ->
-		Scaffold { innerPadding ->
-			Column(
-				modifier = Modifier
-					.padding(paddingValues = innerPadding)
-					.padding(horizontal = 16.dp)
-					.fillMaxSize()
-			) {
+		Column(
+			modifier = Modifier
+				.padding(paddingValues = contentPadding)
+				.padding(horizontal = 16.dp)
+				.fillMaxSize()
+		) {
 				BudgetMonthSelector(
 					budgetReference = budgetView.currentBudget.toReference(),
 					onDateClick = {
@@ -87,7 +87,6 @@ fun MobileBudgetScreen(
 					spaceId = spaceId,
 					budget = budgetView.currentBudget,
 				)
-			}
 		}
 	}
 }

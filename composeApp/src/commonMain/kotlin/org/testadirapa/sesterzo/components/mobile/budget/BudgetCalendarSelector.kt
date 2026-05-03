@@ -136,8 +136,8 @@ fun BudgetCalendarSelector(
 						color = colorScheme.onSurface,
 					)
 				}
-				Spacer(Modifier.width(60.dp))
-				Spacer(Modifier.width(60.dp))
+				Spacer(Modifier.width(40.dp))
+				Spacer(Modifier.width(40.dp))
 				Button(
 					onClick = {
 						scope.launch {

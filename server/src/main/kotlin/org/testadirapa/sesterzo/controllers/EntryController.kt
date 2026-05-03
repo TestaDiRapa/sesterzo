@@ -32,7 +32,7 @@ fun Routing.expenseController() = route("/entry") {
 	authenticatedDeleteInSpace("/{entryId}") { spaceId ->
 		val entryId = call.getPathParameter("entryId")
 		call.respond(
-			entryLogic.deleteEntry(spaceId = spaceId, expenseId = entryId)
+			entryLogic.deleteEntry(spaceId = spaceId, entryId = entryId)
 		)
 	}
 }

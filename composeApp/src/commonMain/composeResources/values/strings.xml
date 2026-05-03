@@ -18,6 +18,10 @@
     <string name="join_space">Join a budget</string>
     <string name="join_space_subtitle">Coming soon</string>
 
+    <!--  Bottom Menu  -->
+    <string name="bottom_menu_budget_page">Budget</string>
+    <string name="bottom_menu_template_page">Template</string>
+
     <!--  Errors  -->
     <string name="error_budget_not_found">Budget not found.</string>
     <string name="error_budget_element_not_found">Budget Element not found.</string>

@@ -2,6 +2,7 @@ package org.testadirapa.sesterzo.components.template
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,11 +10,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
@@ -88,14 +92,14 @@ fun TemplateStatsCard(
 		)
 	)
 
-	Box(
-		modifier = Modifier
-			.background(colorScheme.surface, RoundedCornerShape(12.dp))
-			.padding(horizontal = 24.dp, vertical = 20.dp)
+	Card(
+		modifier = Modifier.fillMaxWidth(),
+		border = BorderStroke(width = 1.dp, color = colorScheme.outline),
+		colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
 	) {
 		Row(
 			verticalAlignment = Alignment.CenterVertically,
-			horizontalArrangement = Arrangement.spacedBy(28.dp)
+			horizontalArrangement = Arrangement.spacedBy(16.dp)
 		) {
 			Box(
 				contentAlignment = Alignment.Center,
@@ -104,13 +108,12 @@ fun TemplateStatsCard(
 				DonutChart(
 					categories = categories,
 					totalIncome = totalIncome,
-					strokeWidth = 22.dp,
+					strokeWidth = 11.dp,
 					gapDegrees = 2f,
 					animProgress = animProgress,
 					modifier = Modifier.fillMaxSize()
 				)
 
-				// Center label
 				Column(horizontalAlignment = Alignment.CenterHorizontally) {
 					Text(
 						text = AppCtx.currency.writer(totalIncome),
@@ -149,7 +152,7 @@ private fun DonutChart(
 	val defaultColor = LocalFinanceColors.current.free
 	Canvas(modifier = modifier) {
 		val stroke = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Butt)
-		val diameter = minOf(size.width, size.height)
+		val diameter = minOf(size.width, size.height) * 0.75f
 		val topLeft = Offset(
 			x = (size.width - diameter) / 2f,
 			y = (size.height - diameter) / 2f,
@@ -190,8 +193,6 @@ private fun DonutChart(
 	}
 }
 
-
-
 @Composable
 private fun LegendRow(
 	category: BudgetCategory,
@@ -199,11 +200,11 @@ private fun LegendRow(
 ) {
 	Row(
 		verticalAlignment = Alignment.CenterVertically,
-		horizontalArrangement = Arrangement.spacedBy(10.dp),
+		horizontalArrangement = Arrangement.spacedBy(8.dp),
 	) {
 		Box(
 			modifier = Modifier
-				.size(10.dp)
+				.size(12.dp)
 				.background(category.color, CircleShape)
 		)
 		Text(
@@ -211,17 +212,10 @@ private fun LegendRow(
 			color = colorScheme.onSurface,
 			style = MaterialTheme.typography.labelLarge,
 			fontWeight = FontWeight.Medium,
-			modifier = Modifier.width(60.dp),
+			modifier = Modifier.width(70.dp),
 		)
 		Text(
 			text = "${percent ?: "-"}%",
-			color = colorScheme.outline,
-			style = MaterialTheme.typography.labelLarge,
-			modifier = Modifier.width(36.dp),
-			textAlign = TextAlign.End,
-		)
-		Text(
-			text = AppCtx.currency.writer(category.amount),
 			color = colorScheme.onTertiaryContainer,
 			style = MaterialTheme.typography.labelLarge,
 			fontWeight = FontWeight.SemiBold,

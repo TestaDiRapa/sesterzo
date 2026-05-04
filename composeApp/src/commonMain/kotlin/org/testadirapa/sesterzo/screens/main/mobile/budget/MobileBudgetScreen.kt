@@ -34,7 +34,6 @@ import kotlin.time.Clock
 fun MobileBudgetScreen(
 	spaceId: String,
 	onError: (e: Throwable) -> Unit,
-	contentPadding: PaddingValues = PaddingValues(),
 ) {
 	var calendarOpen by remember { mutableStateOf(false) }
 	val viewModel = viewModel(key = "$spaceId-budget") {
@@ -42,12 +41,7 @@ fun MobileBudgetScreen(
 	}
 	val budgetView = viewModel.budgetViewState.collectAsState()
 	budgetView.value?.let { budgetView ->
-		Column(
-			modifier = Modifier
-				.padding(paddingValues = contentPadding)
-				.padding(horizontal = 16.dp)
-				.fillMaxSize()
-		) {
+		Column {
 				BudgetMonthSelector(
 					budgetReference = budgetView.currentBudget.toReference(),
 					onDateClick = {

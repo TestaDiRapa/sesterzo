@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -31,10 +32,14 @@ import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.models.BudgetCategory
+import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
+import org.testadirapa.sesterzo.styles.typography.amountTextStyleLarge
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.app_name
 import sesterzo.composeapp.generated.resources.arrow_right
+import sesterzo.composeapp.generated.resources.template_page_expenses
 import sesterzo.composeapp.generated.resources.template_page_income_sources
+import sesterzo.composeapp.generated.resources.template_page_savings
 
 @Composable
 fun TemplateUpdateMenu(
@@ -52,6 +57,20 @@ fun TemplateUpdateMenu(
 			subtitle = "${incomeSources.elements.size} sources",
 			value = incomeSources.elements.values.sum(),
 			color = colorScheme.primary,
+		)
+		HorizontalDivider(color = colorScheme.outline)
+		TemplateRow(
+			label = stringResource(Res.string.template_page_expenses),
+			subtitle = "${expenses.elements.size} sources",
+			value = expenses.elements.values.sum(),
+			color = LocalFinanceColors.current.spent,
+		)
+		HorizontalDivider(color = colorScheme.outline)
+		TemplateRow(
+			label = stringResource(Res.string.template_page_savings),
+			subtitle = "${savings.elements.size} sources",
+			value = savings.elements.values.sum(),
+			color = LocalFinanceColors.current.saved,
 		)
 	}
 }
@@ -101,10 +120,10 @@ private fun TemplateRow(
 			Text(
 				text = AppCtx.currency.writer(value),
 				color = colorScheme.onSurface,
-				style = MaterialTheme.typography.bodyLarge
+				style = amountTextStyleLarge()
 			)
 			Icon(
-				modifier = Modifier.size(36.dp),
+				modifier = Modifier.size(24.dp),
 				painter = painterResource(Res.drawable.arrow_right),
 				contentDescription = "Next",
 				tint = colorScheme.onSurfaceVariant,

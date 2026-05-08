@@ -42,6 +42,7 @@ import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.models.BudgetCategory
 import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
+import org.testadirapa.sesterzo.styles.typography.amountTextStyleMedium
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.template_page_expenses
 import sesterzo.composeapp.generated.resources.template_page_free
@@ -111,7 +112,7 @@ fun TemplateStatsCard(
 					Text(
 						text = AppCtx.currency.writer(totalIncome),
 						color = colorScheme.onSurface,
-						style = MaterialTheme.typography.bodyLarge,
+						style = amountTextStyleMedium(),
 						fontWeight = FontWeight.SemiBold,
 					)
 					Text(

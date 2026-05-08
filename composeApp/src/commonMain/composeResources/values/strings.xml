@@ -56,7 +56,7 @@
     <string name="backup_key_description_2_3">3. Keep it confidential!</string>
     <string name="backup_key_description_3">If you lose it, you may not be able to recover your data in case of a key loss.</string>
     <string name="backup_key_private_key">Private key:</string>
-    <string name="backup_key_use_recovery">Use a recovery key.</string>
+    <string name="backup_key_use_recovery">Use a recovery sentence.</string>
     <string name="backup_key_recovery_description_1">The recovery sentence will be used to recover your key.</string>
     <string name="backup_key_generate_recovery">Generate recovery sentence.</string>
     <string name="backup_key_recovery_title">Recovery sentence:</string>
@@ -101,6 +101,7 @@
     <!--  Template page  -->
     <string name="template_page_income">INCOME</string>
     <string name="template_page_month_abbreviated">mo</string>
+    <string name="template_page_income_sources">Income sources</string>
     <string name="template_page_expenses">Expenses</string>
     <string name="template_page_savings">Savings</string>
     <string name="template_page_free">Free</string>

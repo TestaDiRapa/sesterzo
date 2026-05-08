@@ -2,15 +2,16 @@ package org.testadirapa.sesterzo.services
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.testadirapa.sesterzo.api.AuthApi
+import org.testadirapa.sesterzo.repository.PropertyRepository
 import org.testadirapa.sesterzo.security.JwtPayload.Companion.isJwtExpiredOrInvalid
 import kotlin.time.Duration.Companion.seconds
 
 class AuthService(
 	private val authApi: AuthApi,
+	private val propertyRepository: PropertyRepository,
 	initialJwt: String,
 	initialRefresh: String
 ) {
@@ -33,10 +34,13 @@ class AuthService(
 				?: throw MissingJwtStateException()
 			when {
 				isJwtExpiredOrInvalid(jwt = currentRefresh, refreshPadding = expirationPadding) -> {
+					propertyRepository.resetJwt()
+					propertyRepository.resetRefreshJwt()
 					_jwtState.value = null
 				}
 				currentJwt == null || isJwtExpiredOrInvalid(jwt = currentJwt, refreshPadding = expirationPadding) -> {
 					val newState = authApi.refresh(refreshToken = currentRefresh).bodyOrThrow()
+					propertyRepository.setJwt(newState.jwt)
 					_jwtState.value = JwtState(accessToken = newState.jwt, refreshToken = currentRefresh)
 				}
 			}
@@ -53,6 +57,7 @@ class AuthService(
 	suspend fun invalidateToken() {
 		jwtMutex.withLock {
 			_jwtState.value?.let { (_, refreshToken) ->
+				propertyRepository.resetJwt()
 				_jwtState.value = JwtState(accessToken = null, refreshToken = refreshToken)
 			}
 		}

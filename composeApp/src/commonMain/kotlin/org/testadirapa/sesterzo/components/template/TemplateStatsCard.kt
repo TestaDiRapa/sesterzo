@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +40,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
+import org.testadirapa.sesterzo.models.BudgetCategory
 import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.template_page_expenses
@@ -49,12 +48,6 @@ import sesterzo.composeapp.generated.resources.template_page_free
 import sesterzo.composeapp.generated.resources.template_page_income
 import sesterzo.composeapp.generated.resources.template_page_month_abbreviated
 import sesterzo.composeapp.generated.resources.template_page_savings
-
-private data class BudgetCategory(
-	val label: String,
-	val amount: Amount,
-	val color: Color,
-)
 
 @Composable
 fun TemplateStatsCard(

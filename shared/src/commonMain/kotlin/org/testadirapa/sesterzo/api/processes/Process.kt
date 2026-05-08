@@ -6,6 +6,7 @@ import org.testadirapa.sesterzo.api.SesterzoApi.Companion.getHttpConfig
 import org.testadirapa.sesterzo.api.impl.AuthApiImpl
 import org.testadirapa.sesterzo.cache.PersistentCache
 import org.testadirapa.sesterzo.model.dto.AuthResponse
+import org.testadirapa.sesterzo.repository.PropertyRepository
 import org.testadirapa.sesterzo.storage.StorageFacade
 import kotlin.time.Duration
 

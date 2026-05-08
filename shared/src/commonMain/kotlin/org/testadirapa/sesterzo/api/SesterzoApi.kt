@@ -18,6 +18,7 @@ import org.testadirapa.sesterzo.handlers.CaptchaProgressHandler
 import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Bip39RecoveryKey
 import org.testadirapa.sesterzo.model.dto.StartRegistrationData
+import org.testadirapa.sesterzo.repository.PropertyRepository
 import org.testadirapa.sesterzo.serialization.Serialization
 import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
@@ -111,6 +112,9 @@ interface SesterzoApi {
 			val authApi = AuthApiImpl(config = httpConfig)
 			val authService = AuthService(
 				authApi = authApi,
+				propertyRepository = PropertyRepository(
+					datastore = storage
+				),
 				initialJwt = jwt,
 				initialRefresh = refreshJwt
 			)

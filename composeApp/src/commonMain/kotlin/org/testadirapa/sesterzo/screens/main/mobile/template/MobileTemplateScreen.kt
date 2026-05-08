@@ -2,12 +2,10 @@ package org.testadirapa.sesterzo.screens.main.mobile.template
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,12 +25,11 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.template.TemplateStatsCard
+import org.testadirapa.sesterzo.components.template.TemplateUpdateMenu
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.Space
 import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.content_copy_icon
 import sesterzo.composeapp.generated.resources.cycle
-import sesterzo.composeapp.generated.resources.now
 import sesterzo.composeapp.generated.resources.template_page_subtitle
 import sesterzo.composeapp.generated.resources.template_page_title
 
@@ -74,6 +71,12 @@ fun MobileTemplateScreen(
 			TemplateTitle()
 			Spacer(modifier = Modifier.fillMaxWidth().height(16.dp))
 			TemplateStatsCard(
+				incomeSources = templates.incomesTemplate,
+				savings = templates.savingsTemplate,
+				expenses = templates.expensesTemplate,
+			)
+			Spacer(modifier = Modifier.fillMaxWidth().height(16.dp))
+			TemplateUpdateMenu(
 				incomeSources = templates.incomesTemplate,
 				savings = templates.savingsTemplate,
 				expenses = templates.expensesTemplate,

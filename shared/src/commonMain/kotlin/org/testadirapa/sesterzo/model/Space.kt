@@ -13,6 +13,6 @@ data class Space(
 	val incomeSourcesTemplateId: String,
 	val savingsTemplateId: String,
 	val users: Map<String, AccessKey>,
-	val picture: Base64String?,
+	val pictureReference: String?,
 	val color: RGBColor? = null
 ) : Versionable

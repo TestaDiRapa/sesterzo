@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.styles.colors.colorOrDefault
 import org.testadirapa.sesterzo.styles.colors.onSpaceColor
@@ -24,9 +25,10 @@ import org.testadirapa.sesterzo.utils.toImageBitmap
 @Composable
 fun SpaceAvatar(
 	space: Space,
+	picture: Base64String?,
 	size: Dp
 ) {
-	val imageBitmap = space.picture?.toImageBitmap()
+	val imageBitmap = picture?.toImageBitmap()
 	Box(
 		contentAlignment = Alignment.Center,
 		modifier = Modifier

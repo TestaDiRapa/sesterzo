@@ -1,6 +1,7 @@
 package org.testadirapa.sesterzo.exceptions
 
 enum class ExceptionLabel {
+	AttachmentNotFound,
 	BudgetNotFound,
 	BudgetElementNotFound,
 	CannotDecryptWithAesKey,
@@ -21,6 +22,7 @@ enum class ExceptionLabel {
 	RecoveryKeyExpired,
 	RecoveryKeyNotFound,
 	SpaceNotFound,
+	SpaceThumbnailUpdateFailed,
 	Unauthorized,
 	UserNotFound,
 	UserUpdateFailed

@@ -42,6 +42,7 @@ fun HeaderBar(
 					openKey = Clock.System.now().toEpochMilliseconds()
 					sheetOpen = true
 				},
+				onError = onError
 			)
 		}
 		Spacer(modifier = Modifier.fillMaxWidth().height(8.dp))

@@ -23,4 +23,6 @@ abstract class SpaceDAO(client: DBClient) : GenericSingleCollectionDAO<Space>(cl
 	 * @return a [Flow] of [Space]s matching the condition.
 	 */
 	abstract fun getByOwner(userId: String): Flow<Space>
+
+	abstract suspend fun updateSpacePicture(spaceId: String, pictureRef: String): Space?
 }

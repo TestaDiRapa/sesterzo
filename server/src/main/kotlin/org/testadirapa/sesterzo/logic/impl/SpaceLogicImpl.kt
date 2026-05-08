@@ -4,6 +4,7 @@ import com.icure.kryptom.crypto.defaultCryptoService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.emitAll
+import org.testadirapa.sesterzo.dao.AttachmentDAO
 import org.testadirapa.sesterzo.dao.BudgetElementDAO
 import org.testadirapa.sesterzo.dao.SpaceDAO
 import org.testadirapa.sesterzo.exceptions.EntityNotFoundException
@@ -11,8 +12,10 @@ import org.testadirapa.sesterzo.exceptions.ExceptionLabel
 import org.testadirapa.sesterzo.exceptions.ImageTooLargeException
 import org.testadirapa.sesterzo.exceptions.InvalidSpaceAuthorizationException
 import org.testadirapa.sesterzo.exceptions.QuotaExceededException
+import org.testadirapa.sesterzo.exceptions.SpacePictureUpdateFailed
 import org.testadirapa.sesterzo.logic.SpaceLogic
 import org.testadirapa.sesterzo.model.BudgetElement
+import org.testadirapa.sesterzo.model.EncryptedAttachment
 import org.testadirapa.sesterzo.model.EncryptedBudgetElement
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.SpaceStub
@@ -21,6 +24,7 @@ import org.testadirapa.sesterzo.security.SecurityContext.Companion.withSecurityC
 import org.testadirapa.sesterzo.utils.isSizeUnderThreshold
 
 class SpaceLogicImpl(
+	private val attachmentDAO: AttachmentDAO,
 	private val budgetElementDAO: BudgetElementDAO,
 	private val spaceDAO: SpaceDAO
 ) : SpaceLogic {
@@ -39,10 +43,24 @@ class SpaceLogicImpl(
 			?: throw EntityNotFoundException(entityId = spaceId, label = ExceptionLabel.SpaceNotFound)
 	}
 
-	override suspend fun createSpace(spaceStub: SpaceStub): Space = withSecurityContext {
-		if(!spaceStub.picture.isSizeUnderThreshold()) {
+	override suspend fun setSpacePicture(spaceId: String, picture: EncryptedAttachment): Space = withSecurityContext {
+		if (spaceId !in spaces.keys) {
+			throw InvalidSpaceAuthorizationException(spaceId)
+		}
+		if(!picture.encryptedSelf.isSizeUnderThreshold()) {
 			throw ImageTooLargeException()
 		}
+		val imageRef = attachmentDAO.save(
+			spaceId = spaceId,
+			entity = picture
+		).id
+		return spaceDAO.updateSpacePicture(
+			spaceId = spaceId,
+			pictureRef = imageRef
+		) ?: throw SpacePictureUpdateFailed(spaceId = spaceId)
+	}
+
+	override suspend fun createSpace(spaceStub: SpaceStub): Space = withSecurityContext {
 		val existingUserSpaces = spaceDAO.getByParticipant(currentUserId).count()
 		if (existingUserSpaces > 5) {
 			throw QuotaExceededException()
@@ -88,7 +106,7 @@ class SpaceLogicImpl(
 				incomeSourcesTemplateId = incomeId,
 				savingsTemplateId = savingsId,
 				users = spaceStub.users,
-				picture = spaceStub.picture,
+				pictureReference = null,
 				color = spaceStub.color,
 			)
 		)

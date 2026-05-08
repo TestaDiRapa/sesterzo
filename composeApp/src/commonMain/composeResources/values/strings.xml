@@ -23,6 +23,7 @@
     <string name="bottom_menu_template_page">Template</string>
 
     <!--  Errors  -->
+    <string name="error_attachment_not_found">Attachment not found.</string>
     <string name="error_budget_not_found">Budget not found.</string>
     <string name="error_budget_element_not_found">Budget Element not found.</string>
     <string name="error_cannot_decrypt_aes">Cannot decrypt data with provided AES key.</string>
@@ -40,10 +41,11 @@
     <string name="error_invalid_registration_data">Invalid email or name.</string>
     <string name="error_missing_budget_key">Missing budget key.</string>
     <string name="error_public_key_update_failed">Cannot set the public key for the current user.</string>
-    <string name="error_quota_exceeded">You cannot create more spaces.</string>
+    <string name="error_quota_exceeded">You cannot create more budgets.</string>
     <string name="error_recovery_key_expired">This recovery key expired.</string>
     <string name="error_recovery_key_not_found">Recovery key not found.</string>
-    <string name="error_space_not_found">Space not found.</string>
+    <string name="error_space_not_found">Budget not found.</string>
+    <string name="error_space_thumbnail_update_failed">Cannot set budget thumbnail.</string>
     <string name="error_unauthorized">Invalid email or token.</string>
     <string name="error_user_not_found">User not found.</string>
     <string name="error_user_update_failed">User update failed.</string>

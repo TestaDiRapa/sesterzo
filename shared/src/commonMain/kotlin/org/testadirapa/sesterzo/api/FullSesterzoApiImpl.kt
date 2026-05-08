@@ -1,5 +1,6 @@
 package org.testadirapa.sesterzo.api
 
+import org.testadirapa.sesterzo.api.impl.AttachmentApiImpl
 import org.testadirapa.sesterzo.api.impl.BudgetApiImpl
 import org.testadirapa.sesterzo.api.impl.BudgetElementApiImpl
 import org.testadirapa.sesterzo.api.impl.EntryApiImpl
@@ -12,6 +13,7 @@ import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
 import org.testadirapa.sesterzo.storage.StorageFacade
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 
 class FullSesterzoApiImpl(
 	httpConfig: HttpConfig,
@@ -23,6 +25,16 @@ class FullSesterzoApiImpl(
 ) : FullSesterzoApi {
 
 	override val currentUserId: String get() = cryptoService.userId
+
+	override val attachment: AttachmentApi by lazy {
+		AttachmentApiImpl(
+			httpConfig = httpConfig,
+			cache = cache.attachment,
+			authService = authService,
+			ttl = 1.days,
+			cryptoService = cryptoService
+		)
+	}
 
 	override val budget: BudgetApi by lazy {
 		BudgetApiImpl(

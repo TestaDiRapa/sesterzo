@@ -6,6 +6,9 @@ class AndroidPersistentCache(
 	driver: SqlDriver
 ) : PersistentCache {
 
+	override val attachment: AttachmentPersistentCache by lazy {
+		AndroidAttachmentPersistentCache(driver)
+	}
 	override val budget: BudgetPersistentCache by lazy {
 		AndroidBudgetPersistentCache(driver)
 	}

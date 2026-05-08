@@ -38,6 +38,7 @@ import org.testadirapa.sesterzo.BuildKonfig
 import org.testadirapa.sesterzo.components.loading.PulsingRoundedSquare
 import org.testadirapa.sesterzo.components.ui.ActionRow
 import org.testadirapa.sesterzo.components.space.SpaceRow
+import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.Timestamp
 import sesterzo.composeapp.generated.resources.Res
@@ -65,11 +66,23 @@ fun MobileSpaceSwitcher(
 	var isLoading by remember { mutableStateOf(false) }
 	val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 	var spaces by remember { mutableStateOf<List<Space>>(emptyList()) }
+	var spacePictures by remember { mutableStateOf<Map<String, Base64String>>(emptyMap()) }
 
 	LaunchedEffect(openKey) {
 		isLoading = true
 		runCatching {
 			spaces = AppCtx.api.space.getSpaces()
+			spacePictures = spaces.mapNotNull {
+				it.pictureReference?.let { ref ->
+					AppCtx.api.attachment.getAttachmentInSpace(
+						spaceId = it.id,
+						attachmentId = ref,
+						bypassCache = false
+					)?.let { attachment ->
+						it.id to attachment.data
+					}
+				}
+			}.toMap()
 			isLoading = false
 		}.onFailure {
 			onError(it)
@@ -91,6 +104,7 @@ fun MobileSpaceSwitcher(
 					spaces.sortedBy { it.name }.forEach { space ->
 						SpaceRow(
 							space = space,
+							picture = spacePictures[space.id],
 							active = space.id == activeId,
 							onClick = { onSelect(space) },
 						)

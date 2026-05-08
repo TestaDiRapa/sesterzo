@@ -7,6 +7,5 @@ data class SpaceStub(
 	val id: String,
 	val name: String,
 	val users: Map<String, AccessKey>,
-	val picture: Base64String?,
 	val color: RGBColor?
 )

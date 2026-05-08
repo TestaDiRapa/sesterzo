@@ -5,9 +5,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
 import org.testadirapa.sesterzo.logic.SpaceLogic
+import org.testadirapa.sesterzo.model.EncryptedAttachment
 import org.testadirapa.sesterzo.model.SpaceStub
 import org.testadirapa.sesterzo.security.authenticatedGet
 import org.testadirapa.sesterzo.security.authenticatedPost
+import org.testadirapa.sesterzo.security.authenticatedPut
 import org.testadirapa.sesterzo.utils.getPathParameter
 
 fun Routing.spaceController() = route("/space") {
@@ -26,6 +28,12 @@ fun Routing.spaceController() = route("/space") {
 	authenticatedPost("") {
 		val spaceStub = call.receive<SpaceStub>()
 		call.respond(spaceLogic.createSpace(spaceStub))
+	}
+
+	authenticatedPut("/{spaceId}/thumbnail") {
+		val spaceId = call.getPathParameter("spaceId")
+		val spaceStub = call.receive<EncryptedAttachment>()
+		call.respond(spaceLogic.setSpacePicture(spaceId = spaceId, picture = spaceStub))
 	}
 
 }

@@ -4,6 +4,7 @@ import org.jetbrains.compose.resources.getString
 import org.testadirapa.sesterzo.exceptions.ExceptionLabel
 import org.testadirapa.sesterzo.exceptions.ExceptionWithLabel
 import sesterzo.composeapp.generated.resources.Res
+import sesterzo.composeapp.generated.resources.error_attachment_not_found
 import sesterzo.composeapp.generated.resources.error_budget_element_not_found
 import sesterzo.composeapp.generated.resources.error_budget_not_found
 import sesterzo.composeapp.generated.resources.error_cannot_decrypt_aes
@@ -25,6 +26,7 @@ import sesterzo.composeapp.generated.resources.error_quota_exceeded
 import sesterzo.composeapp.generated.resources.error_recovery_key_expired
 import sesterzo.composeapp.generated.resources.error_recovery_key_not_found
 import sesterzo.composeapp.generated.resources.error_space_not_found
+import sesterzo.composeapp.generated.resources.error_space_thumbnail_update_failed
 import sesterzo.composeapp.generated.resources.error_unauthorized
 import sesterzo.composeapp.generated.resources.error_user_not_found
 import sesterzo.composeapp.generated.resources.error_user_update_failed
@@ -58,6 +60,8 @@ suspend fun Throwable.toErrorState(): ErrorState = when(this) {
 			ExceptionLabel.BudgetElementNotFound -> getString(Res.string.error_budget_element_not_found)
 			ExceptionLabel.ExpenseDeletionFailed -> getString(Res.string.error_expense_deletion_failed)
 			ExceptionLabel.SpaceNotFound -> getString(Res.string.error_space_not_found)
+			ExceptionLabel.AttachmentNotFound -> getString(Res.string.error_attachment_not_found)
+			ExceptionLabel.SpaceThumbnailUpdateFailed -> getString(Res.string.error_space_thumbnail_update_failed)
 		}
 	}
 	else -> "${getString(Res.string.error_generic)}${message?.let { ": $it" } ?: ""}"

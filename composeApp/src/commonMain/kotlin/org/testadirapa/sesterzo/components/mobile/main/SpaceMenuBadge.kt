@@ -15,12 +15,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
+import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.ui.SpaceThumbnailBadge
+import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.styles.colors.colorOrDefault
 import sesterzo.composeapp.generated.resources.Res
@@ -30,7 +37,20 @@ import sesterzo.composeapp.generated.resources.arrow_down
 fun SpaceMenuBadge(
 	space: Space,
 	onClick: () -> Unit,
+	onError: (Throwable) -> Unit
 ) {
+	var spaceImage by remember { mutableStateOf<Base64String?>(null) }
+	LaunchedEffect(space.pictureReference) {
+		space.pictureReference?.also {
+			runCatching {
+				spaceImage = AppCtx.api.attachment.getAttachmentInSpace(
+					spaceId = space.id,
+					attachmentId = it,
+					bypassCache = false
+				)?.data
+			}.onFailure(onError)
+		}
+	}
 	Card(
 		modifier = Modifier.clickable(onClick = onClick),
 		border = BorderStroke(width = 1.dp, color = colorScheme.outline),
@@ -46,7 +66,7 @@ fun SpaceMenuBadge(
 			SpaceThumbnailBadge(
 				placeholderLetter = space.name.first().uppercase(),
 				color = space.colorOrDefault(),
-				imageBytes = space.picture
+				imageBytes = spaceImage
 			)
 			Spacer(modifier = Modifier.width(8.dp))
 			Text(

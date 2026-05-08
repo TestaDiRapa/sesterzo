@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.SpaceStub
 import org.testadirapa.sesterzo.exceptions.QuotaExceededException
+import org.testadirapa.sesterzo.model.EncryptedAttachment
 
 interface SpaceLogic {
 
@@ -22,4 +23,5 @@ interface SpaceLogic {
 	 */
 	suspend fun createSpace(spaceStub: SpaceStub): Space
 	suspend fun getSpace(spaceId: String): Space
+	suspend fun setSpacePicture(spaceId: String, picture: EncryptedAttachment): Space
 }

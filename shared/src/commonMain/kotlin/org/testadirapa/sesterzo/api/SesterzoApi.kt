@@ -188,6 +188,7 @@ interface FullSesterzoApi : SesterzoApi {
 
 	val cryptoService: CryptoService
 
+	val attachment: AttachmentApi
 	val budget: BudgetApi
 	val budgetElement: BudgetElementApi
 	val entry: EntryApi

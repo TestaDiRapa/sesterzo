@@ -1,0 +1,25 @@
+CREATE TABLE CachedAttachment (
+    id                          TEXT    NOT NULL PRIMARY KEY,
+    spaceId                     TEXT    NOT NULL,
+    encryptedSelf               TEXT,              -- nullable Base64String
+    inserted_at                 INTEGER NOT NULL   -- Unix timestamp ms, added by us
+);
+
+selectAll:
+SELECT * FROM CachedAttachment
+ORDER BY inserted_at DESC;
+
+selectById:
+SELECT * FROM CachedAttachment
+WHERE id = :id;
+
+upsert:
+INSERT OR REPLACE INTO CachedAttachment(id, spaceId, encryptedSelf, inserted_at)
+VALUES (?, ?, ?, ?);
+
+deleteOne:
+DELETE FROM CachedAttachment
+WHERE id = :id;
+
+deleteAll:
+DELETE FROM CachedAttachment;

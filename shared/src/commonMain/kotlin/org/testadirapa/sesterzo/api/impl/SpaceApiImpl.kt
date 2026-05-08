@@ -18,6 +18,8 @@ import org.testadirapa.sesterzo.cache.model.CachedSpace
 import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrap
+import org.testadirapa.sesterzo.model.DecryptedAttachment
+import org.testadirapa.sesterzo.model.EncryptedAttachment
 import org.testadirapa.sesterzo.model.RGBColor
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.SpaceStub
@@ -68,6 +70,17 @@ class SpaceApiImpl(
 		setBody(stub)
 	}.wrap()
 
+	private suspend fun setSpaceThumbnail(spaceId: String, picture: EncryptedAttachment): HttpResponse<Space> = put {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, spaceId, "thumbnail")
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+		contentType(Application.Json)
+		setBody(picture)
+	}.wrap()
+
 	override suspend fun getSpaces(): List<Space> = getAllMerging {
 		retrieveSpaces()
 	}.onEach {
@@ -87,7 +100,6 @@ class SpaceApiImpl(
 		val stub = SpaceStub(
 			id = defaultCryptoService.strongRandom.randomUUID(),
 			name = name,
-			picture = picture?.let { base64Encode(it) },
 			color = fallbackColor,
 			users = mapOf(
 				cryptoService.userId to UserAccessKey(
@@ -100,7 +112,19 @@ class SpaceApiImpl(
 		authService.invalidateToken()
 		putInCache(newSpace)
 		cryptoService.decryptAndLoadSpaceKey(newSpace)
-		return newSpace
+		return picture?.let {
+			DecryptedAttachment(
+				id = defaultCryptoService.strongRandom.randomUUID(),
+				spaceId = newSpace.id,
+				data = base64Encode(it),
+			)
+		}?.let {
+			val attachment = cryptoService.encrypt(it)
+			setSpaceThumbnail(
+				spaceId = newSpace.id,
+				picture = attachment
+			).bodyOrThrow()
+		} ?: newSpace
 	}
 
 }

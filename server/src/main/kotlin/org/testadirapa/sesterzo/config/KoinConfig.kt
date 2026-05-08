@@ -15,18 +15,21 @@ import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.components.mongodb.MongoDBCredentials
 import org.testadirapa.sesterzo.components.security.BCryptPasswordEncoder
 import org.testadirapa.sesterzo.components.security.PasswordEncoder
+import org.testadirapa.sesterzo.dao.AttachmentDAO
 import org.testadirapa.sesterzo.dao.BudgetDAO
 import org.testadirapa.sesterzo.dao.BudgetElementDAO
 import org.testadirapa.sesterzo.dao.EntryDAO
 import org.testadirapa.sesterzo.dao.RecoveryDAO
 import org.testadirapa.sesterzo.dao.SpaceDAO
 import org.testadirapa.sesterzo.dao.UserDAO
+import org.testadirapa.sesterzo.dao.impl.AttachmentDAOImpl
 import org.testadirapa.sesterzo.dao.impl.BudgetDAOImpl
 import org.testadirapa.sesterzo.dao.impl.BudgetElementDAOImpl
 import org.testadirapa.sesterzo.dao.impl.EntryDAOImpl
 import org.testadirapa.sesterzo.dao.impl.RecoveryDAOImpl
 import org.testadirapa.sesterzo.dao.impl.SpaceDAOImpl
 import org.testadirapa.sesterzo.dao.impl.UserDAOImpl
+import org.testadirapa.sesterzo.logic.AttachmentLogic
 import org.testadirapa.sesterzo.logic.AuthenticationLogic
 import org.testadirapa.sesterzo.logic.BudgetElementLogic
 import org.testadirapa.sesterzo.logic.BudgetLogic
@@ -35,6 +38,7 @@ import org.testadirapa.sesterzo.logic.EntryLogic
 import org.testadirapa.sesterzo.logic.RecoveryLogic
 import org.testadirapa.sesterzo.logic.SpaceLogic
 import org.testadirapa.sesterzo.logic.UserLogic
+import org.testadirapa.sesterzo.logic.impl.AttachmentLogicImpl
 import org.testadirapa.sesterzo.logic.impl.AuthenticationLogicImpl
 import org.testadirapa.sesterzo.logic.impl.BudgetElementLogicImpl
 import org.testadirapa.sesterzo.logic.impl.BudgetLogicImpl
@@ -62,6 +66,7 @@ fun applicationModules(
 	}
 
 	// DAOs
+	single<AttachmentDAO> { AttachmentDAOImpl(client = get()) }
 	single<BudgetDAO> { BudgetDAOImpl(client = get()) }
 	single<BudgetElementDAO> { BudgetElementDAOImpl(client = get()) }
 	single<EntryDAO> { EntryDAOImpl(client = get()) }
@@ -81,12 +86,19 @@ fun applicationModules(
 			passwordEncoder = get()
 		)
 	}
+	single<AttachmentLogic> { AttachmentLogicImpl(attachmentDAO = get()) }
 	single<BudgetLogic> { BudgetLogicImpl(budgetDAO = get()) }
 	single<BudgetElementLogic> { BudgetElementLogicImpl(budgetElementDAO = get()) }
 	single<CaptchaLogic> { CaptchaLogicImpl(config = CaptchaLogic.Config.fromConfig(config)) }
 	single<EntryLogic> { EntryLogicImpl(entryDAO = get()) }
 	single<RecoveryLogic> { RecoveryLogicImpl(recoveryDAO = get()) }
-	single<SpaceLogic> { SpaceLogicImpl(budgetElementDAO = get(), spaceDAO = get()) }
+	single<SpaceLogic> {
+		SpaceLogicImpl(
+			attachmentDAO = get(),
+			budgetElementDAO = get(),
+			spaceDAO = get()
+		)
+	}
 	single<UserLogic> { UserLogicImpl(userDAO = get()) }
 
 }

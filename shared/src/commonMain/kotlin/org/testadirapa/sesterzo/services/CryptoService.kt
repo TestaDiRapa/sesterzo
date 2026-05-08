@@ -122,7 +122,7 @@ class CryptoService private constructor(
 
 	suspend fun <E: EncryptedData<D>, D> encrypt(decryptedEntity: D): E where D : DecryptedData<E>, D : SpaceData {
 		val dataToEncrypt = decryptedEntity.getJsonToEncrypt()
-		val encryptedSelf = dataToEncrypt.takeIf { it.isEmpty() }?.let {
+		val encryptedSelf = dataToEncrypt.takeIf { it.isNotEmpty() }?.let {
 			val key = spaceKeys[decryptedEntity.spaceId]
 				?: throw MissingSpaceKeyException(decryptedEntity.spaceId)
 			val jsonString = Serialization.json.encodeToString(it)

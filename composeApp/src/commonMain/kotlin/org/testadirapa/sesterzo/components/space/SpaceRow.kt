@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
+import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Space
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.just_you
@@ -31,6 +32,7 @@ import sesterzo.composeapp.generated.resources.members
 @Composable
 fun SpaceRow(
 	space: Space,
+	picture: Base64String?,
 	active: Boolean,
 	onClick: () -> Unit,
 ) {
@@ -54,7 +56,11 @@ fun SpaceRow(
 			.padding(horizontal = 12.dp, vertical = 6.dp),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
-		SpaceAvatar(space = space, size = 36.dp)
+		SpaceAvatar(
+			space = space,
+			picture = picture,
+			size = 36.dp
+		)
 
 		Spacer(Modifier.width(12.dp))
 

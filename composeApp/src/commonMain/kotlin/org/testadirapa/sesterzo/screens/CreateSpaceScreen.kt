@@ -44,7 +44,10 @@ import org.testadirapa.sesterzo.components.input.TextField
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.styles.colors.SpaceColor
+import org.testadirapa.sesterzo.validators.CompositeValidator
+import org.testadirapa.sesterzo.validators.MaxLengthValidator
 import org.testadirapa.sesterzo.validators.NotBlankValidator
+import org.testadirapa.sesterzo.validators.defaultNameValidator
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.arrow_back
 import sesterzo.composeapp.generated.resources.create_space_create_button
@@ -64,7 +67,7 @@ fun CreateSpaceScreen(
 	onCancel: (Space) -> Unit,
 ) {
 	var imageBytes by remember { mutableStateOf<ByteArray?>(null) }
-	var spaceName by remember { mutableStateOf(FormValue(validator = NotBlankValidator)) }
+	var spaceName by remember { mutableStateOf(FormValue(validator = defaultNameValidator)) }
 	var selectedColor by remember { mutableStateOf(SpaceColor.Amber) }
 	Scaffold { innerPadding ->
 		Box(

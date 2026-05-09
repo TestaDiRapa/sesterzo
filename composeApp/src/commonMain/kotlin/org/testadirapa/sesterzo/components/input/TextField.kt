@@ -15,38 +15,33 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
-import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.styles.colors.components.outlinedTextFieldColors
-import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.email_field
-import sesterzo.composeapp.generated.resources.email_field_invalid
-import sesterzo.composeapp.generated.resources.email_field_placeholder
 
 @Composable
 fun TextField(
 	value: FormValue<String>,
-	title: String,
+	title: String? = null,
 	placeholder: String,
 	errorMessage: String,
 	enabled: Boolean = true,
 	onValueChange: (String) -> Unit,
+	modifier: Modifier = Modifier.fillMaxWidth(),
 ) {
 	val focusManager = LocalFocusManager.current
 	Column {
-		Box(
-			modifier = Modifier.padding(bottom = 4.dp),
-		) {
-			Text(
-				text = title,
-				style = MaterialTheme.typography.titleMedium,
-				color = colorScheme.onSurfaceVariant,
-			)
+		if (title != null) {
+			Box(
+				modifier = Modifier.padding(bottom = 4.dp),
+			) {
+				Text(
+					text = title,
+					style = MaterialTheme.typography.titleMedium,
+					color = colorScheme.onSurfaceVariant,
+				)
+			}
 		}
 		OutlinedTextField(
 			value = value.value ?: "",
@@ -64,7 +59,7 @@ fun TextField(
 					Text(errorMessage, color = colorScheme.error)
 				}
 			},
-			modifier = Modifier.fillMaxWidth(),
+			modifier = modifier,
 			shape = RoundedCornerShape(8.dp),
 			colors = outlinedTextFieldColors()
 		)

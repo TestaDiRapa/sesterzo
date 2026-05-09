@@ -2,6 +2,7 @@ package org.testadirapa.sesterzo.components.template
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,31 +47,48 @@ fun TemplateUpdateMenu(
 	incomeSources: DecryptedBudgetElement,
 	expenses: DecryptedBudgetElement,
 	savings: DecryptedBudgetElement,
+	onFormOpen: () -> Unit,
+	setTemplate: (Pair<String, DecryptedBudgetElement>) -> Unit,
 ) {
 	Card(
 		modifier = Modifier.fillMaxWidth(),
 		border = BorderStroke(width = 1.dp, color = colorScheme.outline),
 		colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
 	) {
+		val incomeSourcesTitle = stringResource(Res.string.template_page_income_sources)
 		TemplateRow(
 			label = stringResource(Res.string.template_page_income_sources),
 			subtitle = "${incomeSources.elements.size} sources",
 			value = incomeSources.elements.values.sum(),
 			color = colorScheme.primary,
+			onClick = {
+				setTemplate(incomeSourcesTitle to incomeSources)
+				onFormOpen()
+			}
 		)
 		HorizontalDivider(color = colorScheme.outline)
+		val expensesTitle = stringResource(Res.string.template_page_expenses)
 		TemplateRow(
 			label = stringResource(Res.string.template_page_expenses),
 			subtitle = "${expenses.elements.size} sources",
 			value = expenses.elements.values.sum(),
 			color = LocalFinanceColors.current.spent,
+			onClick = {
+				setTemplate(expensesTitle to expenses)
+				onFormOpen()
+			}
 		)
 		HorizontalDivider(color = colorScheme.outline)
+		val savingTitle = stringResource(Res.string.template_page_savings)
 		TemplateRow(
 			label = stringResource(Res.string.template_page_savings),
 			subtitle = "${savings.elements.size} sources",
 			value = savings.elements.values.sum(),
 			color = LocalFinanceColors.current.saved,
+			onClick = {
+				setTemplate(savingTitle to savings)
+				onFormOpen()
+			}
 		)
 	}
 }
@@ -81,11 +99,13 @@ private fun TemplateRow(
 	subtitle: String,
 	value: Amount,
 	color: Color,
+	onClick: () -> Unit,
 ) {
 	Row(
 		modifier = Modifier
 			.fillMaxWidth()
-			.padding(12.dp),
+			.padding(12.dp)
+			.clickable(onClick = onClick),
 		verticalAlignment = Alignment.CenterVertically,
 		horizontalArrangement = Arrangement.SpaceBetween,
 	) {

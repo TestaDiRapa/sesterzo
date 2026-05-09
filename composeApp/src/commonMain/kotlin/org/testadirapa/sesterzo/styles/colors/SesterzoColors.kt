@@ -97,7 +97,7 @@ val LightColorScheme = lightColorScheme(
 	outline = SesterzoColors.LightOutline,
 	outlineVariant = SesterzoColors.LightOutlineVar,
 	error = SesterzoColors.LightSpent300,
-	onError = Color.White,
+	onError = SesterzoColors.LightSpent500,
 	errorContainer = SesterzoColors.LightSpentContainer,
 	onErrorContainer = SesterzoColors.LightSpent500,
 )
@@ -128,7 +128,7 @@ val DarkColorScheme = darkColorScheme(
 	outlineVariant = SesterzoColors.OutlineVar,
 
 	error = SesterzoColors.Spent300,
-	onError = SesterzoColors.OnAmber,
+	onError = SesterzoColors.Spent500,
 	errorContainer = SesterzoColors.SpentContainer,
 	onErrorContainer = SesterzoColors.Spent300,
 )

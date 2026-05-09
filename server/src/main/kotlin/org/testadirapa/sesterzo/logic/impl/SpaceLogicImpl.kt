@@ -22,6 +22,7 @@ import org.testadirapa.sesterzo.model.SpaceStub
 import org.testadirapa.sesterzo.security.SecurityContext.Companion.flowOnSecurityContext
 import org.testadirapa.sesterzo.security.SecurityContext.Companion.withSecurityContext
 import org.testadirapa.sesterzo.utils.isSizeUnderThreshold
+import org.testadirapa.sesterzo.validators.defaultNameValidator
 
 class SpaceLogicImpl(
 	private val attachmentDAO: AttachmentDAO,
@@ -64,6 +65,9 @@ class SpaceLogicImpl(
 		val existingUserSpaces = spaceDAO.getByParticipant(currentUserId).count()
 		if (existingUserSpaces > 5) {
 			throw QuotaExceededException()
+		}
+		if (!defaultNameValidator.isValid(spaceStub.name)) {
+			throw IllegalArgumentException("Invalid space name: ${spaceStub.name}")
 		}
 		val savingsId = budgetElementDAO.save(
 			spaceId = spaceStub.id,

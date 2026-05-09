@@ -30,8 +30,8 @@ import org.testadirapa.sesterzo.handlers.MutableStateFlowCaptchaProgressHandler
 import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.screens.SwitchAuthButton
 import org.testadirapa.sesterzo.validators.EmailValidator
-import org.testadirapa.sesterzo.validators.NotBlankValidator
 import org.testadirapa.sesterzo.validators.OttValidator
+import org.testadirapa.sesterzo.validators.defaultNameValidator
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.auth_code_label
 import sesterzo.composeapp.generated.resources.button_login
@@ -52,7 +52,7 @@ fun RegistrationScreen(
 	captchaProgressState: StateFlow<MutableStateFlowCaptchaProgressHandler.CaptchaProgress>
 ) {
 	var email by remember { mutableStateOf(FormValue(validator = EmailValidator)) }
-	var name by remember { mutableStateOf(FormValue(validator = NotBlankValidator)) }
+	var name by remember { mutableStateOf(FormValue(validator = defaultNameValidator,)) }
 	var ott by remember { mutableStateOf(FormValue(validator = OttValidator)) }
 	val captchaProgress by captchaProgressState.collectAsState()
 	Scaffold { innerPadding ->

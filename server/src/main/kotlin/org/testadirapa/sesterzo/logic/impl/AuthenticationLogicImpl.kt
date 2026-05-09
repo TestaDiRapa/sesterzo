@@ -22,7 +22,7 @@ import org.testadirapa.sesterzo.security.JwtManager
 import org.testadirapa.sesterzo.security.JwtRefreshClaims
 import org.testadirapa.sesterzo.utils.toMap
 import org.testadirapa.sesterzo.validators.EmailValidator
-import org.testadirapa.sesterzo.validators.NotBlankValidator
+import org.testadirapa.sesterzo.validators.defaultNameValidator
 import java.util.concurrent.TimeUnit
 
 class AuthenticationLogicImpl(
@@ -80,7 +80,7 @@ class AuthenticationLogicImpl(
 		if (!captchaLogic.validateChallenge(solution)) {
 			throw InvalidCaptchaException()
 		}
-		if (!EmailValidator.isValid(email) || !NotBlankValidator.isValid(name)) {
+		if (!EmailValidator.isValid(email) || !defaultNameValidator.isValid(name)) {
 			throw InvalidRegistrationParametersException()
 		}
 		val token = generateShortToken(tokenLength)

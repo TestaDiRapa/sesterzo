@@ -1,9 +1,10 @@
-package org.testadirapa.sesterzo.components.template
+package org.testadirapa.sesterzo.components.mobile.template
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -30,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,7 +42,10 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.input.AmountField
+import org.testadirapa.sesterzo.components.input.FormButton
 import org.testadirapa.sesterzo.components.input.InlineTextField
+import org.testadirapa.sesterzo.components.input.Switch
+import org.testadirapa.sesterzo.components.text.TextWithIcon
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleLarge
@@ -45,11 +53,16 @@ import org.testadirapa.sesterzo.styles.typography.amountTextStyleMedium
 import org.testadirapa.sesterzo.validators.NonNegativeValidator
 import org.testadirapa.sesterzo.validators.defaultNameValidator
 import sesterzo.composeapp.generated.resources.Res
+import sesterzo.composeapp.generated.resources.add_source_apply_to_month_subtitle
+import sesterzo.composeapp.generated.resources.add_source_apply_to_month_title
 import sesterzo.composeapp.generated.resources.add_source_edit
 import sesterzo.composeapp.generated.resources.add_source_page_add_new_source
 import sesterzo.composeapp.generated.resources.add_source_page_new_source
+import sesterzo.composeapp.generated.resources.error_multiple_sources_with_same_name
+import sesterzo.composeapp.generated.resources.info
 import sesterzo.composeapp.generated.resources.minus
 import sesterzo.composeapp.generated.resources.plus
+import sesterzo.composeapp.generated.resources.update
 
 @Composable
 fun MobileSourceUpdateForm(
@@ -57,6 +70,7 @@ fun MobileSourceUpdateForm(
 	type: String,
 	sources: Map<String, Amount>
 ) {
+	var updateCurrentBudget by remember { mutableStateOf(true) }
 	val newSource = stringResource(Res.string.add_source_page_new_source)
 	var updatedSources by remember {
 		mutableStateOf(
@@ -110,12 +124,13 @@ fun MobileSourceUpdateForm(
 				}
 			}
 		}
+		Spacer(modifier = Modifier.height(8.dp))
 		Row(
 			modifier = Modifier
 				.clickable(
 					onClick = {
 						updatedSources = updatedSources + (
-							FormValue(value = newSource, validator = defaultNameValidator) to
+							FormValue(value = "$newSource ${updatedSources.size + 1}", validator = defaultNameValidator) to
 								FormValue(value = 0, validator = NonNegativeValidator)
 						)
 					}
@@ -137,6 +152,67 @@ fun MobileSourceUpdateForm(
 				color = colorScheme.primary,
 			)
 		}
+		if (updatedSources.isNotEmpty() &&
+				updatedSources.mapNotNull { (k, _) -> k.value?.trim() }.toSet().size != updatedSources.size
+		) {
+			Spacer(modifier = Modifier.height(8.dp))
+			TextWithIcon(
+				icon = painterResource(Res.drawable.info),
+				text = stringResource(Res.string.error_multiple_sources_with_same_name),
+				color = colorScheme.onError,
+			)
+		}
+		Spacer(modifier = Modifier.heightIn(8.dp, 48.dp))
+		HorizontalDivider(color = colorScheme.outline)
+		Row(
+			verticalAlignment = Alignment.CenterVertically,
+			horizontalArrangement = Arrangement.spacedBy(12.dp),
+			modifier = Modifier
+				.fillMaxWidth()
+				.padding(horizontal = 4.dp, vertical = 4.dp)
+				.toggleable(
+					value = updateCurrentBudget,
+					role = Role.Switch,
+					interactionSource = remember { MutableInteractionSource() },
+					indication = null,
+					onValueChange = {
+						updateCurrentBudget = !updateCurrentBudget
+					},
+				)
+		) {
+			Column(modifier = Modifier.weight(1f)) {
+				Text(
+					text = stringResource(Res.string.add_source_apply_to_month_title),
+					color = colorScheme.onSurface,
+					style = MaterialTheme.typography.bodyLarge
+				)
+				Spacer(Modifier.height(2.dp))
+				Text(
+					text = stringResource(Res.string.add_source_apply_to_month_subtitle),
+					color = colorScheme.onSurfaceVariant,
+					style = MaterialTheme.typography.bodyMedium
+				)
+			}
+			Switch(
+				checked = updateCurrentBudget,
+				onCheckedChange = null,
+				enabled = true,
+			)
+		}
+		FormButton(
+			onClick = {},
+			text = "${stringResource(Res.string.update)} ${type.lowercase()}",
+			enabled = updatedSources.isNotEmpty()
+				&& updatedSources.all { (k, v) -> k.isValid && v.isValid }
+				&& updatedSources.map { (k, _) -> k.validValue.trim() }.toSet().size == updatedSources.size,
+			isLoading = false,
+			colors = ButtonColors(
+				containerColor = colorScheme.primary,
+				contentColor = colorScheme.onPrimary,
+				disabledContainerColor = colorScheme.surfaceContainerHigh,
+				disabledContentColor = colorScheme.onTertiary,
+			)
+		)
 	}
 }
 

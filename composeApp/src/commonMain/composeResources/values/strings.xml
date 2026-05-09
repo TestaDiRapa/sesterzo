@@ -50,12 +50,15 @@
     <string name="error_user_not_found">User not found.</string>
     <string name="error_user_update_failed">User update failed.</string>
     <string name="error_invalid_source_name">Invalid source name.</string>
+    <string name="error_multiple_sources_with_same_name">You cannot have multiple sources with the same name.</string>
 
     <!--  Add source page  -->
     <string name="add_source_page_new_source">New source</string>
     <string name="add_source_page_add_new_source">Add a new source</string>
     <string name="add_source_type_template">MONTHLY TEMPLATE</string>
     <string name="add_source_edit">EDIT</string>
+    <string name="add_source_apply_to_month_title">Apply to current month</string>
+    <string name="add_source_apply_to_month_subtitle">Also updates the budget of this month</string>
 
     <!--  Backup private key screen  -->
     <string name="backup_key_title">Back up your private key</string>
@@ -164,4 +167,5 @@
 
     <!--  Other  -->
     <string name="out_of">of</string>
+    <string name="update">Update</string>
 </resources>

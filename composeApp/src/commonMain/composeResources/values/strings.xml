@@ -26,6 +26,7 @@
     <string name="error_attachment_not_found">Attachment not found.</string>
     <string name="error_budget_not_found">Budget not found.</string>
     <string name="error_budget_element_not_found">Budget Element not found.</string>
+    <string name="error_budget_update_failed">Budget update failed.</string>
     <string name="error_cannot_decrypt_aes">Cannot decrypt data with provided AES key.</string>
     <string name="error_cannot_decrypt_rsa">Cannot decrypt data with provided RSA key.</string>
     <string name="error_cannot_encrypt_aes">Cannot encrypt data with provided AES key.</string>

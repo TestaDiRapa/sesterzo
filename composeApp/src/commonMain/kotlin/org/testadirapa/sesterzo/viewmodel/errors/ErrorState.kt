@@ -7,6 +7,7 @@ import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.error_attachment_not_found
 import sesterzo.composeapp.generated.resources.error_budget_element_not_found
 import sesterzo.composeapp.generated.resources.error_budget_not_found
+import sesterzo.composeapp.generated.resources.error_budget_update_failed
 import sesterzo.composeapp.generated.resources.error_cannot_decrypt_aes
 import sesterzo.composeapp.generated.resources.error_cannot_decrypt_rsa
 import sesterzo.composeapp.generated.resources.error_cannot_encrypt_aes
@@ -62,6 +63,7 @@ suspend fun Throwable.toErrorState(): ErrorState = when(this) {
 			ExceptionLabel.SpaceNotFound -> getString(Res.string.error_space_not_found)
 			ExceptionLabel.AttachmentNotFound -> getString(Res.string.error_attachment_not_found)
 			ExceptionLabel.SpaceThumbnailUpdateFailed -> getString(Res.string.error_space_thumbnail_update_failed)
+			ExceptionLabel.BudgetUpdateFailed -> getString(Res.string.error_budget_update_failed)
 		}
 	}
 	else -> "${getString(Res.string.error_generic)}${message?.let { ": $it" } ?: ""}"

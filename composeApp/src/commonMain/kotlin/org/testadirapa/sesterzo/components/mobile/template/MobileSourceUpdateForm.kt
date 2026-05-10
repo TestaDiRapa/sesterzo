@@ -67,10 +67,13 @@ import sesterzo.composeapp.generated.resources.plus
 import sesterzo.composeapp.generated.resources.update
 
 @Composable
-fun MobileSourceUpdateForm(
+fun <T> MobileSourceUpdateForm(
 	title: String,
 	type: String,
-	sources: Map<String, Amount>
+	sources: Map<String, Amount>,
+	entity: T,
+	loadingState: Boolean,
+	onSourceUpdate: (entity: T, updatedAmounts: Map<String, Amount>, updatedCurrentBudget: Boolean) -> Unit,
 ) {
 	var updateCurrentBudget by remember { mutableStateOf(true) }
 	val newSource = stringResource(Res.string.add_source_page_new_source)
@@ -206,12 +209,20 @@ fun MobileSourceUpdateForm(
 			)
 		}
 		FormButton(
-			onClick = {},
+			onClick = {
+				onSourceUpdate(
+					entity,
+					updatedSources.map {
+						it.first.validValue to it.second.validValue
+					}.toMap(),
+					updateCurrentBudget
+				)
+			},
 			text = "${stringResource(Res.string.update)} ${type.lowercase()}",
 			enabled = updatedSources.isNotEmpty()
 				&& updatedSources.all { (k, v) -> k.isValid && v.isValid }
 				&& updatedSources.map { (k, _) -> k.validValue.trim() }.toSet().size == updatedSources.size,
-			isLoading = false,
+			isLoading = loadingState,
 			colors = ButtonColors(
 				containerColor = colorScheme.primary,
 				contentColor = colorScheme.onPrimary,

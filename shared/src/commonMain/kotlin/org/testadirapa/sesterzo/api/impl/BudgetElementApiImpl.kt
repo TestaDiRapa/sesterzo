@@ -3,8 +3,10 @@ package org.testadirapa.sesterzo.api.impl
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.parameter
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType.Application
 import io.ktor.http.appendPathSegments
+import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.date.GMTDate
 import org.testadirapa.sesterzo.api.BudgetElementApi
@@ -44,9 +46,35 @@ class BudgetElementApiImpl(
 		accept(Application.Json)
 	}.wrap()
 
+	private suspend fun saveBudgetElement(
+		spaceId: String,
+		budgetElement: EncryptedBudgetElement
+	): HttpResponse<EncryptedBudgetElement> = post {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, "inSpace", spaceId,)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+		contentType(Application.Json)
+		setBody(budgetElement)
+	}.wrap()
+
 	override suspend fun getLatestBudgetElementById(spaceId: String, budgetElementId: String): DecryptedBudgetElement =
 		retrieveLatestById(spaceId = spaceId, budgetElementId = budgetElementId)
 			.bodyOrThrow()
 			.also { putInCache(it) }
 			.let { cryptoService.decrypt(it) }
+
+	override suspend fun createBudgetElement(
+		spaceId: String,
+		budgetElement: DecryptedBudgetElement
+	): DecryptedBudgetElement = saveBudgetElement(
+		spaceId = spaceId,
+		budgetElement = cryptoService.encrypt(budgetElement)
+	).bodyOrThrow().also {
+		putInCache(it)
+	}.let {
+		cryptoService.decrypt(it)
+	}
 }

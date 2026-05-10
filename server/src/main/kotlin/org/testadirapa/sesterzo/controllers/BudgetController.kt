@@ -6,7 +6,9 @@ import io.ktor.server.routing.Routing
 import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import org.testadirapa.sesterzo.logic.BudgetLogic
+import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.EncryptedBudget
+import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.security.authenticateGetInSpace
 import org.testadirapa.sesterzo.security.authenticatedPostInSpace
 import org.testadirapa.sesterzo.utils.getIntPathParameter
@@ -43,4 +45,21 @@ fun Routing.budgetController() = route("/budget") {
 		val month = call.getIntPathParameter("month")
 		call.respond(budgetLogic.getFirstBudgetAfter(spaceId = spaceId, year = year, month = month))
 	}
+
+	authenticatedPostInSpace("/{budgetId}/{version}/{templateType}") { spaceId ->
+		val budgetId = call.getPathParameter("budgetId")
+		val version = call.getIntPathParameter("version")
+		val templateType = call.getPathParameter("templateType")
+		val elementReference = call.receive<VersionableReference>()
+		call.respond(
+			budgetLogic.updateTemplateVersion(
+				spaceId = spaceId,
+				budgetId = budgetId,
+				budgetVersion = version,
+				type = BudgetElement.BudgetElementType.valueOf(templateType),
+				budgetElementReference = elementReference
+			)
+		)
+	}
+
 }

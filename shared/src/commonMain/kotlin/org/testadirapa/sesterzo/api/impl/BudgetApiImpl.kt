@@ -17,10 +17,15 @@ import org.testadirapa.sesterzo.api.TemporizedCachedApi
 import org.testadirapa.sesterzo.cache.BudgetPersistentCache
 import org.testadirapa.sesterzo.cache.model.CachedBudget
 import org.testadirapa.sesterzo.config.HttpConfig
+import org.testadirapa.sesterzo.exceptions.ExceptionLabel
+import org.testadirapa.sesterzo.exceptions.ExceptionWithLabel
 import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrap
+import org.testadirapa.sesterzo.model.Budget
+import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.EncryptedBudget
+import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.model.toReference
 import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
@@ -74,7 +79,6 @@ class BudgetApiImpl(
 		url {
 			takeFrom(baseUrl)
 			appendPathSegments(baseSegment, "inSpace", spaceId)
-			parameter("ts", GMTDate().timestamp)
 		}
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
@@ -90,6 +94,22 @@ class BudgetApiImpl(
 		}
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
+	}.wrap()
+
+	private suspend fun updateBudgetTemplateInSpace(
+		spaceId: String,
+		budget: Budget,
+		type: BudgetElement.BudgetElementType,
+		budgetElementReference: VersionableReference,
+	): HttpResponse<EncryptedBudget> = post {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, "inSpace", spaceId, budget.id, "${budget.version}", type.name)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+		contentType(Application.Json)
+		setBody(budgetElementReference)
 	}.wrap()
 
 	override suspend fun getBudget(spaceId: String, budgetId: String, bypassCache: Boolean): DecryptedBudget? = cachedOrGetIfPresent(
@@ -172,4 +192,24 @@ class BudgetApiImpl(
 		bypassCache = bypassCache,
 		getFromNetwork = { retrieveFirstBudgetBefore(spaceId = spaceId, budgetReference = budgetReference) }
 	)?.let { cryptoService.decrypt(it) }
+
+	override suspend fun updateBudgetTemplate(
+		spaceId: String,
+		budgetReference: BudgetReference,
+		type: BudgetElement.BudgetElementType,
+		budgetElementReference: VersionableReference
+	) {
+		val budget = getBudget(spaceId = spaceId, budgetId = budgetReference.toBudgetId(), bypassCache = true)
+			?: throw IllegalStateException("budget not found")
+		return updateBudgetTemplateInSpace(
+			spaceId = spaceId,
+			budget = budget,
+			type = type,
+			budgetElementReference = budgetElementReference
+		).bodyOrThrow().also {
+			putInCache(it)
+		}.let {
+			cryptoService.decrypt(it)
+		}
+	}
 }

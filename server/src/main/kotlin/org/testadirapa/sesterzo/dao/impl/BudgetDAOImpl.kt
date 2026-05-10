@@ -1,15 +1,18 @@
 package org.testadirapa.sesterzo.dao.impl
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
+import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Sorts
+import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.dao.BudgetDAO
 import org.testadirapa.sesterzo.model.EncryptedBudget
-import org.testadirapa.sesterzo.model.EncryptedBudgetElement
+import org.testadirapa.sesterzo.model.VersionableReference
 
 class BudgetDAOImpl(
 	client: DBClient,
@@ -59,4 +62,23 @@ class BudgetDAOImpl(
 		).sort(
 			Sorts.descending(EncryptedBudget::year.name, EncryptedBudget::month.name)
 		).firstOrNull()
+
+	override suspend fun updateTemplateVersion(
+		spaceId: String,
+		budgetId: String,
+		budgetVersion: Int,
+		fieldName: String,
+		budgetElementReference: VersionableReference
+	): EncryptedBudget? = getCollection(spaceId).findOneAndUpdate(
+		filter = Filters.and(
+			Filters.eq("_id", budgetId),
+			Filters.eq(EncryptedBudget::version.name, budgetVersion),
+		),
+		update = Updates.combine(
+			Updates.set(fieldName, budgetElementReference),
+			Updates.inc(EncryptedBudget::version.name, 1)
+		),
+		options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+	)
+
 }

@@ -17,4 +17,9 @@ class BudgetElementLogicImpl(
 				label = ExceptionLabel.BudgetElementNotFound
 			)
 
+	override suspend fun createBudgetElement(
+		spaceId: String,
+		budgetElement: EncryptedBudgetElement
+	): EncryptedBudgetElement = budgetElementDAO.save(spaceId = spaceId, entity = budgetElement)
+
 }

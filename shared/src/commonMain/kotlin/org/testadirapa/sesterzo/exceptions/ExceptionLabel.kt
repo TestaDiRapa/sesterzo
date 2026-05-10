@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.exceptions
 enum class ExceptionLabel {
 	AttachmentNotFound,
 	BudgetNotFound,
+	BudgetUpdateFailed,
 	BudgetElementNotFound,
 	CannotDecryptWithAesKey,
 	CannotDecryptWithRsaKey,

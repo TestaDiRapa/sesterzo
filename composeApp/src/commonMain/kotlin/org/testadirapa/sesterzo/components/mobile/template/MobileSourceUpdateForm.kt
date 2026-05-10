@@ -4,6 +4,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -95,32 +97,36 @@ fun MobileSourceUpdateForm(
 			total = updatedSources.mapNotNull { (_, value) -> value.takeIf { it.isValid } }.sumOf { it.validValue }
 		)
 		Card(
-			modifier = Modifier.fillMaxWidth(),
+			modifier = Modifier
+				.fillMaxWidth()
+				.heightIn(max = 500.dp),
 			border = BorderStroke(width = 1.dp, color = colorScheme.outline),
 			colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
 		) {
-			updatedSources.forEachIndexed { index, (label, amount) ->
-				SourceRow(
-					label = label,
-					value = amount,
-					onDelete = {
-						updatedSources = updatedSources.filterIndexed { idx, _ ->
-							idx != index
+			Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+				updatedSources.forEachIndexed { index, (label, amount) ->
+					SourceRow(
+						label = label,
+						value = amount,
+						onDelete = {
+							updatedSources = updatedSources.filterIndexed { idx, _ ->
+								idx != index
+							}
+						},
+						onLabelChange = { newLabel ->
+							val tmp = updatedSources.toMutableList()
+							tmp[index] = label.update(newLabel) to amount
+							updatedSources = tmp
+						},
+						onAmountChange = { newAmount ->
+							val tmp = updatedSources.toMutableList()
+							tmp[index] = label to amount.update(newAmount)
+							updatedSources = tmp
 						}
-					},
-					onLabelChange = { newLabel ->
-						val tmp = updatedSources.toMutableList()
-						tmp[index] = label.update(newLabel) to amount
-						updatedSources = tmp
-					},
-					onAmountChange = { newAmount ->
-						val tmp = updatedSources.toMutableList()
-						tmp[index] = label to amount.update(newAmount)
-						updatedSources = tmp
+					)
+					if (index != updatedSources.lastIndex) {
+						HorizontalDivider(color = colorScheme.outline)
 					}
-				)
-				if (index != updatedSources.lastIndex) {
-					HorizontalDivider(color = colorScheme.outline)
 				}
 			}
 		}

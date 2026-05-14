@@ -10,7 +10,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 
 @Serializable
-sealed interface Entry : Identifiable {
+sealed interface Entry : Identifiable, SpaceData {
 	val updated: Timestamp
 	val deleted: Boolean
 	val budgetId: String
@@ -24,10 +24,12 @@ data class DecryptedEntry(
 	override val updated: Timestamp,
 	override val deleted: Boolean,
 	override val budgetId: String,
+	override val spaceId: String,
 	val createdBy: String,
 	val deletedBy: String?,
 	val type: Entry.EntryType,
 	val label: String,
+	val description: String?,
 	val amount: Amount,
 ) : Entry, DecryptedData<EncryptedEntry> {
 
@@ -38,6 +40,7 @@ data class DecryptedEntry(
 			DecryptedEntry::createdBy.name to JsonPrimitive(createdBy),
 			DecryptedEntry::deletedBy.name to JsonPrimitive(deletedBy),
 			DecryptedEntry::type.name to JsonPrimitive(type.name),
+			DecryptedEntry::description.name to JsonPrimitive(description),
 		)
 	)
 
@@ -59,7 +62,7 @@ data class EncryptedEntry(
 	override val budgetId: String,
 	override val encryptedSelf: Base64String?,
 	@Transient val transientSpaceId: String? = null,
-) : Entry, SpaceData, EncryptedData<DecryptedEntry> {
+) : Entry, EncryptedData<DecryptedEntry> {
 
 	override val spaceId: String
 		get() = checkNotNull(transientSpaceId) { "Expense was not patched with spaceId" }
@@ -70,10 +73,12 @@ data class EncryptedEntry(
 		deleted = deleted,
 		budgetId = budgetId,
 		createdBy = decryptedFields.getValue(DecryptedEntry::createdBy.name).jsonPrimitive.content,
-		deletedBy = decryptedFields.getValue(DecryptedEntry::deletedBy.name).jsonPrimitive.contentOrNull,
+		deletedBy = decryptedFields[DecryptedEntry::deletedBy.name]?.jsonPrimitive?.contentOrNull,
 		type = Entry.EntryType.valueOf(decryptedFields.getValue(DecryptedEntry::type.name).jsonPrimitive.content),
 		label = decryptedFields.getValue(DecryptedEntry::label.name).jsonPrimitive.content,
 		amount = decryptedFields.getValue(DecryptedEntry::label.name).jsonPrimitive.long,
+		description = decryptedFields[DecryptedEntry::description.name]?.jsonPrimitive?.contentOrNull,
+		spaceId = spaceId
 	)
 
 

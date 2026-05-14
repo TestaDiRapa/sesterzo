@@ -8,4 +8,5 @@ interface EntryLogic {
 	fun getEntriesForBudget(spaceId: String, budgetId: String): Flow<EncryptedEntry>
 	fun getEntriesForBudgetAfter(spaceId: String, budgetId: String, after: Timestamp): Flow<EncryptedEntry>
 	suspend fun deleteEntry(spaceId: String, entryId: String): EncryptedEntry
+	suspend fun createEntry(spaceId: String, entry: EncryptedEntry): EncryptedEntry
 }

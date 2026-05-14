@@ -63,7 +63,8 @@ class FullSesterzoApiImpl(
 			httpConfig = httpConfig,
 			cache = cache.entry,
 			authService = authService,
-			cryptoService = cryptoService
+			cryptoService = cryptoService,
+			userApi = user,
 		)
 	}
 

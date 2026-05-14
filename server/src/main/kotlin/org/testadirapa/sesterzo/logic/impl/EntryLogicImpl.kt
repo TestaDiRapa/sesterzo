@@ -6,6 +6,7 @@ import org.testadirapa.sesterzo.exceptions.ExpenseDeletionFailedException
 import org.testadirapa.sesterzo.logic.EntryLogic
 import org.testadirapa.sesterzo.model.EncryptedEntry
 import org.testadirapa.sesterzo.model.Timestamp
+import org.testadirapa.sesterzo.utils.requireSizeIsUnderThreshold
 
 class EntryLogicImpl(
 	private val entryDAO: EntryDAO,
@@ -27,4 +28,12 @@ class EntryLogicImpl(
 	override suspend fun deleteEntry(spaceId: String, entryId: String): EncryptedEntry =
 		entryDAO.softDeleteEntry(spaceId = spaceId, entryId = entryId)
 			?: throw ExpenseDeletionFailedException(entryId)
+
+	override suspend fun createEntry(spaceId: String, entry: EncryptedEntry): EncryptedEntry {
+		entry.requireSizeIsUnderThreshold()
+		return entryDAO.save(
+			spaceId = spaceId,
+			entity = entry,
+		)
+	}
 }

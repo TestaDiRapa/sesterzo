@@ -5,6 +5,7 @@ import org.testadirapa.sesterzo.exceptions.EntityNotFoundException
 import org.testadirapa.sesterzo.exceptions.ExceptionLabel
 import org.testadirapa.sesterzo.logic.BudgetElementLogic
 import org.testadirapa.sesterzo.model.EncryptedBudgetElement
+import org.testadirapa.sesterzo.utils.requireSizeIsUnderThreshold
 
 class BudgetElementLogicImpl(
 	private val budgetElementDAO: BudgetElementDAO
@@ -20,6 +21,9 @@ class BudgetElementLogicImpl(
 	override suspend fun createBudgetElement(
 		spaceId: String,
 		budgetElement: EncryptedBudgetElement
-	): EncryptedBudgetElement = budgetElementDAO.save(spaceId = spaceId, entity = budgetElement)
+	): EncryptedBudgetElement {
+		budgetElement.requireSizeIsUnderThreshold()
+		return budgetElementDAO.save(spaceId = spaceId, entity = budgetElement)
+	}
 
 }

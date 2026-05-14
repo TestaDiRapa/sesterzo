@@ -9,6 +9,7 @@ import org.testadirapa.sesterzo.logic.BudgetLogic
 import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.model.VersionableReference
+import org.testadirapa.sesterzo.utils.requireSizeIsUnderThreshold
 
 class BudgetLogicImpl(
 	private val budgetDAO: BudgetDAO
@@ -21,6 +22,7 @@ class BudgetLogicImpl(
 		require(budget.spaceId == spaceId) {
 			"You cannot create a budget in a different space"
 		}
+		budget.requireSizeIsUnderThreshold()
 		return budgetDAO.save(
 			spaceId = spaceId,
 			entity = budget

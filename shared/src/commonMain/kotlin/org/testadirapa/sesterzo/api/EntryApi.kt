@@ -1,6 +1,9 @@
 package org.testadirapa.sesterzo.api
 
+import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedEntry
+import org.testadirapa.sesterzo.model.Entry
+import org.testadirapa.sesterzo.utils.BudgetReference
 
 interface EntryApi {
 
@@ -21,4 +24,12 @@ interface EntryApi {
 	 * @return a [List] of [DecryptedEntry] that are not deleted, in descending order by [DecryptedEntry.updated].
 	 */
 	suspend fun getInSpaceForBudget(spaceId: String, budgetId: String, bypassCache: Boolean): List<DecryptedEntry>
+	suspend fun createEntryInSpace(
+		spaceId: String,
+		budgetReference: BudgetReference,
+		type: Entry.EntryType,
+		label: String,
+		amount: Amount,
+		description: String?
+	): DecryptedEntry
 }

@@ -21,14 +21,17 @@ import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.styles.colors.components.outlinedTextFieldColors
 
 @Composable
-fun TextField(
-	value: FormValue<String>,
+fun <T> TextField(
+	value: FormValue<T>,
 	title: String? = null,
 	placeholder: String,
 	errorMessage: String,
 	enabled: Boolean = true,
 	onValueChange: (String) -> Unit,
 	modifier: Modifier = Modifier.fillMaxWidth(),
+	multiline: Boolean = false,
+	minLines: Int = 1,
+	maxLines: Int = if (multiline) Int.MAX_VALUE else 1,
 ) {
 	val focusManager = LocalFocusManager.current
 	Column {
@@ -44,15 +47,21 @@ fun TextField(
 			}
 		}
 		OutlinedTextField(
-			value = value.value ?: "",
+			value = value.value.orNull?.toString() ?: "",
 			enabled = enabled,
 			onValueChange = onValueChange,
 			placeholder = { Text(placeholder) },
 			isError = value.displayError,
-			singleLine = true,
-			keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+			singleLine = !multiline,
+			minLines = minLines,
+			maxLines = maxLines,
+			keyboardOptions = KeyboardOptions(
+				imeAction = if (multiline) ImeAction.Default else ImeAction.Next
+			),
 			keyboardActions = KeyboardActions(
-				onNext = { focusManager.moveFocus(FocusDirection.Down) }
+				onNext = if (!multiline) {
+					{ focusManager.moveFocus(FocusDirection.Down) }
+				} else null
 			),
 			supportingText = {
 				if (value.displayError) {

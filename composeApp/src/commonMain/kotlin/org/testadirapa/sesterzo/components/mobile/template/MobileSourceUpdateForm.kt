@@ -39,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
@@ -48,8 +47,10 @@ import org.testadirapa.sesterzo.components.input.FormButton
 import org.testadirapa.sesterzo.components.input.InlineTextField
 import org.testadirapa.sesterzo.components.input.Switch
 import org.testadirapa.sesterzo.components.text.TextWithIcon
+import org.testadirapa.sesterzo.components.ui.ModalTitle
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.models.FormValue
+import org.testadirapa.sesterzo.models.Optional
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleLarge
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleMedium
 import org.testadirapa.sesterzo.validators.NonNegativeValidator
@@ -81,10 +82,10 @@ fun <T> MobileSourceUpdateForm(
 		mutableStateOf(
 			sources.map { (k, v) ->
 				FormValue(
-					value = k,
+					value = Optional.Present(k),
 					validator = defaultNameValidator,
 				) to FormValue(
-					value = v,
+					value = Optional.Present(v),
 					validator = NonNegativeValidator
 				)
 			}
@@ -139,8 +140,8 @@ fun <T> MobileSourceUpdateForm(
 				.clickable(
 					onClick = {
 						updatedSources = updatedSources + (
-							FormValue(value = "$newSource ${updatedSources.size + 1}", validator = defaultNameValidator) to
-								FormValue(value = 0, validator = NonNegativeValidator)
+							FormValue(value = Optional.Present("$newSource ${updatedSources.size + 1}"), validator = defaultNameValidator) to
+								FormValue(value = Optional.Present(0), validator = NonNegativeValidator)
 						)
 					}
 				)
@@ -162,7 +163,7 @@ fun <T> MobileSourceUpdateForm(
 			)
 		}
 		if (updatedSources.isNotEmpty() &&
-				updatedSources.mapNotNull { (k, _) -> k.value?.trim() }.toSet().size != updatedSources.size
+				updatedSources.mapNotNull { (k, _) -> k.value.orNull?.trim() }.toSet().size != updatedSources.size
 		) {
 			Spacer(modifier = Modifier.height(8.dp))
 			TextWithIcon(
@@ -212,9 +213,9 @@ fun <T> MobileSourceUpdateForm(
 			onClick = {
 				onSourceUpdate(
 					entity,
-					updatedSources.map {
+					updatedSources.associate {
 						it.first.validValue to it.second.validValue
-					}.toMap(),
+					},
 					updateCurrentBudget
 				)
 			},
@@ -309,20 +310,12 @@ private fun FormHeader(
 			.padding(top = 10.dp, bottom = 14.dp),
 		verticalAlignment = Alignment.Bottom,
 	) {
-		Column(Modifier.weight(1f)) {
-			Text(
-				text = "${stringResource(Res.string.add_source_edit)} · $type",
-				style = MaterialTheme.typography.labelSmall,
-				color = colorScheme.onSurfaceVariant,
-			)
-			Spacer(Modifier.height(4.dp))
-			Text(
-				text = title,
-				fontSize = 17.sp,
-				fontWeight = FontWeight.SemiBold,
-				color = colorScheme.onSurface,
-			)
-		}
+		ModalTitle(
+			subtitle = stringResource(Res.string.add_source_edit),
+			subtitleSpec = type,
+			title = title,
+			modifier = Modifier.weight(1f),
+		)
 		Text(
 			text = AppCtx.currency.writer(total),
 			color = colorScheme.onSurface,

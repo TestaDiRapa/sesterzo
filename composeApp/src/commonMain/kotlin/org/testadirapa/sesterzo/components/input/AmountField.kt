@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.model.Amount
@@ -33,6 +34,7 @@ fun AmountField(
 	hasPlaceholder: Boolean = false,
 	onValueChange: (Amount) -> Unit,
 	textStyle: TextStyle,
+	symbolOffset: Dp = 2.dp,
 	modifier: Modifier = Modifier.fillMaxWidth(),
 	backgroundColor: Color? = null,
 ) {
@@ -41,7 +43,7 @@ fun AmountField(
 		verticalAlignment = Alignment.CenterVertically,
 	) {
 		OutlinedTextField(
-			value = AppCtx.currency.formWriter(value.value ?: 0),
+			value = AppCtx.currency.formWriter(value.value.orNull ?: 0),
 			enabled = enabled,
 			prefix = {
 				Row {
@@ -49,7 +51,7 @@ fun AmountField(
 						text = AppCtx.currency.symbol,
 						color = colorScheme.onSurface,
 						style = textStyle,
-						modifier = Modifier.offset(y = 2.dp)
+						modifier = Modifier.offset(y = symbolOffset)
 					)
 					Spacer(Modifier.width(6.dp))
 				}

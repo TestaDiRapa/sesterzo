@@ -6,8 +6,8 @@ object Bip39Validator : Validator<String> {
 
 	private val charactersRegex = Regex("^[a-z\\s]+$")
 
-	override fun isValid(value: String): Boolean =
-		value.isNotEmpty() &&
+	override fun isValid(value: String?): Boolean =
+		!value.isNullOrBlank() &&
 			value.lowercase().matches(charactersRegex) &&
 			value.isBip39Valid()
 }

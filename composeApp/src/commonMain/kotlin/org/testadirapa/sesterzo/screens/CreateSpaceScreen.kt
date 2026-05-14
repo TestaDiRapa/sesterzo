@@ -44,9 +44,6 @@ import org.testadirapa.sesterzo.components.input.TextField
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.styles.colors.SpaceColor
-import org.testadirapa.sesterzo.validators.CompositeValidator
-import org.testadirapa.sesterzo.validators.MaxLengthValidator
-import org.testadirapa.sesterzo.validators.NotBlankValidator
 import org.testadirapa.sesterzo.validators.defaultNameValidator
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.arrow_back
@@ -128,7 +125,7 @@ fun CreateSpaceScreen(
 						) {
 							ImagePicker(
 								imageBytes = imageBytes,
-								placeholderLetter = spaceName.value?.firstOrNull()?.uppercase() ?: "S",
+								placeholderLetter = spaceName.value.orNull?.firstOrNull()?.uppercase() ?: "S",
 								placeholderBackground = selectedColor,
 								onImageSelected = { imageBytes = it },
 								onError = {

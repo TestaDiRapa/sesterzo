@@ -44,7 +44,7 @@ fun EmailField(
 			)
 		}
 		OutlinedTextField(
-			value = value.value ?: "",
+			value = value.value.orNull.orEmpty(),
 			enabled = enabled,
 			onValueChange = onValueChange,
 			placeholder = { Text(stringResource(Res.string.email_field_placeholder)) },

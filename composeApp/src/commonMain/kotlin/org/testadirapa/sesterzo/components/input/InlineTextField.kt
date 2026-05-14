@@ -43,7 +43,7 @@ fun InlineTextField(
 	val interaction = remember { MutableInteractionSource() }
 	val isFocused by interaction.collectIsFocusedAsState()
 
-	val text = value.value.orEmpty()
+	val text = value.value.orNull.orEmpty()
 	val showError = value.displayError
 
 	val underline = when {

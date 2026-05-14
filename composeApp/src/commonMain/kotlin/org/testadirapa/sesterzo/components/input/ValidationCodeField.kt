@@ -43,7 +43,7 @@ fun ValidationCodeField(
 			)
 		}
 		OutlinedTextField(
-			value = value.value ?: "",
+			value = value.value.orNull.orEmpty(),
 			onValueChange = onValueChange,
 			placeholder = { Text(stringResource(Res.string.validation_code_field_placeholder)) },
 			isError = value.displayError,

@@ -53,6 +53,21 @@
     <string name="error_invalid_source_name">Invalid source name.</string>
     <string name="error_multiple_sources_with_same_name">You cannot have multiple sources with the same name.</string>
 
+    <!--  Add entry page  -->
+    <string name="add_entry_form_title">Add a new entry</string>
+    <string name="add_entry_form_type_label">TYPE</string>
+    <string name="add_entry_form_type_expense">Expense</string>
+    <string name="add_entry_form_type_saving">Saving</string>
+    <string name="add_entry_form_type_income">Income</string>
+    <string name="add_entry_form_type_amount_label">AMOUNT</string>
+    <string name="add_entry_form_type_label_label">LABEL</string>
+    <string name="add_entry_form_type_description_label">DESCRIPTION</string>
+    <string name="add_entry_form_type_description_placeholder">Add a note (optional).</string>
+    <string name="add_entry_form_type_label_placeholder">New entry</string>
+    <string name="add_entry_form_type_label_invalid_error">Label must be not empty and shorter than 60 characters</string>
+    <string name="add_entry_form_type_description_invalid_error">Description cannot be longer than 300 characters</string>
+    <string name="add_entry_form_type_add_button">Add</string>
+
     <!--  Add source page  -->
     <string name="add_source_page_new_source">New source</string>
     <string name="add_source_page_add_new_source">Add a new source</string>

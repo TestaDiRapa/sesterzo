@@ -126,7 +126,11 @@ fun TemplateStatsCard(
 
 			Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
 				categories.forEach {
-					val pct = if (totalIncome > 0) (it.amount / totalIncome * 100).toInt() else null
+					val pct = if (totalIncome > 0) {
+						((it.amount.toFloat() / totalIncome) * 100).toInt()
+					} else {
+						null
+					}
 					LegendRow(category = it, percent = pct)
 				}
 			}
@@ -158,7 +162,7 @@ private fun DonutChart(
 
 		if (totalIncome > 0 && categories.none { it.amount < 0 }) {
 			categories.forEach { category ->
-				val fraction = (category.amount / totalIncome).toFloat()
+				val fraction = category.amount.toFloat() / totalIncome
 				val sweep = (360f - totalGap) * fraction * animProgress
 
 				drawArc(

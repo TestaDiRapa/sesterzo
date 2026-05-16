@@ -40,7 +40,7 @@
     <string name="error_invalid_registration">Invalid token or process id.</string>
     <string name="error_invalid_private_key">The private key is invalid or does not match the public key.</string>
     <string name="error_invalid_registration_data">Invalid email or name.</string>
-    <string name="error_missing_budget_key">Missing budget key.</string>
+    <string name="error_missing_budget_key">Missing budget encryption key.</string>
     <string name="error_public_key_update_failed">Cannot set the public key for the current user.</string>
     <string name="error_quota_exceeded">You cannot create more budgets.</string>
     <string name="error_recovery_key_expired">This recovery key expired.</string>

@@ -109,7 +109,9 @@ class CryptoService private constructor(
 	suspend fun <E, D : DecryptedData<E>> decrypt(encryptedEntity: E): D where E : EncryptedData<D>, E : SpaceData {
 		val decryptedFields = encryptedEntity.encryptedSelf?.let { encryptedSelf ->
 			val key = spaceKeys[encryptedEntity.spaceId]
-				?: throw MissingSpaceKeyException(encryptedEntity.spaceId)
+				?: run {
+					throw MissingSpaceKeyException(encryptedEntity.spaceId)
+				}
 			aesDecrypt(
 				encryptedData = base64Decode(encryptedSelf),
 				key = key

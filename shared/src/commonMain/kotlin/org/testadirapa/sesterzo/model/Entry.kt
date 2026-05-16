@@ -6,6 +6,7 @@ import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 
@@ -76,7 +77,7 @@ data class EncryptedEntry(
 		deletedBy = decryptedFields[DecryptedEntry::deletedBy.name]?.jsonPrimitive?.contentOrNull,
 		type = Entry.EntryType.valueOf(decryptedFields.getValue(DecryptedEntry::type.name).jsonPrimitive.content),
 		label = decryptedFields.getValue(DecryptedEntry::label.name).jsonPrimitive.content,
-		amount = decryptedFields.getValue(DecryptedEntry::label.name).jsonPrimitive.long,
+		amount = decryptedFields.getValue(DecryptedEntry::amount.name).jsonPrimitive.long,
 		description = decryptedFields[DecryptedEntry::description.name]?.jsonPrimitive?.contentOrNull,
 		spaceId = spaceId
 	)

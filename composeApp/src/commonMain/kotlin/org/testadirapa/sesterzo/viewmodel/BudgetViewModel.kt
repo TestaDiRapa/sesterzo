@@ -15,12 +15,12 @@ import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.currentBudgetReference
 import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.utils.toReference
-import org.testadirapa.sesterzo.viewmodel.intents.SpaceIntent
+import org.testadirapa.sesterzo.viewmodel.intents.BudgetIntent
 
-class SpaceViewModel(
+class BudgetViewModel(
 	private val spaceId: String,
 	private val errorHandler: (e: Throwable) -> Unit,
-) : AbstractViewModel<SpaceIntent>() {
+) : AbstractViewModel<BudgetIntent>() {
 	override val logger = Logger.withTag("BudgetViewModel")
 
 	private val _budgetViewState = MutableStateFlow<BudgetView?>(null)
@@ -39,13 +39,13 @@ class SpaceViewModel(
 		}
 	}
 
-	override suspend fun processIntent(intent: SpaceIntent) {
+	override suspend fun processIntent(intent: BudgetIntent) {
 		when(intent) {
-			SpaceIntent.NavigateToNext -> navigateToNextBudget()
-			SpaceIntent.NavigateToPrevious -> navigateToPreviousBudget()
-			is SpaceIntent.NavigateTo -> initBudgetView(intent.budgetReference)
-			is SpaceIntent.CreateBudget -> createBudget(reference = intent.newReference)
-			is SpaceIntent.CreateEntry -> createEntry(
+			BudgetIntent.NavigateToNext -> navigateToNextBudget()
+			BudgetIntent.NavigateToPrevious -> navigateToPreviousBudget()
+			is BudgetIntent.NavigateTo -> initBudgetView(intent.budgetReference)
+			is BudgetIntent.CreateBudget -> createBudget(reference = intent.newReference)
+			is BudgetIntent.CreateEntry -> createEntry(
 				budgetReference = intent.budgetReference,
 				type = intent.type,
 				label = intent.label,

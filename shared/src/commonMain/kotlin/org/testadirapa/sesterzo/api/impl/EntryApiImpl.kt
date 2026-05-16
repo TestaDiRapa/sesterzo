@@ -10,9 +10,6 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.date.GMTDate
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.updateAndGet
 import org.testadirapa.sesterzo.api.CachedApi
 import org.testadirapa.sesterzo.api.EntryApi
 import org.testadirapa.sesterzo.api.UserApi
@@ -40,7 +37,6 @@ class EntryApiImpl(
 	private val userApi: UserApi,
 ) : CachedApi<EncryptedEntry, EncryptedEntry, EntryPersistentCache>(httpConfig, cache), EntryApi {
 
-	private val lastUpdateForSpace = MutableStateFlow<Map<Pair<String, String>, Timestamp>>(emptyMap())
 	override val baseSegment: String = "entry"
 	override fun convert(data: EncryptedEntry): EncryptedEntry = data
 
@@ -103,62 +99,17 @@ class EntryApiImpl(
 				.associateBy { it.id }
 			updates.values.sortedByDescending { it.updated } +
 				cached.filter { !updates.containsKey(it.id) }.map { cryptoService.decrypt(it) }
-		}.also {
-			it.firstOrNull()?.let { latestEntry ->
-				setLastUpdateReference(spaceId = spaceId, budgetId = budgetId, value = latestEntry.updated)
-			}
 		}
 	}
 
-	private suspend fun getAndCacheAfterLatestReference(spaceId: String, budgetId: String) {
-		val lastRegisteredInCache = getLastUpdateReferenceOrNull(spaceId = spaceId, budgetId = budgetId)
-		val lastRegistered = if (lastRegisteredInCache == null) {
-			retrieveAllInSpaceForBudget(spaceId = spaceId, budgetId = budgetId)
-				.bodyOrThrow()
-				.onEach { putInCache(it) }
-				.map { cryptoService.decrypt(it) }
-				.maxByOrNull { it.updated }
-		} else {
-			retrieveAllInSpaceForBudgetAfter(spaceId = spaceId, budgetId = budgetId, after = lastRegisteredInCache)
-				.bodyOrThrow()
-				.onEach { putInCache(it) }
-				.map { cryptoService.decrypt(it) }
-				.maxByOrNull { it.updated }
-		}
-		if (lastRegistered != null) {
-			setLastUpdateReference(spaceId = spaceId, budgetId = budgetId, value = lastRegistered.updated)
-		}
-	}
-
-	private suspend fun getLastUpdateReferenceOrNull(spaceId: String, budgetId: String): Timestamp? =
-		lastUpdateForSpace.updateAndGet { values ->
-			if (!values.containsKey(spaceId to budgetId)) {
-				val lastForSpaceBudget =
-					cache.getAllForBudgetInSpace(spaceId = spaceId, budgetId = budgetId).maxByOrNull { it.updated }?.updated
-				if (lastForSpaceBudget != null) {
-					values + ((spaceId to budgetId) to lastForSpaceBudget)
-				} else {
-					values
-				}
-			} else {
-				values
-			}
-		}[spaceId to budgetId]
-
-	private fun setLastUpdateReference(spaceId: String, budgetId: String, value: Timestamp) {
-		lastUpdateForSpace.update { values ->
-			values + ((spaceId to budgetId) to value)
-		}
-	}
-
-	override suspend fun createEntryInSpace(
+	override suspend fun createEntryAndRetrieve(
 		spaceId: String,
 		budgetReference: BudgetReference,
 		type: Entry.EntryType,
 		label: String,
 		amount: Amount,
 		description: String?,
-	): DecryptedEntry {
+	): List<DecryptedEntry> {
 		val entry = DecryptedEntry(
 			id = defaultCryptoService.strongRandom.randomUUID(),
 			updated = Clock.System.now().toEpochMilliseconds(),
@@ -172,13 +123,10 @@ class EntryApiImpl(
 			description = description?.takeIf { it.isNotBlank() },
 			spaceId = spaceId,
 		)
-		val createdEntry = createEntryInSpace(
+		createEntryInSpace(
 			spaceId = spaceId,
 			entry = cryptoService.encrypt(entry)
-		).bodyOrThrow().let {
-			cryptoService.decrypt(it)
-		}
-		getAndCacheAfterLatestReference(spaceId = spaceId, budgetId = budgetReference.toBudgetId())
-		return createdEntry
+		).bodyOrThrow()
+		return getInSpaceForBudget(spaceId = spaceId, budgetId = budgetReference.toBudgetId(), bypassCache = false)
 	}
 }

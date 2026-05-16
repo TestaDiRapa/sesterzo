@@ -17,32 +17,11 @@ import org.testadirapa.sesterzo.model.Timestamp
 
 @Composable
 fun BudgetComponent(
-	refreshKey: Timestamp,
-	spaceId: String,
-	budget: DecryptedBudget
+	entries: List<DecryptedEntry>,
 ) {
-	val scope = rememberCoroutineScope()
-	var budget by remember { mutableStateOf(budget) }
-	var expenses by remember { mutableStateOf<List<DecryptedEntry>>(emptyList()) }
-	LaunchedEffect(Unit) {
-		expenses = AppCtx.api.entry.getInSpaceForBudget(
-			spaceId = spaceId,
-			budgetId = budget.id,
-			bypassCache = false // TODO
-		)
-	}
-	LaunchedEffect(refreshKey) {
-		expenses = AppCtx.api.entry.getInSpaceForBudget(
-			spaceId = spaceId,
-			budgetId = budget.id,
-			bypassCache = false // TODO
-		)
-	}
-	Scaffold { scaffoldPadding ->
-		Column {
-			expenses.forEach {
-				Text("${it.label} - ${it.amount} - ${it.updated}")
-			}
+	Column {
+		entries.forEach {
+			Text("${it.label} - ${it.amount} - ${it.updated}")
 		}
 	}
 }

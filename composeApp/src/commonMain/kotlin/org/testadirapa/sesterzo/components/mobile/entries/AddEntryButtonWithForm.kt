@@ -18,14 +18,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
+import org.testadirapa.sesterzo.model.Amount
+import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.Space
+import org.testadirapa.sesterzo.utils.BudgetReference
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.plus
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEntryButtonWithForm(
-	space: Space
+	space: Space,
+	currentBudget: BudgetReference,
+	onCreate: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
+	loadingState: Boolean,
 ) {
 	var showDialog by remember { mutableStateOf(false) }
 	val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -59,6 +65,9 @@ fun AddEntryButtonWithForm(
 		) {
 			AddEntryForm(
 				space = space,
+				currentBudget = currentBudget,
+				onCreate = onCreate,
+				loadingState = loadingState,
 			)
 		}
 	}

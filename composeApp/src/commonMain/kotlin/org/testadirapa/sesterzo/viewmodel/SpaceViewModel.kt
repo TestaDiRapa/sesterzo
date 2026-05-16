@@ -5,22 +5,29 @@ import co.touchlab.kermit.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
+import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.currentBudgetReference
+import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.utils.toReference
-import org.testadirapa.sesterzo.viewmodel.intents.BudgetIntent
+import org.testadirapa.sesterzo.viewmodel.intents.SpaceIntent
 
-class BudgetViewModel(
+class SpaceViewModel(
 	private val spaceId: String,
 	private val errorHandler: (e: Throwable) -> Unit,
-) : AbstractViewModel<BudgetIntent>() {
+) : AbstractViewModel<SpaceIntent>() {
 	override val logger = Logger.withTag("BudgetViewModel")
 
 	private val _budgetViewState = MutableStateFlow<BudgetView?>(null)
 	val budgetViewState: StateFlow<BudgetView?> = _budgetViewState
+
+	private val _entriesViewState = MutableStateFlow<List<DecryptedEntry>>(emptyList())
+	val entriesViewState: StateFlow<List<DecryptedEntry>> = _entriesViewState
 
 	init {
 		viewModelScope.launch {
@@ -32,12 +39,20 @@ class BudgetViewModel(
 		}
 	}
 
-	override suspend fun processIntent(intent: BudgetIntent) {
+	override suspend fun processIntent(intent: SpaceIntent) {
 		when(intent) {
-			BudgetIntent.NavigateToNext -> navigateToNextBudget()
-			BudgetIntent.NavigateToPrevious -> navigateToPreviousBudget()
-			is BudgetIntent.NavigateTo -> initBudgetView(intent.budgetReference)
-			is BudgetIntent.CreateBudget -> createBudget(reference = intent.newReference)
+			SpaceIntent.NavigateToNext -> navigateToNextBudget()
+			SpaceIntent.NavigateToPrevious -> navigateToPreviousBudget()
+			is SpaceIntent.NavigateTo -> initBudgetView(intent.budgetReference)
+			is SpaceIntent.CreateBudget -> createBudget(reference = intent.newReference)
+			is SpaceIntent.CreateEntry -> createEntry(
+				budgetReference = intent.budgetReference,
+				type = intent.type,
+				label = intent.label,
+				amount = intent.amount,
+				description = intent.description,
+
+			)
 		}
 	}
 
@@ -54,7 +69,7 @@ class BudgetViewModel(
 	}
 
 	private suspend fun navigateToNextBudget() {
-		_budgetViewState.update {
+		_budgetViewState.updateAndGet {
 			if(it?.nextBudget != null) {
 				val newNextBudget = AppCtx.api.budget.getFirstBudgetAfter(
 					spaceId = spaceId,
@@ -69,11 +84,15 @@ class BudgetViewModel(
 			} else {
 				it
 			}
+		}.also {
+			if (it != null) {
+				loadEntries(budgetId = it.currentBudget.id)
+			}
 		}
 	}
 
 	private suspend fun navigateToPreviousBudget() {
-		_budgetViewState.update {
+		_budgetViewState.updateAndGet {
 			if(it?.previousBudget != null) {
 				val newPreviousBudget = AppCtx.api.budget.getFirstBudgetBefore(
 					spaceId = spaceId,
@@ -87,6 +106,10 @@ class BudgetViewModel(
 				)
 			} else {
 				it
+			}
+		}.also {
+			if (it != null) {
+				loadEntries(budgetId = it.currentBudget.id)
 			}
 		}
 	}
@@ -113,6 +136,38 @@ class BudgetViewModel(
 				previousBudget = previousBudget,
 				nextBudget = nextBudget
 			)
+		}
+		loadEntries(budgetId = currentBudget.id)
+	}
+
+	private suspend fun loadEntries(budgetId: String) {
+		_entriesViewState.update {
+			AppCtx.api.entry.getInSpaceForBudget(
+				spaceId = spaceId,
+				budgetId = budgetId,
+				bypassCache = false
+			)
+		}
+	}
+
+	private suspend fun createEntry(
+		budgetReference: BudgetReference,
+		type: Entry.EntryType,
+		label: String,
+		amount: Amount,
+		description: String?
+	) {
+		AppCtx.api.entry.createEntryAndRetrieve(
+			spaceId = spaceId,
+			budgetReference = budgetReference,
+			type = type,
+			label = label,
+			amount = amount,
+			description = description,
+		).also { entries ->
+			_entriesViewState.update {
+				entries
+			}
 		}
 	}
 

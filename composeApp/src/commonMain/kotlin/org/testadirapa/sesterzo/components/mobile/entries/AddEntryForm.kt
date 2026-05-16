@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -44,6 +43,7 @@ import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.models.Optional
 import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleLarge
+import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.currentBudgetReference
 import org.testadirapa.sesterzo.utils.monthName
 import org.testadirapa.sesterzo.validators.MaxLengthOrNullValidator
@@ -70,6 +70,9 @@ import sesterzo.composeapp.generated.resources.banknotes
 @Composable
 fun AddEntryForm(
 	space: Space,
+	currentBudget: BudgetReference,
+	onCreate: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
+	loadingState: Boolean,
 	entryType: Entry.EntryType = Entry.EntryType.Expense,
 ) {
 	var entryTypeState by remember { mutableStateOf(entryType) }
@@ -108,10 +111,18 @@ fun AddEntryForm(
 		)
 		Spacer(modifier = Modifier.heightIn(8.dp, 48.dp))
 		FormButton(
-			onClick = {},
+			onClick = {
+				onCreate(
+					currentBudget,
+					entryTypeState,
+					label.validValue,
+					amount.validValue,
+					description.validValue,
+				)
+			},
 			text = "${stringResource(Res.string.add_entry_form_type_add_button)} ${entryTypeToName(entryTypeState)}",
 			enabled = amount.isValid && label.isValid && description.isValid,
-			isLoading = false,
+			isLoading = loadingState,
 			colors = ButtonColors(
 				containerColor = colorScheme.primary,
 				contentColor = colorScheme.onPrimary,

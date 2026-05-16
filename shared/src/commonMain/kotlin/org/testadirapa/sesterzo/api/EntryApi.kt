@@ -24,12 +24,12 @@ interface EntryApi {
 	 * @return a [List] of [DecryptedEntry] that are not deleted, in descending order by [DecryptedEntry.updated].
 	 */
 	suspend fun getInSpaceForBudget(spaceId: String, budgetId: String, bypassCache: Boolean): List<DecryptedEntry>
-	suspend fun createEntryInSpace(
+	suspend fun createEntryAndRetrieve(
 		spaceId: String,
 		budgetReference: BudgetReference,
 		type: Entry.EntryType,
 		label: String,
 		amount: Amount,
 		description: String?
-	): DecryptedEntry
+	): List<DecryptedEntry>
 }

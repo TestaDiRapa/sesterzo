@@ -27,6 +27,7 @@ import org.testadirapa.sesterzo.components.mobile.budget.BudgetMonthSelector
 import org.testadirapa.sesterzo.components.mobile.entries.AddEntryButtonWithForm
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.screens.main.mobile.Page
+import org.testadirapa.sesterzo.screens.main.mobile.entries.MobileEntriesScreen
 import org.testadirapa.sesterzo.utils.toReference
 import org.testadirapa.sesterzo.viewmodel.BudgetViewModel
 import org.testadirapa.sesterzo.viewmodel.intents.BudgetIntent
@@ -56,7 +57,10 @@ fun MobileBudgetScreen(
 						isExpanded = calendarOpen,
 						onPrev = budgetView.previousBudget?.let { {viewModel.acceptIntent(BudgetIntent.NavigateToPrevious) } },
 						onNext = budgetView.nextBudget?.let { { viewModel.acceptIntent(BudgetIntent.NavigateToNext) } },
-						onCreate = { reference -> viewModel.acceptIntent(BudgetIntent.CreateBudget(reference)) },
+						onCreate = { reference ->
+							calendarOpen = false
+							viewModel.acceptIntent(BudgetIntent.CreateBudget(reference))
+						},
 					)
 					AnimatedVisibility(
 						visible = calendarOpen,
@@ -106,7 +110,7 @@ fun MobileBudgetScreen(
 			}
 		},
 		floatingActionButtonPosition = FabPosition.End,
-	) {
+	) { scaffoldPadding ->
 		Column {
 			when (page) {
 				Page.Budget -> {
@@ -114,7 +118,12 @@ fun MobileBudgetScreen(
 						entries = entries.value,
 					)
 				}
-				Page.Entries -> {}
+				Page.Entries -> {
+					MobileEntriesScreen(
+						scaffoldPadding = scaffoldPadding,
+						entries = entries.value,
+					)
+				}
 				else -> {}
 			}
 		}

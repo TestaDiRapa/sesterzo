@@ -25,18 +25,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
-import org.testadirapa.sesterzo.models.BudgetCategory
 import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleLarge
 import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.app_name
 import sesterzo.composeapp.generated.resources.arrow_right
 import sesterzo.composeapp.generated.resources.template_page_expenses
 import sesterzo.composeapp.generated.resources.template_page_income_sources
@@ -55,41 +52,26 @@ fun TemplateUpdateMenu(
 		border = BorderStroke(width = 1.dp, color = colorScheme.outline),
 		colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
 	) {
-		val incomeSourcesTitle = stringResource(Res.string.template_page_income_sources)
-		TemplateRow(
-			label = stringResource(Res.string.template_page_income_sources),
-			subtitle = "${incomeSources.elements.size} sources",
-			value = incomeSources.elements.values.sum(),
-			color = colorScheme.primary,
-			onClick = {
-				setTemplate(incomeSourcesTitle to incomeSources)
-				onFormOpen()
-			}
+		val options = listOf(
+			Triple(stringResource(Res.string.template_page_income_sources), incomeSources, colorScheme.primary),
+			Triple(stringResource(Res.string.template_page_expenses), expenses, LocalFinanceColors.current.spent),
+			Triple(stringResource(Res.string.template_page_savings), savings, LocalFinanceColors.current.saved),
 		)
-		HorizontalDivider(color = colorScheme.outline)
-		val expensesTitle = stringResource(Res.string.template_page_expenses)
-		TemplateRow(
-			label = stringResource(Res.string.template_page_expenses),
-			subtitle = "${expenses.elements.size} sources",
-			value = expenses.elements.values.sum(),
-			color = LocalFinanceColors.current.spent,
-			onClick = {
-				setTemplate(expensesTitle to expenses)
-				onFormOpen()
+		options.forEachIndexed { index, (label, sources, color) ->
+			TemplateRow(
+				label = label,
+				subtitle = "${sources.elements.size} sources",
+				value = sources.elements.values.sum(),
+				color = color,
+				onClick = {
+					setTemplate(label to sources)
+					onFormOpen()
+				}
+			)
+			if (index != options.lastIndex) {
+				HorizontalDivider(color = colorScheme.outline)
 			}
-		)
-		HorizontalDivider(color = colorScheme.outline)
-		val savingTitle = stringResource(Res.string.template_page_savings)
-		TemplateRow(
-			label = stringResource(Res.string.template_page_savings),
-			subtitle = "${savings.elements.size} sources",
-			value = savings.elements.values.sum(),
-			color = LocalFinanceColors.current.saved,
-			onClick = {
-				setTemplate(savingTitle to savings)
-				onFormOpen()
-			}
-		)
+		}
 	}
 }
 
@@ -112,14 +94,14 @@ private fun TemplateRow(
 		Row(
 			verticalAlignment = Alignment.CenterVertically,
 		) {
-			Spacer(Modifier.width(8.dp))
+			Spacer(Modifier.width(4.dp))
 			Box(
 				modifier = Modifier
 					.width(5.dp)
 					.height(40.dp)
 					.background(color, RoundedCornerShape(5.dp))
 			)
-			Spacer(Modifier.width(8.dp))
+			Spacer(Modifier.width(16.dp))
 			Column {
 				Text(
 					text = label,

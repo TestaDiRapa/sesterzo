@@ -20,6 +20,7 @@
 
     <!--  Bottom Menu  -->
     <string name="bottom_menu_budget_page">Budget</string>
+    <string name="bottom_menu_history_page">History</string>
     <string name="bottom_menu_template_page">Template</string>
 
     <!--  Errors  -->
@@ -101,6 +102,10 @@
     <string name="create_space_space_name_error">Invalid budget name.</string>
     <string name="create_space_create_button">Create budget</string>
 
+    <!--  Entry list page  -->
+    <string name="entry_list_page_today">Today</string>
+    <string name="entry_list_page_yesterday">Yesterday</string>
+
     <!--  Recover private key screen  -->
     <string name="recover_key_title">Your private key was not found on the device</string>
     <string name="recover_key_description_1">Recover your key using one of the following options:</string>
@@ -152,6 +157,24 @@
 
     <!--  Dividers  -->
     <string name="divider_or">or</string>
+
+    <!--  Days  -->
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
+    <string name="sunday">Sunday</string>
+
+    <!--  Days abbreviated  -->
+    <string name="monday_abbreviated">Mon</string>
+    <string name="tuesday_abbreviated">Tue</string>
+    <string name="wednesday_abbreviated">Wed</string>
+    <string name="thursday_abbreviated">Thu</string>
+    <string name="friday_abbreviated">Fri</string>
+    <string name="saturday_abbreviated">Sat</string>
+    <string name="sunday_abbreviated">Sun</string>
 
     <!--  Months  -->
     <string name="january">January</string>

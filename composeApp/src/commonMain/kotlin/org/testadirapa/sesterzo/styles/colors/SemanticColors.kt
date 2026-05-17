@@ -21,13 +21,13 @@ val LocalFinanceColors = staticCompositionLocalOf<FinanceColors> {
 }
 
 val DarkFinanceColors = FinanceColors(
- 	income    = SesterzoColors.Income300,
+	income    = SesterzoColors.Income300,
 	spent     = SesterzoColors.Spent300,
 	saved     = SesterzoColors.Saved300,
 	free      = SesterzoColors.TextTert,
 	onTrackBg = Color(0x1F86C8A2),
 	overBg    = Color(0x1FE88B7C),
-	savedBg   = Color(0x1F9EC9B8),
+	savedBg   = SesterzoColors.Income500,
 )
 
 val LightFinanceColors = FinanceColors(
@@ -37,7 +37,7 @@ val LightFinanceColors = FinanceColors(
 	free      = SesterzoColors.LightTextTert,
 	onTrackBg = Color(0xFFE6F2EB), // solid 8–10% tint
 	overBg    = Color(0xFFFCE8E3),
-	savedBg   = Color(0xFFE7EFEB),
+	savedBg   = SesterzoColors.LightSaved300,
 )
 
 

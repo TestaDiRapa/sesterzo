@@ -24,9 +24,11 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.screens.main.mobile.Page
 import sesterzo.composeapp.generated.resources.Res
+import sesterzo.composeapp.generated.resources.bank
 import sesterzo.composeapp.generated.resources.bottom_menu_budget_page
+import sesterzo.composeapp.generated.resources.bottom_menu_history_page
 import sesterzo.composeapp.generated.resources.bottom_menu_template_page
-import sesterzo.composeapp.generated.resources.piggy_bank
+import sesterzo.composeapp.generated.resources.receipt
 import sesterzo.composeapp.generated.resources.template
 
 @Composable
@@ -46,10 +48,16 @@ fun BottomMenu(
 				.fillMaxWidth()
 		) {
 			MenuIcon(
-				painter = painterResource(Res.drawable.piggy_bank),
+				painter = painterResource(Res.drawable.bank),
 				name = stringResource(Res.string.bottom_menu_budget_page),
 				isSelected = currentPage == Page.Budget,
 				onClick = { onPageChange(Page.Budget) }
+			)
+			MenuIcon(
+				painter = painterResource(Res.drawable.receipt),
+				name = stringResource(Res.string.bottom_menu_history_page),
+				isSelected = currentPage == Page.Entries,
+				onClick = { onPageChange(Page.Entries) }
 			)
 			MenuIcon(
 				painter = painterResource(Res.drawable.template),

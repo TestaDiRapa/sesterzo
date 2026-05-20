@@ -1,5 +1,9 @@
 package org.testadirapa.sesterzo.logic.impl
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.any
+import kotlinx.coroutines.flow.emitAll
+import org.testadirapa.sesterzo.dao.SpaceDAO
 import org.testadirapa.sesterzo.dao.UserDAO
 import org.testadirapa.sesterzo.exceptions.PublicKeyUpdateFailedException
 import org.testadirapa.sesterzo.exceptions.EntityNotFoundException
@@ -8,10 +12,12 @@ import org.testadirapa.sesterzo.exceptions.ExceptionLabel
 import org.testadirapa.sesterzo.logic.UserLogic
 import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.User
+import org.testadirapa.sesterzo.security.SecurityContext.Companion.flowOnSecurityContext
 import org.testadirapa.sesterzo.security.SecurityContext.Companion.withSecurityContext
 
 class UserLogicImpl(
 	val userDAO: UserDAO,
+	val spaceDAO: SpaceDAO,
 ) : UserLogic {
 
 	override suspend fun getCurrentUser(): User = withSecurityContext {
@@ -38,5 +44,14 @@ class UserLogicImpl(
 		}
 	}
 
+	override fun getUsers(userIds: Set<String>): Flow<User> = flowOnSecurityContext { ctx ->
+		val userSpaces = spaceDAO.getByIds(ctx.spaces.keys)
+		val allowedUserIds = userIds.filter { userId ->
+			userSpaces.any { it.users.containsKey(userId) }
+		}.toSet()
+		emitAll(
+			userDAO.getByIds(allowedUserIds)
+		)
+	}
 
 }

@@ -16,6 +16,11 @@ selectById:
 SELECT * FROM CachedBudgetElement
 WHERE id = :id;
 
+selectByIds:
+SELECT * FROM CachedBudgetElement
+WHERE id IN :ids
+ORDER BY inserted_at DESC;
+
 upsert:
 INSERT OR REPLACE INTO CachedBudgetElement(
     id, budgetElementId, version, spaceId, type, encryptedSelf, inserted_at

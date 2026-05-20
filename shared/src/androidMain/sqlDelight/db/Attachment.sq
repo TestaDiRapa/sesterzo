@@ -13,6 +13,11 @@ selectById:
 SELECT * FROM CachedAttachment
 WHERE id = :id;
 
+selectByIds:
+SELECT * FROM CachedAttachment
+WHERE id IN :ids
+ORDER BY inserted_at DESC;
+
 upsert:
 INSERT OR REPLACE INTO CachedAttachment(id, spaceId, encryptedSelf, inserted_at)
 VALUES (?, ?, ?, ?);

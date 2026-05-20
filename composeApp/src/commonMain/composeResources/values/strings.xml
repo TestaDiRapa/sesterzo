@@ -34,6 +34,7 @@
     <string name="error_expense_deletion_failed">Expense deletion failed, please try again later.</string>
     <string name="error_forbidden_in_space">You are not allowed to access this budget.</string>
     <string name="error_generic">An unexpected error occurred.</string>
+    <string name="error_generic_forbidden">You are not allowed to perform this operation.</string>
     <string name="error_image_too_large">Image is too large.</string>
     <string name="error_invalid_captcha">The provided captcha is invalid.</string>
     <string name="error_invalid_jwt">You are not logged in.</string>

@@ -49,7 +49,7 @@ abstract class CachedApi<W : Identifiable, R : Identifiable, C : PersistenceOper
 	}
 
 	/**
-	 * Retrieves an element, retrieving it from the network if:
+	 * Retrieves an element, retrieving it from the server if:
 	 * - The [bypassCache] parameter is set to true.
 	 * - The element is missing in the cache.
 	 * - The element is available in the cache but not up-to-date anymore (according to [isInvalid]).
@@ -95,7 +95,7 @@ abstract class CachedApi<W : Identifiable, R : Identifiable, C : PersistenceOper
 	}
 
 	/**
-	 * Retrieves an element, retrieving it from the network if:
+	 * Retrieves an element, retrieving it from the server if:
 	 * - The [bypassCache] parameter is set to true.
 	 * - The element is missing in the cache.
 	 * - The element is available in the cache but not up-to-date anymore (according to [isInvalid]).
@@ -124,6 +124,46 @@ abstract class CachedApi<W : Identifiable, R : Identifiable, C : PersistenceOper
 			}
 		} else {
 			convert(cached)
+		}
+	}
+
+	/**
+	 * Retrieves multiple elements by their ids, retrieving from the server the ones that are not present in cache or
+	 * that are not up-to-date anymore according to [isInvalid].
+	 * This method will attempt to retrieve all entities from the server if [bypassCache] is true.
+	 * In this last case, the method will still return the outdated versions if the server responds with a 500.
+	 * On a successful retrieve, the entities are updated in the cache.
+	 * On a 403, [clearCacheOnForbidden] is called on all the entities of the type.
+	 *
+	 * @param ids the ids of the entity to retrieve.
+	 * @param bypassCache forces the retrieval of the entities from the server.
+	 * @param getFromNetwork the call to the api function to retrieve the entity from the server.
+	 * @return the list of entities.
+	 */
+	protected suspend fun cachedAndGetMissing(
+		ids: List<String>,
+		bypassCache: Boolean,
+		getFromNetwork: suspend (ids: List<String>) -> HttpResponse<List<W>>,
+	): List<W> {
+		val cachedByIds = cache.getByIds(ids).associateBy { it.id }.toMutableMap()
+		val idsToRetrieve = if (bypassCache) {
+			ids
+		} else {
+			ids.filter { !cachedByIds.containsKey(it) || isInvalid(cachedByIds.getValue(it)) }
+		}
+		return if (idsToRetrieve.isEmpty()) {
+			cachedByIds.values.map { convert(it) }
+		} else {
+			val response = getFromNetwork(idsToRetrieve)
+			when {
+				response.isSuccess -> response.bodyOrThrow().onEach {
+					cachedByIds.remove(it.id)
+					putInCache(it)
+				} + cachedByIds.values.map { convert(it) }
+				response.isForbidden -> response.clearCacheOnForbidden(cachedEntity = null)
+				response.isServerError -> cachedByIds.values.map { convert(it) }
+				else -> response.bodyOrThrow()
+			}
 		}
 	}
 

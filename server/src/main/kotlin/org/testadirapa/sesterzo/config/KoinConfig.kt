@@ -99,7 +99,7 @@ fun applicationModules(
 			spaceDAO = get()
 		)
 	}
-	single<UserLogic> { UserLogicImpl(userDAO = get()) }
+	single<UserLogic> { UserLogicImpl(userDAO = get(), spaceDAO = get()) }
 
 }
 

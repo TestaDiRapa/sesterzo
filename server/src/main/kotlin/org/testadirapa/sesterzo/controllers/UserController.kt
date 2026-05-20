@@ -19,6 +19,12 @@ fun Routing.userController() = route("/user") {
 		call.respond(userLogic.getCurrentUser())
 	}
 
+	authenticatedPost("/byIds") {
+		val userIds = call.receive<Set<String>>()
+		call.respond(userLogic.getUsers(userIds))
+	}
+
+
 	authenticatedPost("/current/publicKey") {
 		val publicKey = call.receive<PublicKeyPayload>().publicKey
 		call.respond(userLogic.setPublicKey(publicKey))

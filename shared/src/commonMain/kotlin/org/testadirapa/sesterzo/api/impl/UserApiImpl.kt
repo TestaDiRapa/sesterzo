@@ -4,6 +4,7 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.ContentType.Application
 import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
@@ -45,6 +46,18 @@ class UserApiImpl(
 		}
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
+	}.wrap()
+
+	private suspend fun retrieveUsers(userIds: Set<String>): HttpResponse<List<User>> = post {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, "byIds")
+			parameter("ts", GMTDate().timestamp)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+		contentType(Application.Json)
+		setBody(userIds)
 	}.wrap()
 
 	private suspend fun updatePublicKeyForCurrentUser(publicKey: Base64String): HttpResponse<User> =
@@ -90,4 +103,9 @@ class UserApiImpl(
 		updateBackupConfirmation().bodyOrThrow().also {
 			putInCache(it)
 		}
+
+	override suspend fun getUsers(userIds: List<String>, bypassCache: Boolean): List<User> = cachedAndGetMissing(
+		ids = userIds,
+		bypassCache = bypassCache
+	) { ids -> retrieveUsers(userIds = ids.toSet()) }
 }

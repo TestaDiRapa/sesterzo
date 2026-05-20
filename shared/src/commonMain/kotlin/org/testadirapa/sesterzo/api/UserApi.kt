@@ -13,4 +13,5 @@ interface UserApi {
 	suspend fun setPublicKeyForCurrentUser(publicKey: Base64String): User
 
 	suspend fun setBackupConfirmation(): User
+	suspend fun getUsers(userIds: List<String>, bypassCache: Boolean): List<User>
 }

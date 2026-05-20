@@ -14,6 +14,10 @@ selectById:
 SELECT * FROM Entry
 WHERE id = :id;
 
+selectByIds:
+SELECT * FROM Entry
+WHERE id IN :ids;
+
 selectBySpaceBudget:
 SELECT * FROM Entry
 WHERE spaceId = :spaceId AND budgetId = :budgetId;

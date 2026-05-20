@@ -10,6 +10,7 @@ enum class ExceptionLabel {
 	CannotEncryptWithAesKey,
 	ExpenseDeletionFailed,
 	ForbiddenInSpace,
+	GenericForbidden,
 	ImageTooLarge,
 	InvalidCaptcha,
 	InvalidJwt,

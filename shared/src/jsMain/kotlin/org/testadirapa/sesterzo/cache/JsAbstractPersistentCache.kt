@@ -2,6 +2,11 @@ package org.testadirapa.sesterzo.cache
 
 import com.juul.indexeddb.Database
 import com.juul.indexeddb.Key
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.mapNotNull
 
 abstract class JsAbstractPersistentCache<W, R>(
 	protected val database: Database
@@ -44,6 +49,8 @@ abstract class JsAbstractPersistentCache<W, R>(
 	override suspend fun getById(id: String): R? = database.transaction(storeName) {
 		objectStore(storeName).get(Key(id))
 	}?.let { toKt(it) }
+
+	override suspend fun getByIds(ids: List<String>): List<R> = ids.mapNotNull { getById(it) }
 
 	override suspend fun clearAll() {
 		database.writeTransaction(storeName) {

@@ -24,6 +24,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +59,11 @@ fun MobileEntriesScreen(
 	scaffoldPadding: PaddingValues,
 	entries: List<DecryptedEntry>
 ) {
+	var usersById by remember { mutableStateOf<Map<String, User>>(emptyMap()) }
+	LaunchedEffect(Unit) {
+		entries
+			.map { }
+	}
 	val activeEntriesByDay = entries
 		.filterNot { it.deleted }
 		.groupBy { it.updated.toLocalDateTime().day }
@@ -81,12 +91,6 @@ fun MobileEntriesScreen(
 fun EntryCard(
 	entry: DecryptedEntry,
 ) {
-//	var user by remember { mutableStateOf<User?>(null) }
-//	LaunchedEffect(entry) {
-//		runCatching {
-//			user = AppCtx.api.user
-//		}
-//	}
 	Card(
 		modifier = Modifier.fillMaxWidth(),
 		border = BorderStroke(width = 1.dp, color = colorScheme.outline),

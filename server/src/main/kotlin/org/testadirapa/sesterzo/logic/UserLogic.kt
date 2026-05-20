@@ -1,5 +1,6 @@
 package org.testadirapa.sesterzo.logic
 
+import kotlinx.coroutines.flow.Flow
 import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.security.SecurityContext
@@ -20,4 +21,5 @@ interface UserLogic {
 	 * Sets [User.hasBackup] to true for the current user.
 	 */
 	suspend fun setBackupConfirmation(): User
+	fun getUsers(userIds: Set<String>): Flow<User>
 }

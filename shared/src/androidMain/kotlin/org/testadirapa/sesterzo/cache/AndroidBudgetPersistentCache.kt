@@ -72,6 +72,10 @@ class AndroidBudgetPersistentCache(
 		queries.selectById(id).executeAsOneOrNull()?.let { rowToEntity(it) }
 	}
 
+	override suspend fun getByIds(ids: List<String>): List<CachedBudget> = withContext(Dispatchers.IO) {
+		queries.selectByIds(ids).executeAsList().map { rowToEntity(it) }
+	}
+
 	override suspend fun clearAll() {
 		withContext(Dispatchers.IO) {
 			queries.deleteAll()

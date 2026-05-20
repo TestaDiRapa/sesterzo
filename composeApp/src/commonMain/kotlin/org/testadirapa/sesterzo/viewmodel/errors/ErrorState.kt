@@ -14,6 +14,7 @@ import sesterzo.composeapp.generated.resources.error_cannot_encrypt_aes
 import sesterzo.composeapp.generated.resources.error_expense_deletion_failed
 import sesterzo.composeapp.generated.resources.error_forbidden_in_space
 import sesterzo.composeapp.generated.resources.error_generic
+import sesterzo.composeapp.generated.resources.error_generic_forbidden
 import sesterzo.composeapp.generated.resources.error_image_too_large
 import sesterzo.composeapp.generated.resources.error_invalid_captcha
 import sesterzo.composeapp.generated.resources.error_invalid_jwt
@@ -64,6 +65,7 @@ suspend fun Throwable.toErrorState(): ErrorState = when(this) {
 			ExceptionLabel.AttachmentNotFound -> getString(Res.string.error_attachment_not_found)
 			ExceptionLabel.SpaceThumbnailUpdateFailed -> getString(Res.string.error_space_thumbnail_update_failed)
 			ExceptionLabel.BudgetUpdateFailed -> getString(Res.string.error_budget_update_failed)
+			ExceptionLabel.GenericForbidden -> getString(Res.string.error_generic_forbidden)
 		}
 	}
 	else -> "${getString(Res.string.error_generic)}${message?.let { ": $it" } ?: ""}"

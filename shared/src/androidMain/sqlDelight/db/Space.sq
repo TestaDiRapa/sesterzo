@@ -7,7 +7,7 @@ CREATE TABLE CachedSpace (
     income_sources_template_id  TEXT    NOT NULL,
     savings_template_id         TEXT    NOT NULL,
     users                       TEXT    NOT NULL,  -- JSON-encoded Map<String, AccessKey>
-    picture                     TEXT,              -- nullable Base64String
+    pictureReference            TEXT,              -- nullable reference to attachment
     color                       TEXT,              -- JSON-encoded RGBcolor
     inserted_at                 INTEGER NOT NULL   -- Unix timestamp ms, added by us
 );
@@ -20,13 +20,18 @@ selectById:
 SELECT * FROM CachedSpace
 WHERE id = :id;
 
+selectByIds:
+SELECT * FROM CachedSpace
+WHERE id IN :ids
+ORDER BY inserted_at DESC;
+
 upsert:
 INSERT OR REPLACE INTO CachedSpace(
     id, version, name, owner,
     fixed_expenses_template_id,
     income_sources_template_id,
     savings_template_id,
-    users, picture, color, inserted_at
+    users, pictureReference, color, inserted_at
 )
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 

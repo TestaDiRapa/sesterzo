@@ -19,6 +19,11 @@ selectById:
 SELECT * FROM CachedBudget
 WHERE id = :id;
 
+selectByIds:
+SELECT * FROM CachedBudget
+WHERE id IN :ids
+ORDER BY inserted_at DESC;
+
 selectBySpaceYear:
 SELECT * FROM CachedBudget
 WHERE spaceId = :spaceId AND year = :year;

@@ -26,7 +26,7 @@ class AndroidSpacePersistentCache(
 			income_sources_template_id = space.incomeSourcesTemplateId,
 			savings_template_id = space.savingsTemplateId,
 			users = Serialization.json.encodeToString(space.users),
-			picture = space.picture,
+			pictureReference = space.pictureReference,
 			color = space.color?.let { Serialization.json.encodeToString(it) },
 			inserted_at = System.currentTimeMillis()
 		)
@@ -45,7 +45,7 @@ class AndroidSpacePersistentCache(
 				savingsTemplateId = row.savings_template_id,
 				users = Serialization.json.decodeFromString(row.users),
 				color = row.color?.let { Serialization.json.decodeFromString(it) },
-				picture = row.picture
+				pictureReference = row.pictureReference,
 			),
 			insertedAt = row.inserted_at
 		)
@@ -74,6 +74,10 @@ class AndroidSpacePersistentCache(
 
 	override suspend fun getById(id: String): CachedSpace? = withContext(Dispatchers.IO) {
 		queries.selectById(id).executeAsOneOrNull()?.let { rowToEntity(it) }
+	}
+
+	override suspend fun getByIds(ids: List<String>): List<CachedSpace> = withContext(Dispatchers.IO) {
+		queries.selectByIds(ids).executeAsList().map { rowToEntity(it) }
 	}
 
 	override suspend fun clearAll() {

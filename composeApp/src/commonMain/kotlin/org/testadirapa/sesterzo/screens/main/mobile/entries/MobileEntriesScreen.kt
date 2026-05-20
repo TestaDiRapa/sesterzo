@@ -60,9 +60,11 @@ fun MobileEntriesScreen(
 	entries: List<DecryptedEntry>
 ) {
 	var usersById by remember { mutableStateOf<Map<String, User>>(emptyMap()) }
-	LaunchedEffect(Unit) {
-		entries
-			.map { }
+	LaunchedEffect(entries.size) {
+		usersById = AppCtx.api.user.getUsers(
+			userIds = entries.mapTo(mutableSetOf()) { it.createdBy }.toList(),
+			bypassCache = false
+		).associateBy { it.id }
 	}
 	val activeEntriesByDay = entries
 		.filterNot { it.deleted }
@@ -80,7 +82,7 @@ fun MobileEntriesScreen(
 				date = date,
 			)
 			entriesInDay.forEach { entry ->
-				EntryCard(entry = entry)
+				EntryCard(entry = entry, user = usersById[entry.createdBy])
 			}
 			Spacer(Modifier.height(8.dp))
 		}
@@ -90,6 +92,7 @@ fun MobileEntriesScreen(
 @Composable
 fun EntryCard(
 	entry: DecryptedEntry,
+	user: User?
 ) {
 	Card(
 		modifier = Modifier.fillMaxWidth(),
@@ -146,9 +149,9 @@ fun EntryCard(
 					EntryTypeBadge(
 						entryType = entry.type,
 					)
-					Spacer(Modifier.width(8.dp))
+					Spacer(Modifier.width(12.dp))
 					Text(
-						text = "User",
+						text = user?.name ?: "???",
 						style = MaterialTheme.typography.bodyMedium,
 						fontWeight = FontWeight.SemiBold,
 						color = colorScheme.primary,

@@ -50,9 +50,9 @@ class BudgetViewModel(
 				type = intent.type,
 				label = intent.label,
 				amount = intent.amount,
-				description = intent.description,
-
+				description = intent.description
 			)
+			is BudgetIntent.DeleteEntry -> deleteEntry(entryId = intent.entryId)
 		}
 	}
 
@@ -165,9 +165,16 @@ class BudgetViewModel(
 			amount = amount,
 			description = description,
 		).also { entries ->
-			_entriesViewState.update {
-				entries
-			}
+			_entriesViewState.update { entries }
+		}
+	}
+
+	private suspend fun deleteEntry(entryId: String) {
+		AppCtx.api.entry.deleteEntryAndRetrieve(
+			spaceId = spaceId,
+			entryId = entryId
+		).also { entries ->
+			_entriesViewState.update { entries }
 		}
 	}
 

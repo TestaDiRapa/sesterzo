@@ -74,12 +74,23 @@ class EntryApiImpl(
 		url {
 			takeFrom(baseUrl)
 			appendPathSegments(baseSegment, "inSpace", spaceId)
-			parameter("ts", GMTDate().timestamp)
 		}
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
 		contentType(Application.Json)
 		setBody(entry)
+	}.wrapPatching { entry -> entry.copy(transientSpaceId = spaceId) }
+
+	private suspend fun deleteEntryInSpace(
+		spaceId: String,
+		entryId: String,
+	): HttpResponse<EncryptedEntry> = delete {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, "inSpace", spaceId, entryId)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
 	}.wrapPatching { entry -> entry.copy(transientSpaceId = spaceId) }
 
 	override suspend fun getInSpaceForBudget(spaceId: String, budgetId: String, bypassCache: Boolean): List<DecryptedEntry> {
@@ -128,5 +139,13 @@ class EntryApiImpl(
 			entry = cryptoService.encrypt(entry)
 		).bodyOrThrow()
 		return getInSpaceForBudget(spaceId = spaceId, budgetId = budgetReference.toBudgetId(), bypassCache = false)
+	}
+
+	override suspend fun deleteEntryAndRetrieve(
+		spaceId: String,
+		entryId: String
+	): List<DecryptedEntry> {
+		val deletedEntry = deleteEntryInSpace(spaceId = spaceId, entryId = entryId).bodyOrThrow()
+		return getInSpaceForBudget(spaceId = spaceId, budgetId = deletedEntry.budgetId, bypassCache = false)
 	}
 }

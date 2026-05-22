@@ -16,4 +16,5 @@ sealed interface BudgetIntent : Intent {
 		val amount: Amount,
 		val description: String?
 	): BudgetIntent
+	data class DeleteEntry(val entryId: String): BudgetIntent
 }

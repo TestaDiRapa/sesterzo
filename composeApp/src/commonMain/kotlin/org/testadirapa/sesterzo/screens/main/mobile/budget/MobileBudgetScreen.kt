@@ -122,6 +122,9 @@ fun MobileBudgetScreen(
 					MobileEntriesScreen(
 						scaffoldPadding = scaffoldPadding,
 						entries = entries.value,
+						onDelete = { entryId ->
+							viewModel.acceptIntent(BudgetIntent.DeleteEntry(entryId))
+						}
 					)
 				}
 				else -> {}

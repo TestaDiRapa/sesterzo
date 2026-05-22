@@ -32,4 +32,6 @@ interface EntryApi {
 		amount: Amount,
 		description: String?
 	): List<DecryptedEntry>
+
+	suspend fun deleteEntryAndRetrieve(spaceId: String, entryId: String): List<DecryptedEntry>
 }

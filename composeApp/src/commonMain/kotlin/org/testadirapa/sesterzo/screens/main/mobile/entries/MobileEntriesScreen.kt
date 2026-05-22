@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.runtime.key
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -93,11 +94,13 @@ fun MobileEntriesScreen(
 				date = date,
 			)
 			entriesInDay.forEach { entry ->
-				EntryCard(
-					entry = entry,
-					user = usersById[entry.createdBy],
-					onDelete = onDelete,
-				)
+				key(entry.id) {
+					EntryCard(
+						entry = entry,
+						user = usersById[entry.createdBy],
+						onDelete = onDelete,
+					)
+				}
 			}
 			Spacer(Modifier.height(8.dp))
 		}

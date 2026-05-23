@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.model.VersionableReference
+import org.testadirapa.sesterzo.model.dto.BulkOperationElementResult
 
 abstract class BudgetDAO(client: DBClient) : GenericMultiCollectionDAO<EncryptedBudget>(client) {
 
@@ -12,11 +13,24 @@ abstract class BudgetDAO(client: DBClient) : GenericMultiCollectionDAO<Encrypted
 	abstract fun getBudgetsForYear(spaceId: String, year: Int): Flow<EncryptedBudget>
 	abstract suspend fun getFirstBudgetAfter(spaceId: String, year: Int, month: Int): EncryptedBudget?
 	abstract suspend fun getFirstBudgetBefore(spaceId: String, year: Int, month: Int): EncryptedBudget?
-	abstract suspend fun updateTemplateVersion(
+
+	/**
+	 * Updates the templateReference in [fieldName] to the version passed in [budgetElementReference], returning a flow
+	 * of [BulkOperationElementResult] for the budgets that are successive to [budgetId] (including it if [inclusiveStart]
+	 * is true) where the current reference for that template is less or equal than [budgetElementReference].
+	 * This operation will create a new version of each budget successfully update.
+	 *
+	 * There are some caveats on the safety in case of concurrent operations:
+	 * - Multiple updates with the same [budgetElementReference] will lead to multiple increases of [EncryptedBudget.version] -> not ideal but ok.
+	 * - If someone calls [getBudgetsForYear] or another bulk read operation while the update is ongoing,
+	 * it will receive an inconsistent state of the documents.
+	 */
+	abstract fun updateTemplatesVersionOnBudgets(
 		spaceId: String,
 		budgetId: String,
-		budgetVersion: Int,
+		inclusiveStart: Boolean,
 		fieldName: String,
+		updatedField: EncryptedBudget.() -> VersionableReference,
 		budgetElementReference: VersionableReference
-	): EncryptedBudget?
+	): Flow<BulkOperationElementResult<EncryptedBudget>>
 }

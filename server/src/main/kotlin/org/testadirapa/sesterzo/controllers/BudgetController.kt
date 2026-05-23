@@ -34,28 +34,28 @@ fun Routing.budgetController() = route("/budget") {
 		call.respond(budgetLogic.getBudgetsForYear(spaceId = spaceId, year = year))
 	}
 
-	authenticateGetInSpace("/before/{year}/{month}") { spaceId ->
+	authenticateGetInSpace("/firstBefore/{year}/{month}") { spaceId ->
 		val year = call.getIntPathParameter("year")
 		val month = call.getIntPathParameter("month")
 		call.respond(budgetLogic.getFirstBudgetBefore(spaceId = spaceId, year = year, month = month))
 	}
 
-	authenticateGetInSpace("/after/{year}/{month}") { spaceId ->
+	authenticateGetInSpace("/firstAfter/{year}/{month}") { spaceId ->
 		val year = call.getIntPathParameter("year")
 		val month = call.getIntPathParameter("month")
 		call.respond(budgetLogic.getFirstBudgetAfter(spaceId = spaceId, year = year, month = month))
 	}
 
-	authenticatedPostInSpace("/{budgetId}/{version}/{templateType}") { spaceId ->
+	authenticatedPostInSpace("/{budgetId}/{templateType}") { spaceId ->
 		val budgetId = call.getPathParameter("budgetId")
-		val version = call.getIntPathParameter("version")
 		val templateType = call.getPathParameter("templateType")
+		val inclusiveStart = call.queryParameters["inclusiveStart"]?.toBoolean() ?: false
 		val elementReference = call.receive<VersionableReference>()
 		call.respond(
-			budgetLogic.updateTemplateVersion(
+			budgetLogic.updateTemplateVersionOnBudgets(
 				spaceId = spaceId,
 				budgetId = budgetId,
-				budgetVersion = version,
+				inclusiveStart = inclusiveStart,
 				type = BudgetElement.BudgetElementType.valueOf(templateType),
 				budgetElementReference = elementReference
 			)

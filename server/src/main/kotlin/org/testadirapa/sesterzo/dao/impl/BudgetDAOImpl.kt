@@ -6,13 +6,19 @@ import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Sorts
+import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.Updates
+import com.sun.org.apache.xalan.internal.lib.ExsltDatetime.year
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.dao.BudgetDAO
 import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.model.VersionableReference
+import org.testadirapa.sesterzo.model.dto.BulkOperationElementResult
 
 class BudgetDAOImpl(
 	client: DBClient,
@@ -63,22 +69,47 @@ class BudgetDAOImpl(
 			Sorts.descending(EncryptedBudget::year.name, EncryptedBudget::month.name)
 		).firstOrNull()
 
-	override suspend fun updateTemplateVersion(
+	override fun updateTemplatesVersionOnBudgets(
 		spaceId: String,
 		budgetId: String,
-		budgetVersion: Int,
+		inclusiveStart: Boolean,
 		fieldName: String,
+		updatedField: EncryptedBudget.() -> VersionableReference,
 		budgetElementReference: VersionableReference
-	): EncryptedBudget? = getCollection(spaceId).findOneAndUpdate(
-		filter = Filters.and(
-			Filters.eq("_id", budgetId),
-			Filters.eq(EncryptedBudget::version.name, budgetVersion),
-		),
-		update = Updates.combine(
-			Updates.set(fieldName, budgetElementReference),
-			Updates.inc(EncryptedBudget::version.name, 1)
-		),
-		options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
-	)
+	): Flow<BulkOperationElementResult<EncryptedBudget>> = flow {
+		getCollection(spaceId).updateMany(
+			filter = Filters.and(
+				if (inclusiveStart) {
+					Filters.gte("_id", budgetId)
+				} else {
+					Filters.gt("_id", budgetId)
+				},
+				Filters.eq("$fieldName.${VersionableReference::id.name}", budgetElementReference.id),
+				Filters.lte("$fieldName.${VersionableReference::version.name}", budgetElementReference.version)
+			),
+			update = Updates.combine(
+				Updates.set(fieldName, budgetElementReference),
+				Updates.inc(EncryptedBudget::version.name, 1)
+			),
+		)
+		emitAll(
+			find(
+				spaceId = spaceId,
+				filter = if (inclusiveStart) {
+					Filters.gte("_id", budgetId)
+				} else {
+					Filters.gt("_id", budgetId)
+				},
+			).map {
+				BulkOperationElementResult(
+					element = it,
+					success = it.updatedField().let { ref ->
+						ref.id == budgetElementReference.id &&
+							ref.version >= budgetElementReference.version // It's ok if some updated the same budget with a more recent version, even concurrently
+					},
+				)
+			}
+		)
+	}
 
 }

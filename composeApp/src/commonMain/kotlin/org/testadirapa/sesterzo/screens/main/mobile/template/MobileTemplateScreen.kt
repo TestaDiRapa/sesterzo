@@ -23,16 +23,16 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.testadirapa.sesterzo.App
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.mobile.template.MobileSourceUpdateForm
 import org.testadirapa.sesterzo.components.template.TemplateStatsCard
 import org.testadirapa.sesterzo.components.template.TemplateUpdateMenu
 import org.testadirapa.sesterzo.components.text.TextWithIcon
+import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.Space
+import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.model.toReference
-import org.testadirapa.sesterzo.utils.currentBudgetReference
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.add_source_type_template
 import sesterzo.composeapp.generated.resources.cycle
@@ -49,6 +49,7 @@ private data class Templates(
 @Composable
 fun MobileTemplateScreen(
 	space: Space,
+	onUpdateBudgetsTemplate: (type: BudgetElement.BudgetElementType, version: VersionableReference, updateCurrent: Boolean) -> Unit,
 	onError: (Throwable) -> Unit,
 ) {
 	val scope = rememberCoroutineScope()
@@ -111,14 +112,7 @@ fun MobileTemplateScreen(
 										elements = updatedAmounts
 									)
 								)
-								if (updatedCurrentBudget) {
-									AppCtx.api.budget.updateBudgetTemplate(
-										spaceId = space.id,
-										budgetReference = currentBudgetReference(),
-										type = updatedElement.type,
-										budgetElementReference = updatedElement.toReference(),
-									)
-								}
+								onUpdateBudgetsTemplate(updatedElement.type, updatedElement.toReference(), updatedCurrentBudget)
 							}.onFailure(onError)
 							runCatching {
 								templatesOrNull = retrieveLatestTemplates(space)

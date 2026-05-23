@@ -2,6 +2,7 @@ package org.testadirapa.sesterzo.viewmodel.errors
 
 import org.jetbrains.compose.resources.getString
 import org.testadirapa.sesterzo.exceptions.ExceptionLabel
+import org.testadirapa.sesterzo.exceptions.ExceptionWithMessage
 import org.testadirapa.sesterzo.exceptions.ExceptionWithLabel
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.error_attachment_not_found
@@ -68,5 +69,6 @@ suspend fun Throwable.toErrorState(): ErrorState = when(this) {
 			ExceptionLabel.GenericForbidden -> getString(Res.string.error_generic_forbidden)
 		}
 	}
+	is ExceptionWithMessage -> msg
 	else -> "${getString(Res.string.error_generic)}${message?.let { ": $it" } ?: ""}"
 }.let { ErrorState(it) }

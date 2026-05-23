@@ -7,15 +7,18 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.testadirapa.sesterzo.AppCtx
-import org.testadirapa.sesterzo.model.Amount
+import org.testadirapa.sesterzo.exceptions.ExceptionWithMessage
+import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudget
-import org.testadirapa.sesterzo.model.DecryptedEntry
+import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.currentBudgetReference
-import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.utils.toReference
 import org.testadirapa.sesterzo.viewmodel.intents.BudgetIntent
+import sesterzo.composeapp.generated.resources.Res
+import sesterzo.composeapp.generated.resources.error_budget_update_failed_bulk
 
 class BudgetViewModel(
 	private val spaceId: String,
@@ -25,9 +28,6 @@ class BudgetViewModel(
 
 	private val _budgetViewState = MutableStateFlow<BudgetView?>(null)
 	val budgetViewState: StateFlow<BudgetView?> = _budgetViewState
-
-	private val _entriesViewState = MutableStateFlow<List<DecryptedEntry>>(emptyList())
-	val entriesViewState: StateFlow<List<DecryptedEntry>> = _entriesViewState
 
 	init {
 		viewModelScope.launch {
@@ -45,14 +45,11 @@ class BudgetViewModel(
 			BudgetIntent.NavigateToPrevious -> navigateToPreviousBudget()
 			is BudgetIntent.NavigateTo -> initBudgetView(intent.budgetReference)
 			is BudgetIntent.CreateBudget -> createBudget(reference = intent.newReference)
-			is BudgetIntent.CreateEntry -> createEntry(
-				budgetReference = intent.budgetReference,
+			is BudgetIntent.UpdateCurrentBudgetTemplate -> updateCurrentBudgetTemplate(
 				type = intent.type,
-				label = intent.label,
-				amount = intent.amount,
-				description = intent.description
+				reference = intent.reference,
+				updateCurrentBudget = intent.updateCurrentBudget,
 			)
-			is BudgetIntent.DeleteEntry -> deleteEntry(entryId = intent.entryId)
 		}
 	}
 
@@ -84,10 +81,6 @@ class BudgetViewModel(
 			} else {
 				it
 			}
-		}.also {
-			if (it != null) {
-				loadEntries(budgetId = it.currentBudget.id)
-			}
 		}
 	}
 
@@ -106,10 +99,6 @@ class BudgetViewModel(
 				)
 			} else {
 				it
-			}
-		}.also {
-			if (it != null) {
-				loadEntries(budgetId = it.currentBudget.id)
 			}
 		}
 	}
@@ -137,44 +126,37 @@ class BudgetViewModel(
 				nextBudget = nextBudget
 			)
 		}
-		loadEntries(budgetId = currentBudget.id)
 	}
 
-	private suspend fun loadEntries(budgetId: String) {
-		_entriesViewState.update {
-			AppCtx.api.entry.getInSpaceForBudget(
-				spaceId = spaceId,
-				budgetId = budgetId,
-				bypassCache = false
-			)
-		}
-	}
-
-	private suspend fun createEntry(
-		budgetReference: BudgetReference,
-		type: Entry.EntryType,
-		label: String,
-		amount: Amount,
-		description: String?
+	private suspend fun updateCurrentBudgetTemplate(
+		type: BudgetElement.BudgetElementType,
+		reference: VersionableReference,
+		updateCurrentBudget: Boolean
 	) {
-		AppCtx.api.entry.createEntryAndRetrieve(
+		val result = AppCtx.api.budget.updateBudgetsTemplate(
 			spaceId = spaceId,
-			budgetReference = budgetReference,
+			startingReference = currentBudgetReference(),
+			inclusiveStart = updateCurrentBudget,
 			type = type,
-			label = label,
-			amount = amount,
-			description = description,
-		).also { entries ->
-			_entriesViewState.update { entries }
-		}
-	}
-
-	private suspend fun deleteEntry(entryId: String) {
-		AppCtx.api.entry.deleteEntryAndRetrieve(
-			spaceId = spaceId,
-			entryId = entryId
-		).also { entries ->
-			_entriesViewState.update { entries }
+			budgetElementReference = reference,
+		)
+		result
+			.filter { !it.success }
+			.map { it.element.id }
+			.takeIf { it.isNotEmpty() }
+			?.let {
+				onError(
+					ExceptionWithMessage(
+						"${getString(Res.string.error_budget_update_failed_bulk)} ${it.joinToString(", ")}"
+					)
+				)
+			}
+		_budgetViewState.update { state ->
+			state?.copy(
+				previousBudget = result.firstOrNull { it.element.id == state.previousBudget?.id }?.element ?: state.previousBudget,
+				currentBudget = result.firstOrNull { it.element.id == state.currentBudget.id }?.element ?: state.currentBudget,
+				nextBudget = result.firstOrNull { it.element.id == state.nextBudget?.id }?.element ?: state.nextBudget,
+			)
 		}
 	}
 

@@ -9,6 +9,7 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.date.GMTDate
+import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.number
 import org.testadirapa.sesterzo.api.BudgetApi
 import org.testadirapa.sesterzo.api.BudgetElementApi
@@ -26,6 +27,7 @@ import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.model.VersionableReference
+import org.testadirapa.sesterzo.model.dto.BulkOperationElementResult
 import org.testadirapa.sesterzo.model.toReference
 import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
@@ -58,7 +60,7 @@ class BudgetApiImpl(
 	private suspend fun retrieveFirstBudgetAfter(spaceId: String, budgetReference: BudgetReference): HttpResponse<EncryptedBudget> = get {
 		url {
 			takeFrom(baseUrl)
-			appendPathSegments(baseSegment, "inSpace", spaceId, "after", budgetReference.year.toString(), budgetReference.month.number.toString())
+			appendPathSegments(baseSegment, "inSpace", spaceId, "firstAfter", budgetReference.year.toString(), budgetReference.month.number.toString())
 			parameter("ts", GMTDate().timestamp)
 		}
 		bearerAuth(authService.getJwt())
@@ -68,7 +70,7 @@ class BudgetApiImpl(
 	private suspend fun retrieveFirstBudgetBefore(spaceId: String, budgetReference: BudgetReference): HttpResponse<EncryptedBudget> = get {
 		url {
 			takeFrom(baseUrl)
-			appendPathSegments(baseSegment, "inSpace", spaceId, "before", budgetReference.year.toString(), budgetReference.month.number.toString())
+			appendPathSegments(baseSegment, "inSpace", spaceId, "firstBefore", budgetReference.year.toString(), budgetReference.month.number.toString())
 			parameter("ts", GMTDate().timestamp)
 		}
 		bearerAuth(authService.getJwt())
@@ -96,15 +98,17 @@ class BudgetApiImpl(
 		accept(Application.Json)
 	}.wrap()
 
-	private suspend fun updateBudgetTemplateInSpace(
+	private suspend fun updateBudgetsTemplateInSpace(
 		spaceId: String,
-		budget: Budget,
+		startingReference: BudgetReference,
+		inclusiveStart: Boolean,
 		type: BudgetElement.BudgetElementType,
 		budgetElementReference: VersionableReference,
-	): HttpResponse<EncryptedBudget> = post {
+	): HttpResponse<List<BulkOperationElementResult<EncryptedBudget>>> = post {
 		url {
 			takeFrom(baseUrl)
-			appendPathSegments(baseSegment, "inSpace", spaceId, budget.id, "${budget.version}", type.name)
+			appendPathSegments(baseSegment, "inSpace", spaceId, startingReference.toBudgetId(), type.name)
+			parameter("inclusiveStart", inclusiveStart)
 		}
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
@@ -193,23 +197,26 @@ class BudgetApiImpl(
 		getFromNetwork = { retrieveFirstBudgetBefore(spaceId = spaceId, budgetReference = budgetReference) }
 	)?.let { cryptoService.decrypt(it) }
 
-	override suspend fun updateBudgetTemplate(
+	override suspend fun updateBudgetsTemplate(
 		spaceId: String,
-		budgetReference: BudgetReference,
+		startingReference: BudgetReference,
+		inclusiveStart: Boolean,
 		type: BudgetElement.BudgetElementType,
 		budgetElementReference: VersionableReference
-	) {
-		val budget = getBudget(spaceId = spaceId, budgetId = budgetReference.toBudgetId(), bypassCache = true)
-			?: throw IllegalStateException("budget not found")
-		return updateBudgetTemplateInSpace(
+	): List<BulkOperationElementResult<DecryptedBudget>> {
+		return updateBudgetsTemplateInSpace(
 			spaceId = spaceId,
-			budget = budget,
+			startingReference = startingReference,
+			inclusiveStart = inclusiveStart,
 			type = type,
 			budgetElementReference = budgetElementReference
-		).bodyOrThrow().also {
-			putInCache(it)
-		}.let {
-			cryptoService.decrypt(it)
+		).bodyOrThrow().onEach {
+			putInCache(it.element)
+		}.map {
+			BulkOperationElementResult(
+				element = cryptoService.decrypt(it.element),
+				success = it.success,
+			)
 		}
 	}
 }

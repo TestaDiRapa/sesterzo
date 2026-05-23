@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.api
 import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.VersionableReference
+import org.testadirapa.sesterzo.model.dto.BulkOperationElementResult
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.currentBudgetReference
 
@@ -28,10 +29,11 @@ interface BudgetApi {
 		bypassCache: Boolean
 	): DecryptedBudget?
 
-	suspend fun updateBudgetTemplate(
+	suspend fun updateBudgetsTemplate(
 		spaceId: String,
-		budgetReference: BudgetReference,
+		startingReference: BudgetReference,
+		inclusiveStart: Boolean,
 		type: BudgetElement.BudgetElementType,
 		budgetElementReference: VersionableReference
-	)
+	): List<BulkOperationElementResult<DecryptedBudget>>
 }

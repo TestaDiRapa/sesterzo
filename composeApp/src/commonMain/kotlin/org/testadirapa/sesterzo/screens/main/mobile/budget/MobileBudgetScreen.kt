@@ -111,23 +111,28 @@ fun MobileBudgetScreen(
 		},
 		floatingActionButtonPosition = FabPosition.End,
 	) { scaffoldPadding ->
-		Column {
-			when (page) {
-				Page.Budget -> {
-					BudgetComponent(
-						entries = entries.value,
-					)
+		budgetView.value?.let { view ->
+			Column {
+				when (page) {
+					Page.Budget -> {
+						BudgetComponent(
+							scaffoldPadding = scaffoldPadding,
+							entries = entries.value,
+							budget = view.currentBudget,
+							onError = onError,
+						)
+					}
+					Page.Entries -> {
+						MobileEntriesScreen(
+							scaffoldPadding = scaffoldPadding,
+							entries = entries.value,
+							onDelete = { entryId ->
+								viewModel.acceptIntent(BudgetIntent.DeleteEntry(entryId))
+							}
+						)
+					}
+					else -> {}
 				}
-				Page.Entries -> {
-					MobileEntriesScreen(
-						scaffoldPadding = scaffoldPadding,
-						entries = entries.value,
-						onDelete = { entryId ->
-							viewModel.acceptIntent(BudgetIntent.DeleteEntry(entryId))
-						}
-					)
-				}
-				else -> {}
 			}
 		}
 	}

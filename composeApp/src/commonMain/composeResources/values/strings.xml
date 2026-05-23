@@ -107,6 +107,10 @@
     <string name="entry_list_page_today">Today</string>
     <string name="entry_list_page_yesterday">Yesterday</string>
 
+    <!--  Main page  -->
+    <string name="main_page_mode_expenses">Expenses</string>
+    <string name="main_page_mode_savings">Savings</string>
+
     <!--  Recover private key screen  -->
     <string name="recover_key_title">Your private key was not found on the device</string>
     <string name="recover_key_description_1">Recover your key using one of the following options:</string>

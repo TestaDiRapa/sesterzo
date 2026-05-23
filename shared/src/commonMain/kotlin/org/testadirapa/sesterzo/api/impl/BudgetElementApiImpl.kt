@@ -10,7 +10,7 @@ import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.date.GMTDate
 import org.testadirapa.sesterzo.api.BudgetElementApi
-import org.testadirapa.sesterzo.api.TemporizedCachedApi
+import org.testadirapa.sesterzo.api.CachedApi
 import org.testadirapa.sesterzo.cache.BudgetElementPersistentCache
 import org.testadirapa.sesterzo.cache.model.CachedBudgetElement
 import org.testadirapa.sesterzo.config.HttpConfig
@@ -18,20 +18,21 @@ import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrap
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.EncryptedBudgetElement
+import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
-import kotlin.time.Duration
 
 class BudgetElementApiImpl(
 	httpConfig: HttpConfig,
 	cache: BudgetElementPersistentCache,
-	ttl: Duration,
 	private val authService: AuthService,
 	private val cryptoService: CryptoService,
-) : TemporizedCachedApi<EncryptedBudgetElement, CachedBudgetElement, BudgetElementPersistentCache>(httpConfig, cache, ttl),
+) : CachedApi<EncryptedBudgetElement, CachedBudgetElement, BudgetElementPersistentCache>(httpConfig, cache),
 	BudgetElementApi {
 
 	override val baseSegment: String = "budgetElement"
+
+	override fun convert(data: CachedBudgetElement): EncryptedBudgetElement = data.entity
 
 	private suspend fun retrieveLatestById(
 		spaceId: String,
@@ -46,13 +47,28 @@ class BudgetElementApiImpl(
 		accept(Application.Json)
 	}.wrap()
 
+	private suspend fun retrieveBudgetElementById(
+		spaceId: String,
+		budgetElementId: String,
+		version: Int,
+	): HttpResponse<EncryptedBudgetElement> = get {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, "inSpace", spaceId, budgetElementId, "$version")
+			parameter("ts", GMTDate().timestamp)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+	}.wrap()
+
+
 	private suspend fun saveBudgetElement(
 		spaceId: String,
 		budgetElement: EncryptedBudgetElement
 	): HttpResponse<EncryptedBudgetElement> = post {
 		url {
 			takeFrom(baseUrl)
-			appendPathSegments(baseSegment, "inSpace", spaceId,)
+			appendPathSegments(baseSegment, "inSpace", spaceId)
 		}
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
@@ -65,6 +81,18 @@ class BudgetElementApiImpl(
 			.bodyOrThrow()
 			.also { putInCache(it) }
 			.let { cryptoService.decrypt(it) }
+
+	override suspend fun getBudgetElement(
+		spaceId: String,
+		budgetElementReference: VersionableReference
+	): DecryptedBudgetElement = cachedOrGet(
+		id = budgetElementReference.toId(),
+		bypassCache = false
+	) {
+		retrieveBudgetElementById(spaceId = spaceId, budgetElementId = budgetElementReference.id, version = budgetElementReference.version)
+	}.let {
+		cryptoService.decrypt(it)
+	}
 
 	override suspend fun createBudgetElement(
 		spaceId: String,

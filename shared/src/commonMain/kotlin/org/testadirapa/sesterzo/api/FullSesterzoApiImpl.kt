@@ -52,7 +52,6 @@ class FullSesterzoApiImpl(
 		BudgetElementApiImpl(
 			httpConfig = httpConfig,
 			cache = cache.budgetElement,
-			ttl = cacheTtl,
 			authService = authService,
 			cryptoService = cryptoService
 		)

@@ -5,6 +5,7 @@ import org.testadirapa.sesterzo.exceptions.EntityNotFoundException
 import org.testadirapa.sesterzo.exceptions.ExceptionLabel
 import org.testadirapa.sesterzo.logic.BudgetElementLogic
 import org.testadirapa.sesterzo.model.EncryptedBudgetElement
+import org.testadirapa.sesterzo.model.Versionable
 import org.testadirapa.sesterzo.utils.requireSizeIsUnderThreshold
 
 class BudgetElementLogicImpl(
@@ -15,6 +16,13 @@ class BudgetElementLogicImpl(
 		budgetElementDAO.getLatestVersionForId(spaceId, budgetElementId)
 			?: throw EntityNotFoundException(
 				entityId = budgetElementId,
+				label = ExceptionLabel.BudgetElementNotFound
+			)
+
+	override suspend fun getBudgetElement(spaceId: String, budgetElementId: String, version: Int): EncryptedBudgetElement =
+		budgetElementDAO.getById(spaceId = spaceId, id = "$budgetElementId-$version")
+			?: throw EntityNotFoundException(
+				entityId = Versionable.idOf(entityId = budgetElementId, version = version),
 				label = ExceptionLabel.BudgetElementNotFound
 			)
 

@@ -21,6 +21,10 @@ abstract class CachedApi<W : Identifiable, R : Identifiable, C : PersistenceOper
 		cache.upsert(data)
 	}
 
+	protected suspend fun removeFromCache(data: W) {
+		cache.clear(data)
+	}
+
 	/**
 	 * Checks if an entity from the cache is invalid. Default is false (always valid), but is overridden in the temporized
 	 * implementation.

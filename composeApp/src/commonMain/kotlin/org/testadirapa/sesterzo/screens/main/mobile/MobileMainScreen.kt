@@ -35,6 +35,7 @@ fun MobileMainScreen(
 		BudgetViewModel(spaceId = space.id, errorHandler = onError)
 	}
 	val budgetView = viewModel.budgetViewState.collectAsState()
+	val loadingState = viewModel.loadingState.collectAsState()
 	Scaffold(
 		topBar = {
 			HeaderBar(
@@ -64,6 +65,7 @@ fun MobileMainScreen(
 							space = space,
 							page = currentPage,
 							budget = budgets.currentBudget,
+							budgetLoadingState = loadingState.value,
 							onPreviousBudget = budgets.previousBudget?.let { { viewModel.acceptIntent(BudgetIntent.NavigateToPrevious) } },
 							onNextBudget = budgets.nextBudget?.let { { viewModel.acceptIntent(BudgetIntent.NavigateToNext) } },
 							onMonthSelect = { reference ->
@@ -71,6 +73,9 @@ fun MobileMainScreen(
 							},
 							onCreateBudget = { reference ->
 								viewModel.acceptIntent(BudgetIntent.CreateBudget(reference))
+							},
+							onBudgetUpdate = { budget, newAmounts, type ->
+								viewModel.acceptIntent(BudgetIntent.UpdateBudgetAmount(budget, newAmounts, type))
 							},
 							onError = onError,
 						)

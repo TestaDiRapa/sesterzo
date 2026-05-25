@@ -4,11 +4,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import org.testadirapa.sesterzo.dao.BudgetDAO
+import org.testadirapa.sesterzo.exceptions.BudgetConflictException
 import org.testadirapa.sesterzo.exceptions.EntityNotFoundException
 import org.testadirapa.sesterzo.exceptions.ExceptionLabel
 import org.testadirapa.sesterzo.logic.BudgetLogic
+import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.EncryptedBudget
+import org.testadirapa.sesterzo.model.EncryptedBudgetElement
 import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.model.dto.BulkOperationElementResult
 import org.testadirapa.sesterzo.utils.requireSizeIsUnderThreshold
@@ -76,4 +79,14 @@ class BudgetLogicImpl(
 			)
 		)
 	}
+
+	override suspend fun setEncryptedSelfOnBudget(
+		spaceId: String,
+		budget: EncryptedBudget
+	): EncryptedBudget = budgetDAO.setEncryptedSelfOnBudget(
+		spaceId = spaceId,
+		budgetId = budget.id,
+		budgetVersion = budget.version,
+		encryptedSelf = budget.encryptedSelf
+	) ?: throw BudgetConflictException(budgetId = budget.id)
 }

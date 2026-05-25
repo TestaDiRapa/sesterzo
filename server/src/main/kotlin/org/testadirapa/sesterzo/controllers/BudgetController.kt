@@ -11,6 +11,7 @@ import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.security.authenticateGetInSpace
 import org.testadirapa.sesterzo.security.authenticatedPostInSpace
+import org.testadirapa.sesterzo.security.authenticatedPutInSpace
 import org.testadirapa.sesterzo.utils.getIntPathParameter
 import org.testadirapa.sesterzo.utils.getPathParameter
 import kotlin.getValue
@@ -27,6 +28,11 @@ fun Routing.budgetController() = route("/budget") {
 	authenticatedPostInSpace("") { spaceId ->
 		val budget = call.receive<EncryptedBudget>()
 		call.respond(budgetLogic.createBudget(spaceId = spaceId, budget = budget))
+	}
+
+	authenticatedPostInSpace("/encryptedSelf") { spaceId ->
+		val budget = call.receive<EncryptedBudget>()
+		call.respond(budgetLogic.setEncryptedSelfOnBudget(spaceId = spaceId, budget = budget))
 	}
 
 	authenticateGetInSpace("/forYear/{year}") { spaceId ->

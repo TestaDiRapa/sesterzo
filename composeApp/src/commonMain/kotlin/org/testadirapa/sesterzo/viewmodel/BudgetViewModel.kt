@@ -10,8 +10,10 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.exceptions.ExceptionWithMessage
+import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudget
+import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.currentBudgetReference
@@ -49,6 +51,11 @@ class BudgetViewModel(
 				type = intent.type,
 				reference = intent.reference,
 				updateCurrentBudget = intent.updateCurrentBudget,
+			)
+			is BudgetIntent.UpdateBudgetAmount -> updateBudgetAmount(
+				budget = intent.budget,
+				newAmounts = intent.newAmounts,
+				type = intent.type,
 			)
 		}
 	}
@@ -157,6 +164,50 @@ class BudgetViewModel(
 				currentBudget = result.firstOrNull { it.element.id == state.currentBudget.id }?.element ?: state.currentBudget,
 				nextBudget = result.firstOrNull { it.element.id == state.nextBudget?.id }?.element ?: state.nextBudget,
 			)
+		}
+	}
+
+	private suspend fun updateBudgetAmount(
+		budget: DecryptedBudget,
+		newAmounts: Map<String, Amount>,
+		type: Entry.EntryType,
+	) {
+		when(type) {
+			Entry.EntryType.Expense -> budget.copy(fixedExpenses = newAmounts)
+			Entry.EntryType.Income -> budget.copy(income = newAmounts)
+			Entry.EntryType.Saving -> budget.copy(savings = newAmounts)
+		}.also {
+			updateBudget(it)
+		}
+	}
+
+	private suspend fun updateBudget(
+		updatedBudget: DecryptedBudget,
+	) {
+		val result = AppCtx.api.budget.updateBudgetEncryptedFields(
+			spaceId = spaceId,
+			budget = updatedBudget
+		)
+		if (result.isSuccess) {
+			val updated = result.getOrThrow()
+			_budgetViewState.update {
+				it?.copy(
+					previousBudget = if (it.previousBudget?.id == updatedBudget.id) updated else it.previousBudget,
+					currentBudget = if (it.currentBudget.id == updatedBudget.id) updated else it.currentBudget,
+					nextBudget = if (it.nextBudget?.id == updatedBudget.id) updated else it.nextBudget,
+				)
+			}
+		} else {
+			result.exceptionOrNull()?.also { onError(it) }
+			_budgetViewState.value?.also {
+				if (
+					it.previousBudget?.id == updatedBudget.id ||
+					it.currentBudget.id == updatedBudget.id ||
+					it.nextBudget?.id == updatedBudget.id
+				) {
+					initBudgetView(budgetReference = it.currentBudget.toReference())
+				}
+			}
 		}
 	}
 

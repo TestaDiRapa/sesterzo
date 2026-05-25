@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.mobile.entries.AddEntryForm
+import org.testadirapa.sesterzo.components.mobile.template.MobileSourceUpdateForm
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
@@ -44,6 +45,10 @@ import org.testadirapa.sesterzo.utils.toReference
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.main_page_mode_expenses
 import sesterzo.composeapp.generated.resources.main_page_mode_savings
+import sesterzo.composeapp.generated.resources.main_page_template_form_subtitle
+import sesterzo.composeapp.generated.resources.main_page_template_form_warning
+import sesterzo.composeapp.generated.resources.template_page_expenses
+import sesterzo.composeapp.generated.resources.template_page_savings
 
 private enum class DisplayMode(val entryType: Entry.EntryType) {
 	Expenses(Entry.EntryType.Expense),
@@ -58,11 +63,15 @@ fun BudgetComponent(
 	scaffoldPadding: PaddingValues,
 	entries: List<DecryptedEntry>,
 	loadingState: Boolean,
+	budgetLoadingState: Boolean,
 	onCreateEntry: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
+	onBudgetUpdate: (budget: DecryptedBudget, newAmounts: Map<String, Amount>, type: Entry.EntryType) -> Unit,
 	onError: (error: Throwable) -> Unit,
 ) {
+	var showTemplateUpdateFormSheet by remember { mutableStateOf(false) }
 	var addEntryFormInfo by remember { mutableStateOf<Pair<String, Entry.EntryType>?>(null) }
-	val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+	val entryFormSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+	val templateFormSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 	var displayMode by remember { mutableStateOf(DisplayMode.Expenses) }
 	var expensesTemplate by remember { mutableStateOf<DecryptedBudgetElement?>(null) }
 	var savingsTemplate by remember { mutableStateOf<DecryptedBudgetElement?>(null) }
@@ -105,13 +114,16 @@ fun BudgetComponent(
 			},
 			onRowClick = { label ->
 				addEntryFormInfo = label to displayMode.entryType
+			},
+			onEdit = {
+				showTemplateUpdateFormSheet = true
 			}
 		)
 	}
 	if (addEntryFormInfo != null) {
 		ModalBottomSheet(
 			onDismissRequest = { addEntryFormInfo = null },
-			sheetState = sheetState,
+			sheetState = entryFormSheetState,
 			containerColor = colorScheme.surface,
 		) {
 			AddEntryForm(
@@ -124,6 +136,40 @@ fun BudgetComponent(
 				loadingState = loadingState,
 				entryType = addEntryFormInfo?.second ?: Entry.EntryType.Expense,
 				label = addEntryFormInfo?.first,
+			)
+		}
+	}
+
+	if (showTemplateUpdateFormSheet) {
+		ModalBottomSheet(
+			onDismissRequest = { showTemplateUpdateFormSheet = false },
+			sheetState = templateFormSheetState,
+			containerColor = colorScheme.surface,
+		) {
+			MobileSourceUpdateForm(
+				title = when(displayMode) {
+					DisplayMode.Expenses -> stringResource(Res.string.template_page_expenses)
+					DisplayMode.Savings -> stringResource(Res.string.template_page_savings)
+				},
+				type = stringResource(Res.string.main_page_template_form_subtitle),
+				sources = when(displayMode) {
+					DisplayMode.Expenses -> expensesTemplate?.elements.orEmpty() + budget.fixedExpenses
+					DisplayMode.Savings -> savingsTemplate?.elements.orEmpty() + budget.savings
+				},
+				entity = when(displayMode) {
+					DisplayMode.Expenses -> Triple(budget, expensesTemplate, displayMode.entryType)
+					DisplayMode.Savings -> Triple(budget, savingsTemplate, displayMode.entryType)
+				},
+				loadingState = budgetLoadingState,
+				onSourceUpdate = { (budget, template, type), updatedAmounts, _ ->
+					val amounts = updatedAmounts.filter { (k, v) ->
+						template?.elements?.get(k) != v
+					}
+					onBudgetUpdate(budget, amounts, type)
+					showTemplateUpdateFormSheet = false
+				},
+				showUpdateCurrentBudgetSwitch = false,
+				warningText = stringResource(Res.string.main_page_template_form_warning)
 			)
 		}
 	}

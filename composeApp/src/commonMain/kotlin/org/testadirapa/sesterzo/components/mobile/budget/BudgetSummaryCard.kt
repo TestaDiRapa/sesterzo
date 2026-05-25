@@ -59,6 +59,7 @@ fun BudgetSummaryCard(
 	entries: List<DecryptedEntry>,
 	overLimitTextColor: Color,
 	onRowClick: (label: String) -> Unit,
+	onEdit: () -> Unit,
 ) {
 	val entriesByLabel = entries.groupBy { it.label }.mapValues { it.value.sumOf { v -> v.amount } }.toMutableMap()
 	val cardRowsValues = scheduled.map { (label, amount) ->
@@ -77,7 +78,7 @@ fun BudgetSummaryCard(
 				total = scheduled.values.sum(),
 				actual = entries.sumOf { it.amount },
 				overLimitTextColor = overLimitTextColor,
-				onEdit = {}
+				onEdit = onEdit
 			)
 			HorizontalDivider(modifier = Modifier.fillMaxWidth())
 			cardRowsValues.forEachIndexed { idx, (label, amount, threshold) ->
@@ -181,40 +182,36 @@ private fun CardHeader(
 		horizontalArrangement = Arrangement.SpaceBetween,
 		modifier = Modifier.fillMaxWidth().padding(12.dp)
 	) {
-		Row(
-			verticalAlignment = Alignment.CenterVertically
-		) {
+		Column{
 			Text(
 				text = title,
 				color = colorScheme.onSurface,
 				style = MaterialTheme.typography.bodyLarge
 			)
-			Spacer(modifier = Modifier.width(8.dp))
-			Text(
-				text = "·",
-				color = colorScheme.onSurface,
-				style = MaterialTheme.typography.bodyMedium
-			)
-			Spacer(modifier = Modifier.width(8.dp))
-			Text(
-				text = AppCtx.currency.writer(actual),
-				color = if (actual <= total) {
-					colorScheme.onSurface
-				} else {
-					overLimitTextColor
-				},
-				style = amountTextStyleSmall()
-			)
-			Text(
-				text = " / ",
-				color = colorScheme.onSurfaceVariant,
-				style = MaterialTheme.typography.bodyMedium
-			)
-			Text(
-				text =  AppCtx.currency.writer(total),
-				color = colorScheme.onSurfaceVariant,
-				style = amountTextStyleSmall()
-			)
+			Spacer(modifier = Modifier.height(4.dp))
+			Row(
+				verticalAlignment = Alignment.CenterVertically,
+			) {
+				Text(
+					text = AppCtx.currency.writer(actual),
+					color = if (actual <= total) {
+						colorScheme.onSurface
+					} else {
+						overLimitTextColor
+					},
+					style = amountTextStyleSmall()
+				)
+				Text(
+					text = " / ",
+					color = colorScheme.onSurfaceVariant,
+					style = MaterialTheme.typography.bodyMedium
+				)
+				Text(
+					text =  AppCtx.currency.writer(total),
+					color = colorScheme.onSurfaceVariant,
+					style = amountTextStyleSmall()
+				)
+			}
 		}
 		Button(
 			onClick = onEdit,

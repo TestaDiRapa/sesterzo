@@ -35,7 +35,7 @@ class JsBudgetPersistentCache(
 	@OptIn(ExperimentalWasmJsInterop::class)
 	override fun toKt(dbEntity: JsAny): CachedBudget = (dbEntity as JsBudget).toKt()
 
-	override fun keyOf(entity: EncryptedBudget): Key = Key(entity.id)
+	override fun keyOf(entity: EncryptedBudget): Key = Key("${entity.spaceId}-${entity.id}")
 
 	@OptIn(ExperimentalWasmJsInterop::class)
 	override suspend fun getByYearInSpace(spaceId: String, year: Int): List<CachedBudget> = database.transaction(storeName) {

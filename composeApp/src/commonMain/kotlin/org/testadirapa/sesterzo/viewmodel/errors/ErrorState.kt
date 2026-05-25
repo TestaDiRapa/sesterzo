@@ -6,6 +6,7 @@ import org.testadirapa.sesterzo.exceptions.ExceptionWithMessage
 import org.testadirapa.sesterzo.exceptions.ExceptionWithLabel
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.error_attachment_not_found
+import sesterzo.composeapp.generated.resources.error_budget_conflict
 import sesterzo.composeapp.generated.resources.error_budget_element_not_found
 import sesterzo.composeapp.generated.resources.error_budget_not_found
 import sesterzo.composeapp.generated.resources.error_budget_update_failed
@@ -67,6 +68,7 @@ suspend fun Throwable.toErrorState(): ErrorState = when(this) {
 			ExceptionLabel.SpaceThumbnailUpdateFailed -> getString(Res.string.error_space_thumbnail_update_failed)
 			ExceptionLabel.BudgetUpdateFailed -> getString(Res.string.error_budget_update_failed)
 			ExceptionLabel.GenericForbidden -> getString(Res.string.error_generic_forbidden)
+			ExceptionLabel.BudgetConflict -> getString(Res.string.error_budget_conflict)
 		}
 	}
 	is ExceptionWithMessage -> msg

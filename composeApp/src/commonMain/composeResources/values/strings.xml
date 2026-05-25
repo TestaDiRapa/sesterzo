@@ -25,6 +25,7 @@
 
     <!--  Errors  -->
     <string name="error_attachment_not_found">Attachment not found.</string>
+    <string name="error_budget_conflict">This budget was already modified on another platform. Please retry.</string>
     <string name="error_budget_not_found">Budget not found.</string>
     <string name="error_budget_element_not_found">Budget Element not found.</string>
     <string name="error_budget_update_failed">Budget update failed.</string>
@@ -112,6 +113,8 @@
     <string name="main_page_mode_expenses">Expenses</string>
     <string name="main_page_mode_savings">Savings</string>
     <string name="main_page_edit_block">Edit</string>
+    <string name="main_page_template_form_subtitle">CURRENT MONTH</string>
+    <string name="main_page_template_form_warning">This will only update the current month. Go to the template page to update the template.</string>
 
     <!--  Recover private key screen  -->
     <string name="recover_key_title">Your private key was not found on the device</string>

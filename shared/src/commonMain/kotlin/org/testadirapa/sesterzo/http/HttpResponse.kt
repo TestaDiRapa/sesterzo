@@ -1,6 +1,5 @@
 package org.testadirapa.sesterzo.http
 
-import io.ktor.client.call.body
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
@@ -21,19 +20,22 @@ class HttpResponse<T>(
 	val isServerError: Boolean get() = response.status.value >= 500
 	val isClientError: Boolean get() = response.status.value in 400 until 500
 	val isForbidden: Boolean get() = response.status.value == 403
+	val isConflict: Boolean get() = response.status.value == 409
 
 	@Suppress("UNCHECKED_CAST")
 	private suspend fun getBodyFromResponse(): T =
-		(response.call.bodyNullable(typeInfo) as T).let {
-			patcher(it)
-		}
+		patcher((response.call.bodyNullable(typeInfo) as T))
 
 	private suspend fun throwErrorFromResponse(): Nothing {
+		throw exception()
+	}
+
+	suspend fun exception(): Throwable {
 		val responseBodyText = kotlin.runCatching {
 			response.bodyAsText()
 		}.getOrNull()
 		val statusResponse = responseBodyText?.let { Json.decodeFromString<StatusResponse>(it) }
-		throw ResponseStatusException(
+		return ResponseStatusException(
 			msg = statusResponse?.message,
 			label = statusResponse?.label,
 		)

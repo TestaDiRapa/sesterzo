@@ -75,6 +75,8 @@ fun <T> MobileSourceUpdateForm(
 	entity: T,
 	loadingState: Boolean,
 	onSourceUpdate: (entity: T, updatedAmounts: Map<String, Amount>, updatedCurrentBudget: Boolean) -> Unit,
+	showUpdateCurrentBudgetSwitch: Boolean = true,
+	warningText: String? = null,
 ) {
 	var updateCurrentBudget by remember { mutableStateOf(true) }
 	val newSource = stringResource(Res.string.add_source_page_new_source)
@@ -174,39 +176,48 @@ fun <T> MobileSourceUpdateForm(
 		}
 		Spacer(modifier = Modifier.heightIn(8.dp, 48.dp))
 		HorizontalDivider(color = colorScheme.outline)
-		Row(
-			verticalAlignment = Alignment.CenterVertically,
-			horizontalArrangement = Arrangement.spacedBy(12.dp),
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(horizontal = 4.dp, vertical = 4.dp)
-				.toggleable(
-					value = updateCurrentBudget,
-					role = Role.Switch,
-					interactionSource = remember { MutableInteractionSource() },
-					indication = null,
-					onValueChange = {
-						updateCurrentBudget = !updateCurrentBudget
-					},
-				)
-		) {
-			Column(modifier = Modifier.weight(1f)) {
-				Text(
-					text = stringResource(Res.string.add_source_apply_to_month_title),
-					color = colorScheme.onSurface,
-					style = MaterialTheme.typography.bodyLarge
-				)
-				Spacer(Modifier.height(2.dp))
-				Text(
-					text = stringResource(Res.string.add_source_apply_to_month_subtitle),
-					color = colorScheme.onSurfaceVariant,
-					style = MaterialTheme.typography.bodyMedium
+		if (showUpdateCurrentBudgetSwitch) {
+			Row(
+				verticalAlignment = Alignment.CenterVertically,
+				horizontalArrangement = Arrangement.spacedBy(12.dp),
+				modifier = Modifier
+					.fillMaxWidth()
+					.padding(horizontal = 4.dp, vertical = 4.dp)
+					.toggleable(
+						value = updateCurrentBudget,
+						role = Role.Switch,
+						interactionSource = remember { MutableInteractionSource() },
+						indication = null,
+						onValueChange = {
+							updateCurrentBudget = !updateCurrentBudget
+						},
+					)
+			) {
+				Column(modifier = Modifier.weight(1f)) {
+					Text(
+						text = stringResource(Res.string.add_source_apply_to_month_title),
+						color = colorScheme.onSurface,
+						style = MaterialTheme.typography.bodyLarge
+					)
+					Spacer(Modifier.height(2.dp))
+					Text(
+						text = stringResource(Res.string.add_source_apply_to_month_subtitle),
+						color = colorScheme.onSurfaceVariant,
+						style = MaterialTheme.typography.bodyMedium
+					)
+				}
+				Switch(
+					checked = updateCurrentBudget,
+					onCheckedChange = null,
+					enabled = true,
 				)
 			}
-			Switch(
-				checked = updateCurrentBudget,
-				onCheckedChange = null,
-				enabled = true,
+		}
+		warningText?.let {
+			Text(
+				text = it,
+				color = colorScheme.onSurface,
+				style = MaterialTheme.typography.bodyLarge
 			)
 		}
 		FormButton(

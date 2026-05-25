@@ -1,6 +1,9 @@
 package org.testadirapa.sesterzo.viewmodel.intents
 
+import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.BudgetElement
+import org.testadirapa.sesterzo.model.DecryptedBudget
+import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.utils.BudgetReference
 
@@ -13,5 +16,10 @@ sealed interface BudgetIntent : Intent {
 		val type: BudgetElement.BudgetElementType,
 		val reference: VersionableReference,
 		val updateCurrentBudget: Boolean
+	): BudgetIntent
+	data class UpdateBudgetAmount(
+		val budget: DecryptedBudget,
+		val newAmounts: Map<String, Amount>,
+		val type : Entry.EntryType,
 	): BudgetIntent
 }

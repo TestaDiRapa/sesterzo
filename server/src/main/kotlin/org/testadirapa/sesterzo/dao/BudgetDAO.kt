@@ -3,6 +3,8 @@ package org.testadirapa.sesterzo.dao
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.Flow
 import org.testadirapa.sesterzo.components.mongodb.DBClient
+import org.testadirapa.sesterzo.model.Amount
+import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.model.dto.BulkOperationElementResult
@@ -33,4 +35,11 @@ abstract class BudgetDAO(client: DBClient) : GenericMultiCollectionDAO<Encrypted
 		updatedField: EncryptedBudget.() -> VersionableReference,
 		budgetElementReference: VersionableReference
 	): Flow<BulkOperationElementResult<EncryptedBudget>>
+
+	abstract suspend fun setEncryptedSelfOnBudget(
+		spaceId: String,
+		budgetId: String,
+		budgetVersion: Int,
+		encryptedSelf: Base64String?
+	): EncryptedBudget?
 }

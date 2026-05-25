@@ -36,4 +36,6 @@ interface BudgetApi {
 		type: BudgetElement.BudgetElementType,
 		budgetElementReference: VersionableReference
 	): List<BulkOperationElementResult<DecryptedBudget>>
+
+	suspend fun updateBudgetEncryptedFields(spaceId: String, budget: DecryptedBudget): Result<DecryptedBudget>
 }

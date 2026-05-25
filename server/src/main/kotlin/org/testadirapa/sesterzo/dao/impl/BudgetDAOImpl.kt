@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.dao.BudgetDAO
+import org.testadirapa.sesterzo.model.Amount
+import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.model.dto.BulkOperationElementResult
@@ -68,6 +71,23 @@ class BudgetDAOImpl(
 		).sort(
 			Sorts.descending(EncryptedBudget::year.name, EncryptedBudget::month.name)
 		).firstOrNull()
+
+	override suspend fun setEncryptedSelfOnBudget(
+		spaceId: String,
+		budgetId: String,
+		budgetVersion: Int,
+		encryptedSelf: Base64String?
+	): EncryptedBudget? = getCollection(spaceId).findOneAndUpdate(
+		filter = Filters.and(
+			Filters.eq("_id", budgetId),
+			Filters.eq(EncryptedBudget::version.name, budgetVersion),
+		),
+		update = Updates.combine(
+			Updates.set(EncryptedBudget::encryptedSelf.name, encryptedSelf),
+			Updates.inc(EncryptedBudget::version.name, 1)
+		),
+		options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+	)
 
 	override fun updateTemplatesVersionOnBudgets(
 		spaceId: String,

@@ -9,7 +9,6 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.date.GMTDate
-import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.number
 import org.testadirapa.sesterzo.api.BudgetApi
 import org.testadirapa.sesterzo.api.BudgetElementApi
@@ -18,11 +17,8 @@ import org.testadirapa.sesterzo.api.TemporizedCachedApi
 import org.testadirapa.sesterzo.cache.BudgetPersistentCache
 import org.testadirapa.sesterzo.cache.model.CachedBudget
 import org.testadirapa.sesterzo.config.HttpConfig
-import org.testadirapa.sesterzo.exceptions.ExceptionLabel
-import org.testadirapa.sesterzo.exceptions.ExceptionWithLabel
 import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrap
-import org.testadirapa.sesterzo.model.Budget
 import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.EncryptedBudget
@@ -81,6 +77,17 @@ class BudgetApiImpl(
 		url {
 			takeFrom(baseUrl)
 			appendPathSegments(baseSegment, "inSpace", spaceId)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+		contentType(Application.Json)
+		setBody(budget)
+	}.wrap()
+
+	private suspend fun setBudgetEncryptedSelfInSpace(spaceId: String, budget: EncryptedBudget): HttpResponse<EncryptedBudget> = post {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, "inSpace", spaceId, "encryptedSelf")
 		}
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
@@ -211,12 +218,37 @@ class BudgetApiImpl(
 			type = type,
 			budgetElementReference = budgetElementReference
 		).bodyOrThrow().onEach {
-			putInCache(it.element)
+			if (it.success) {
+				putInCache(it.element)
+			} else {
+				removeFromCache(it.element)
+			}
 		}.map {
 			BulkOperationElementResult(
 				element = cryptoService.decrypt(it.element),
 				success = it.success,
 			)
+		}
+	}
+
+	override suspend fun updateBudgetEncryptedFields(
+		spaceId: String,
+		budget: DecryptedBudget,
+	): Result<DecryptedBudget> = setBudgetEncryptedSelfInSpace(
+		spaceId = spaceId,
+		budget = cryptoService.encrypt(budget)
+	).let { response ->
+		when {
+			response.isSuccess -> response.bodyOrThrow().also {
+				putInCache(it)
+			}.let {
+				Result.success(cryptoService.decrypt(it))
+			}
+			response.isConflict || response.isForbidden -> {
+				removeFromCache(cryptoService.encrypt(budget))
+				Result.failure(response.exception())
+			}
+			else -> throw response.exception()
 		}
 	}
 }

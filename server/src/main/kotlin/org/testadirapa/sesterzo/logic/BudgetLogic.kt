@@ -20,4 +20,6 @@ interface BudgetLogic {
 		type: BudgetElement.BudgetElementType,
 		budgetElementReference: VersionableReference
 	): Flow<BulkOperationElementResult<EncryptedBudget>>
+
+	suspend fun setEncryptedSelfOnBudget(spaceId: String, budget: EncryptedBudget): EncryptedBudget
 }

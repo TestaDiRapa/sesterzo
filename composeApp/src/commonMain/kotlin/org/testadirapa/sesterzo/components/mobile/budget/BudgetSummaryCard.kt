@@ -4,6 +4,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.NonCancellable.key
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -57,7 +57,8 @@ fun BudgetSummaryCard(
 	title: String,
 	scheduled: Map<String, Amount>,
 	entries: List<DecryptedEntry>,
-	overLimitTextColor: Color
+	overLimitTextColor: Color,
+	onRowClick: (label: String) -> Unit,
 ) {
 	val entriesByLabel = entries.groupBy { it.label }.mapValues { it.value.sumOf { v -> v.amount } }.toMutableMap()
 	val cardRowsValues = scheduled.map { (label, amount) ->
@@ -86,6 +87,7 @@ fun BudgetSummaryCard(
 						amount = amount,
 						threshold = threshold,
 						overLimitTextColor = overLimitTextColor,
+						onClick = { onRowClick(label) },
 						idx = idx
 					)
 				}
@@ -103,11 +105,15 @@ private fun SummaryRow(
 	amount: Amount,
 	threshold: Amount,
 	overLimitTextColor: Color,
+	onClick: () -> Unit,
 	idx: Int = 0
 ) {
 	Row(
 		verticalAlignment = Alignment.CenterVertically,
-		modifier = Modifier.fillMaxWidth().padding(12.dp)
+		modifier = Modifier
+			.fillMaxWidth()
+			.clickable(onClick = onClick)
+			.padding(12.dp)
 	) {
 		Column {
 			Row(

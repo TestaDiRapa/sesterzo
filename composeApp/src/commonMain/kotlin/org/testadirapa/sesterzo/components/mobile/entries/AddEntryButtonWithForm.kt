@@ -65,7 +65,7 @@ fun AddEntryButtonWithForm(
 		) {
 			AddEntryForm(
 				space = space,
-				currentBudget = currentBudget,
+				currentBudgetReference = currentBudget,
 				onCreate = { budgetReference, type, label, amount, description ->
 					onCreate(budgetReference, type, label, amount, description)
 					showDialog = false

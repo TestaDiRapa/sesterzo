@@ -12,9 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,12 +31,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.components.mobile.entries.AddEntryForm
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.model.Entry
+import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
+import org.testadirapa.sesterzo.utils.BudgetReference
+import org.testadirapa.sesterzo.utils.toReference
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.main_page_mode_expenses
 import sesterzo.composeapp.generated.resources.main_page_mode_savings
@@ -43,13 +50,19 @@ private enum class DisplayMode(val entryType: Entry.EntryType) {
 	Savings(Entry.EntryType.Saving),
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BudgetComponent(
+	space: Space,
 	budget: DecryptedBudget,
 	scaffoldPadding: PaddingValues,
 	entries: List<DecryptedEntry>,
+	loadingState: Boolean,
+	onCreateEntry: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
 	onError: (error: Throwable) -> Unit,
 ) {
+	var addEntryFormInfo by remember { mutableStateOf<Pair<String, Entry.EntryType>?>(null) }
+	val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 	var displayMode by remember { mutableStateOf(DisplayMode.Expenses) }
 	var expensesTemplate by remember { mutableStateOf<DecryptedBudgetElement?>(null) }
 	var savingsTemplate by remember { mutableStateOf<DecryptedBudgetElement?>(null) }
@@ -90,8 +103,31 @@ fun BudgetComponent(
 				DisplayMode.Expenses -> LocalFinanceColors.current.spent
 				DisplayMode.Savings -> LocalFinanceColors.current.saved
 			},
+			onRowClick = { label ->
+				addEntryFormInfo = label to displayMode.entryType
+			}
 		)
 	}
+	if (addEntryFormInfo != null) {
+		ModalBottomSheet(
+			onDismissRequest = { addEntryFormInfo = null },
+			sheetState = sheetState,
+			containerColor = colorScheme.surface,
+		) {
+			AddEntryForm(
+				space = space,
+				currentBudgetReference = budget.toReference(),
+				onCreate = { budgetReference, type, label, amount, description ->
+					onCreateEntry(budgetReference, type, label, amount, description)
+					addEntryFormInfo = null
+				},
+				loadingState = loadingState,
+				entryType = addEntryFormInfo?.second ?: Entry.EntryType.Expense,
+				label = addEntryFormInfo?.first,
+			)
+		}
+	}
+
 }
 
 @Composable

@@ -126,8 +126,21 @@ fun MobileBudgetScreen(
 					BudgetComponent(
 						scaffoldPadding = scaffoldPadding,
 						entries = entries.value,
+						space = space,
 						budget = budget,
+						loadingState = loadingState.value,
 						onError = onError,
+						onCreateEntry = { budgetReference, type, label, amount, description ->
+							viewModel.acceptIntent(
+								EntryIntent.CreateEntry(
+									budgetReference = budgetReference,
+									type = type,
+									label = label,
+									amount = amount,
+									description = description,
+								)
+							)
+						}
 					)
 				}
 				Page.Entries -> {

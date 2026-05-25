@@ -70,14 +70,21 @@ import sesterzo.composeapp.generated.resources.banknotes
 @Composable
 fun AddEntryForm(
 	space: Space,
-	currentBudget: BudgetReference,
+	currentBudgetReference: BudgetReference,
 	onCreate: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
 	loadingState: Boolean,
 	entryType: Entry.EntryType = Entry.EntryType.Expense,
+	label: String? = null,
 ) {
 	var entryTypeState by remember { mutableStateOf(entryType) }
 	var amount by remember { mutableStateOf(FormValue(validator = NonNegativeValidator)) }
-	var label by remember { mutableStateOf(FormValue(validator = defaultNameValidator)) }
+	var label by remember {
+		mutableStateOf(
+		FormValue(
+			value = label?.let { Optional.Present(it) } ?: Optional.Absent,
+			validator = defaultNameValidator)
+		)
+	}
 	var description by remember {
 		mutableStateOf(
 			FormValue(
@@ -113,7 +120,7 @@ fun AddEntryForm(
 		FormButton(
 			onClick = {
 				onCreate(
-					currentBudget,
+					currentBudgetReference,
 					entryTypeState,
 					label.validValue,
 					amount.validValue,

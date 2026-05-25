@@ -33,6 +33,7 @@ import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.model.Entry
+import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.main_page_mode_expenses
 import sesterzo.composeapp.generated.resources.main_page_mode_savings
@@ -84,7 +85,11 @@ fun BudgetComponent(
 				DisplayMode.Expenses -> expensesTemplate?.elements.orEmpty() + budget.fixedExpenses
 				DisplayMode.Savings -> savingsTemplate?.elements.orEmpty() + budget.savings
 			},
-			entries = entries.filter { !it.deleted && it.type == displayMode.entryType }
+			entries = entries.filter { !it.deleted && it.type == displayMode.entryType },
+			overLimitTextColor = when(displayMode) {
+				DisplayMode.Expenses -> LocalFinanceColors.current.spent
+				DisplayMode.Savings -> LocalFinanceColors.current.saved
+			},
 		)
 	}
 }

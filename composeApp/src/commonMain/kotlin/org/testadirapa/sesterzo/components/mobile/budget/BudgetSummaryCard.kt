@@ -1,30 +1,71 @@
 package org.testadirapa.sesterzo.components.mobile.budget
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.NonCancellable.key
+import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedEntry
+import org.testadirapa.sesterzo.styles.typography.amountTextStyleMedium
+import org.testadirapa.sesterzo.styles.typography.amountTextStyleSmall
+import sesterzo.composeapp.generated.resources.Res
+import sesterzo.composeapp.generated.resources.main_page_edit_block
+import sesterzo.composeapp.generated.resources.pencil
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun BudgetSummaryCard(
 	title: String,
 	scheduled: Map<String, Amount>,
-	entries: List<DecryptedEntry>
+	entries: List<DecryptedEntry>,
+	overLimitTextColor: Color
 ) {
+	val entriesByLabel = entries.groupBy { it.label }.mapValues { it.value.sumOf { v -> v.amount } }.toMutableMap()
+	val cardRowsValues = scheduled.map { (label, amount) ->
+		val actual = entriesByLabel.remove(label)
+		Triple(label, actual ?: 0, amount)
+	} + entriesByLabel.map { (label, amount) ->
+		Triple(label, amount, 0L)
+	}
 	Card(
 		border = BorderStroke(width = 1.dp, color = colorScheme.outline),
 		colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
@@ -33,11 +74,92 @@ fun BudgetSummaryCard(
 			CardHeader(
 				title = title,
 				total = scheduled.values.sum(),
-				actual = entries.sumOf { it.amount }
+				actual = entries.sumOf { it.amount },
+				overLimitTextColor = overLimitTextColor,
+				onEdit = {}
 			)
 			HorizontalDivider(modifier = Modifier.fillMaxWidth())
+			cardRowsValues.forEachIndexed { idx, (label, amount, threshold) ->
+				key(label) {
+					SummaryRow(
+						label = label,
+						amount = amount,
+						threshold = threshold,
+						overLimitTextColor = overLimitTextColor,
+						idx = idx
+					)
+				}
+				if (idx != cardRowsValues.lastIndex) {
+					HorizontalDivider(modifier = Modifier.fillMaxWidth())
+				}
+			}
 		}
 	}
+}
+
+@Composable
+private fun SummaryRow(
+	label: String,
+	amount: Amount,
+	threshold: Amount,
+	overLimitTextColor: Color,
+	idx: Int = 0
+) {
+	Row(
+		verticalAlignment = Alignment.CenterVertically,
+		modifier = Modifier.fillMaxWidth().padding(12.dp)
+	) {
+		Column {
+			Row(
+				verticalAlignment = Alignment.CenterVertically,
+				horizontalArrangement = Arrangement.SpaceBetween,
+				modifier = Modifier.fillMaxWidth()
+			) {
+				Text(
+					text = label,
+					color = colorScheme.onSurface,
+					style = MaterialTheme.typography.bodyLarge,
+					fontWeight = FontWeight.SemiBold,
+				)
+				Text(
+					text = AppCtx.currency.writer(amount),
+					color = colorScheme.onSurface,
+					style = amountTextStyleMedium()
+				)
+			}
+			Spacer(modifier = Modifier.height(8.dp))
+			AnimatedProgressBar(
+				value = (amount.toFloat() / threshold.toFloat()).coerceAtMost(1.0f),
+				overLimitColor = overLimitTextColor,
+				delayMillis = 150 * idx
+			)
+		}
+	}
+}
+
+@Composable
+fun AnimatedProgressBar(
+	value: Float,
+	overLimitColor: Color,
+	delayMillis: Int = 0
+) {
+	var progress by remember { mutableFloatStateOf(0f) }
+	val animatedProgress by animateFloatAsState(
+		targetValue = progress,
+		animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
+		label = "progress"
+	)
+
+	LaunchedEffect(value) {
+		delay(delayMillis.milliseconds)
+		progress = value
+	}
+
+	LinearProgressIndicator(
+		progress = { animatedProgress },
+		color = if (value >= 1.0) overLimitColor else ProgressIndicatorDefaults.linearColor,
+		modifier = Modifier.fillMaxWidth()
+	)
 }
 
 @Composable
@@ -45,33 +167,80 @@ private fun CardHeader(
 	title: String,
 	total: Amount,
 	actual: Amount,
+	overLimitTextColor: Color,
+	onEdit: () -> Unit,
 ) {
 	Row(
 		verticalAlignment = Alignment.CenterVertically,
 		horizontalArrangement = Arrangement.SpaceBetween,
-		modifier = Modifier.fillMaxWidth()
+		modifier = Modifier.fillMaxWidth().padding(12.dp)
 	) {
-		Row(verticalAlignment = Alignment.CenterVertically) {
+		Row(
+			verticalAlignment = Alignment.CenterVertically
+		) {
 			Text(
 				text = title,
 				color = colorScheme.onSurface,
 				style = MaterialTheme.typography.bodyLarge
 			)
+			Spacer(modifier = Modifier.width(8.dp))
 			Text(
-				text = " · ${AppCtx.currency.symbol} ",
+				text = "·",
 				color = colorScheme.onSurface,
-				style = MaterialTheme.typography.bodyLarge
+				style = MaterialTheme.typography.bodyMedium
+			)
+			Spacer(modifier = Modifier.width(8.dp))
+			Text(
+				text = AppCtx.currency.writer(actual),
+				color = if (actual <= total) {
+					colorScheme.onSurface
+				} else {
+					overLimitTextColor
+				},
+				style = amountTextStyleSmall()
 			)
 			Text(
-				text = AppCtx.currency.formWriter(actual),
-				color = colorScheme.onSurface,
-				style = MaterialTheme.typography.bodyLarge
+				text = " / ",
+				color = colorScheme.onSurfaceVariant,
+				style = MaterialTheme.typography.bodyMedium
 			)
 			Text(
-				text = " / ${AppCtx.currency.formWriter(total)}",
-				color = colorScheme.onSurface,
-				style = MaterialTheme.typography.bodyLarge
+				text =  AppCtx.currency.writer(total),
+				color = colorScheme.onSurfaceVariant,
+				style = amountTextStyleSmall()
 			)
+		}
+		Button(
+			onClick = onEdit,
+			enabled = true,
+			modifier = Modifier
+				.height(36.dp)
+				.defaultMinSize(minWidth = 42.dp),
+			shape = RoundedCornerShape(8.dp),
+			border = BorderStroke(width = 1.dp, color = colorScheme.outline),
+			colors = ButtonColors(
+				containerColor = colorScheme.surfaceVariant,
+				contentColor = colorScheme.onSurface,
+				disabledContainerColor = colorScheme.surfaceVariant,
+				disabledContentColor = colorScheme.onSurface,
+			)
+		) {
+			Row(
+				verticalAlignment = Alignment.CenterVertically,
+			) {
+				Icon(
+					modifier = Modifier.size(14.dp),
+					painter = painterResource(Res.drawable.pencil),
+					contentDescription = "Edit",
+					tint = colorScheme.onSurface,
+				)
+				Spacer(modifier = Modifier.width(8.dp))
+				Text(
+					text = stringResource(Res.string.main_page_edit_block),
+					color = colorScheme.onSurface,
+					style = MaterialTheme.typography.bodyMedium
+				)
+			}
 		}
 	}
 }

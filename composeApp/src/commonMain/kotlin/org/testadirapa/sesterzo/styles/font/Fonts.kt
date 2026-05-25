@@ -8,6 +8,7 @@ import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.dm_sans_bold
 import sesterzo.composeapp.generated.resources.dm_sans_medium
 import sesterzo.composeapp.generated.resources.dm_sans_regular
+import sesterzo.composeapp.generated.resources.dm_sans_semibold
 import sesterzo.composeapp.generated.resources.jetbrains_mono_bold
 import sesterzo.composeapp.generated.resources.jetbrains_mono_medium
 import sesterzo.composeapp.generated.resources.jetbrains_mono_regular
@@ -18,6 +19,7 @@ fun dmSansFontFamily(): FontFamily = FontFamily(
 	Font(Res.font.dm_sans_regular, FontWeight.Normal),
 	Font(Res.font.dm_sans_medium, FontWeight.Medium),
 	Font(Res.font.dm_sans_bold, FontWeight.Bold),
+	Font(Res.font.dm_sans_semibold, FontWeight.SemiBold),
 )
 
 @Composable

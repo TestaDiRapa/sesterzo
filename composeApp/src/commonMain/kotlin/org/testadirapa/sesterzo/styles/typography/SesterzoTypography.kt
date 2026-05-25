@@ -49,3 +49,11 @@ fun amountTextStyleMedium() = TextStyle(
 	fontSize = 15.sp,
 	lineHeight = 22.sp
 )
+
+@Composable
+fun amountTextStyleSmall() = TextStyle(
+	fontFamily = jetBrainsMonoFontFamily(),
+	fontWeight = FontWeight.Medium,
+	fontSize = 13.sp,
+	lineHeight = 22.sp
+)

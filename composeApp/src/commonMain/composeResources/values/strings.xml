@@ -111,6 +111,7 @@
     <!--  Main page  -->
     <string name="main_page_mode_expenses">Expenses</string>
     <string name="main_page_mode_savings">Savings</string>
+    <string name="main_page_edit_block">Edit</string>
 
     <!--  Recover private key screen  -->
     <string name="recover_key_title">Your private key was not found on the device</string>

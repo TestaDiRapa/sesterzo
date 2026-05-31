@@ -5,6 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
@@ -32,6 +33,7 @@ data class DecryptedEntry(
 	val label: String,
 	val description: String?,
 	val amount: Amount,
+	val automation: Boolean = false
 ) : Entry, DecryptedData<EncryptedEntry> {
 
 	override fun getJsonToEncrypt(): JsonObject = JsonObject(
@@ -42,6 +44,7 @@ data class DecryptedEntry(
 			DecryptedEntry::deletedBy.name to JsonPrimitive(deletedBy),
 			DecryptedEntry::type.name to JsonPrimitive(type.name),
 			DecryptedEntry::description.name to JsonPrimitive(description),
+			DecryptedEntry::automation.name to JsonPrimitive(automation),
 		)
 	)
 
@@ -79,6 +82,7 @@ data class EncryptedEntry(
 		label = decryptedFields.getValue(DecryptedEntry::label.name).jsonPrimitive.content,
 		amount = decryptedFields.getValue(DecryptedEntry::amount.name).jsonPrimitive.long,
 		description = decryptedFields[DecryptedEntry::description.name]?.jsonPrimitive?.contentOrNull,
+		automation =  decryptedFields[DecryptedEntry::automation.name]?.jsonPrimitive?.boolean ?: false,
 		spaceId = spaceId
 	)
 

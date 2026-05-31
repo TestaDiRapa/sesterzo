@@ -214,11 +214,15 @@ fun <T> MobileSourceUpdateForm(
 			}
 		}
 		warningText?.let {
-			Text(
-				text = it,
-				color = colorScheme.onSurface,
-				style = MaterialTheme.typography.bodyLarge
-			)
+			Row(
+				modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+			) {
+				Text(
+					text = it,
+					color = colorScheme.onSurface,
+					style = MaterialTheme.typography.bodyLarge
+				)
+			}
 		}
 		FormButton(
 			onClick = {

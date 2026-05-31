@@ -7,7 +7,9 @@ import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import org.bson.conversions.Bson
 import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.model.Identifiable
@@ -80,12 +82,29 @@ abstract class GenericMultiCollectionDAO<T : Identifiable>(
 	 *
 	 * @param spaceId the id of the space.
 	 * @param entity a [T] to create.
-	 * @return the id of the entity, if successfully created.
+	 * @return the entity, if successfully created.
 	 */
 	suspend fun save(spaceId: String, entity: T): T =
 		getCollection(spaceId).insertOne(entity).insertedId?.asString()?.value?.let { id ->
 			getById(spaceId, id)
 		} ?: throw IllegalStateException("There was an error while creating the entity.")
+
+	/**
+	 * Creates multiple entities [T] in the database.
+	 *
+	 * @param spaceId the id of the space.
+	 * @param entities a [List] of [T] to create.
+	 * @return the entities successfully created.
+	 */
+	fun save(spaceId: String, entities: List<T>): Flow<T> = flow {
+		val ids = getCollection(spaceId).insertMany(entities).insertedIds.values.map { it.asString().value }
+		emitAll(
+			getByIds(
+				spaceId = spaceId,
+				ids = ids.toSet()
+			)
+		)
+	}
 
 	/**
 	 * Replace an existing entity [T] in the database with the version passed as parameter.

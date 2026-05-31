@@ -1,5 +1,6 @@
 package org.testadirapa.sesterzo.api.impl
 
+import com.icure.kryptom.crypto.defaultCryptoService
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.request.parameter
@@ -12,8 +13,10 @@ import io.ktor.util.date.GMTDate
 import kotlinx.datetime.number
 import org.testadirapa.sesterzo.api.BudgetApi
 import org.testadirapa.sesterzo.api.BudgetElementApi
+import org.testadirapa.sesterzo.api.EntryApi
 import org.testadirapa.sesterzo.api.SpaceApi
 import org.testadirapa.sesterzo.api.TemporizedCachedApi
+import org.testadirapa.sesterzo.api.UserApi
 import org.testadirapa.sesterzo.cache.BudgetPersistentCache
 import org.testadirapa.sesterzo.cache.model.CachedBudget
 import org.testadirapa.sesterzo.config.HttpConfig
@@ -21,7 +24,10 @@ import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrap
 import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudget
+import org.testadirapa.sesterzo.model.DecryptedBudgetElement
+import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.model.EncryptedBudget
+import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.model.dto.BulkOperationElementResult
 import org.testadirapa.sesterzo.model.toReference
@@ -29,6 +35,8 @@ import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.toBudgetId
+import org.testadirapa.sesterzo.utils.toReference
+import org.testadirapa.sesterzo.utils.toTimestampOfStartValidity
 import kotlin.time.Duration
 
 class BudgetApiImpl(
@@ -38,7 +46,9 @@ class BudgetApiImpl(
 	private val authService: AuthService,
 	private val cryptoService: CryptoService,
 	private val spaceApi: SpaceApi,
-	private val budgetElementApi: BudgetElementApi
+	private val budgetElementApi: BudgetElementApi,
+	private val entryApi: EntryApi,
+	private val userApi: UserApi,
 ) : TemporizedCachedApi<EncryptedBudget, CachedBudget, BudgetPersistentCache>(httpConfig, cache, ttl), BudgetApi {
 
 	override val baseSegment: String = "budget"
@@ -145,6 +155,10 @@ class BudgetApiImpl(
 
 	override suspend fun createBudget(spaceId: String, budgetReference: BudgetReference): DecryptedBudget {
 		val space = spaceApi.getSpace(spaceId = spaceId, bypassCache = false)
+		val incomeElement = budgetElementApi.getLatestBudgetElementById(
+			spaceId = spaceId,
+			budgetElementId = space.incomeSourcesTemplateId
+		)
 		val budget = DecryptedBudget(
 			year = budgetReference.year,
 			month = budgetReference.month.number,
@@ -154,22 +168,43 @@ class BudgetApiImpl(
 				spaceId = spaceId,
 				budgetElementId = space.fixedExpensesTemplateId
 			).toReference(),
-			incomeReference = budgetElementApi.getLatestBudgetElementById(
-				spaceId = spaceId,
-				budgetElementId = space.incomeSourcesTemplateId
-			).toReference(),
+			incomeReference = incomeElement.toReference(),
 			savingsReference = budgetElementApi.getLatestBudgetElementById(
 				spaceId = spaceId,
 				budgetElementId = space.savingsTemplateId
 			).toReference(),
 		)
-		return createBudgetInSpace(
+		val createdBudget = createBudgetInSpace(
 			spaceId = spaceId,
 			budget = cryptoService.encrypt(budget)
 		).bodyOrThrow().let { encryptedBudget ->
 			putInCache(encryptedBudget)
 			cryptoService.decrypt(encryptedBudget)
 		}
+		val builtInEntries = incomeElement.elements.map { (label, amount) ->
+			DecryptedEntry(
+				id = defaultCryptoService.strongRandom.randomUUID(),
+				updated = budgetReference.toTimestampOfStartValidity(),
+				deleted = false,
+				budgetId = budgetReference.toBudgetId(),
+				createdBy = userApi.getCurrentUser().id,
+				deletedBy = null,
+				type = Entry.EntryType.Income,
+				label = label,
+				amount = amount,
+				description = null,
+				spaceId = spaceId,
+				automation = true
+			)
+		}
+		if (builtInEntries.isNotEmpty()) {
+			entryApi.createEntriesAndRetrieve(
+				spaceId = spaceId,
+				budgetReference = budgetReference,
+				entries = builtInEntries,
+			)
+		}
+		return createdBudget
 	}
 
 	override suspend fun getBudgetsInSpaceForYear(spaceId: String, year: Int, bypassCache: Boolean): List<DecryptedBudget> = getAllMergingIf(
@@ -209,17 +244,25 @@ class BudgetApiImpl(
 		startingReference: BudgetReference,
 		inclusiveStart: Boolean,
 		type: BudgetElement.BudgetElementType,
-		budgetElementReference: VersionableReference
+		budgetElement: DecryptedBudgetElement
 	): List<BulkOperationElementResult<DecryptedBudget>> {
 		return updateBudgetsTemplateInSpace(
 			spaceId = spaceId,
 			startingReference = startingReference,
 			inclusiveStart = inclusiveStart,
 			type = type,
-			budgetElementReference = budgetElementReference
+			budgetElementReference = budgetElement.toReference(),
 		).bodyOrThrow().onEach {
 			if (it.success) {
 				putInCache(it.element)
+				if (budgetElement.type == BudgetElement.BudgetElementType.Income) {
+					entryApi.createOrUpdateBuiltInEntries(
+						spaceId = spaceId,
+						budgetReference = it.element.toReference(),
+						type = Entry.EntryType.Income,
+						entries = budgetElement.elements
+					)
+				}
 			} else {
 				removeFromCache(it.element)
 			}

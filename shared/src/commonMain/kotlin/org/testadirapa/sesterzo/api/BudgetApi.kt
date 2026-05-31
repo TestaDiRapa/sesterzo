@@ -2,6 +2,7 @@ package org.testadirapa.sesterzo.api
 
 import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudget
+import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.model.dto.BulkOperationElementResult
 import org.testadirapa.sesterzo.utils.BudgetReference
@@ -34,7 +35,7 @@ interface BudgetApi {
 		startingReference: BudgetReference,
 		inclusiveStart: Boolean,
 		type: BudgetElement.BudgetElementType,
-		budgetElementReference: VersionableReference
+		budgetElement: DecryptedBudgetElement
 	): List<BulkOperationElementResult<DecryptedBudget>>
 
 	suspend fun updateBudgetEncryptedFields(spaceId: String, budget: DecryptedBudget): Result<DecryptedBudget>

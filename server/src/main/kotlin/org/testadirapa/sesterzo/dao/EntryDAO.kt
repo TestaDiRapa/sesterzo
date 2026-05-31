@@ -12,4 +12,5 @@ abstract class EntryDAO(client: DBClient) : GenericMultiCollectionDAO<EncryptedE
 	abstract fun getEntriesForBudget(spaceId: String, budgetId: String): Flow<EncryptedEntry>
 	abstract fun getEntriesForBudgetAfter(spaceId: String, budgetId: String, after: Timestamp): Flow<EncryptedEntry>
 	abstract suspend fun softDeleteEntry(spaceId: String, entryId: String): EncryptedEntry?
+	abstract fun softDeleteEntries(spaceId: String, entryIds: List<String>): Flow<EncryptedEntry>
 }

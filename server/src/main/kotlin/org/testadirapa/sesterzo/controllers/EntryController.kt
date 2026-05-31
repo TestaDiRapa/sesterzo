@@ -7,6 +7,7 @@ import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import org.testadirapa.sesterzo.logic.EntryLogic
 import org.testadirapa.sesterzo.model.EncryptedEntry
+import org.testadirapa.sesterzo.model.dto.BulkEntryUpdate
 import org.testadirapa.sesterzo.security.authenticateGetInSpace
 import org.testadirapa.sesterzo.security.authenticatedDeleteInSpace
 import org.testadirapa.sesterzo.security.authenticatedPostInSpace
@@ -43,6 +44,17 @@ fun Routing.expenseController() = route("/entry") {
 		val entry = call.receive<EncryptedEntry>()
 		call.respond(
 			entryLogic.createEntry(spaceId = spaceId, entry = entry)
+		)
+	}
+
+	authenticatedPostInSpace("bulk") { spaceId ->
+		val entries = call.receive<BulkEntryUpdate>()
+		call.respond(
+			entryLogic.updateBuiltInEntries(
+				spaceId = spaceId,
+				entriesToCreate = entries.entriesToCreate,
+				entryIdsToDelete = entries.entryIdsToDelete
+			)
 		)
 	}
 }

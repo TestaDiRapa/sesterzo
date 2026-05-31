@@ -31,8 +31,6 @@ import org.testadirapa.sesterzo.components.text.TextWithIcon
 import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.Space
-import org.testadirapa.sesterzo.model.VersionableReference
-import org.testadirapa.sesterzo.model.toReference
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.add_source_type_template
 import sesterzo.composeapp.generated.resources.cycle
@@ -49,7 +47,7 @@ private data class Templates(
 @Composable
 fun MobileTemplateScreen(
 	space: Space,
-	onUpdateBudgetsTemplate: (type: BudgetElement.BudgetElementType, version: VersionableReference, updateCurrent: Boolean) -> Unit,
+	onUpdateBudgetsTemplate: (type: BudgetElement.BudgetElementType, budgetElement: DecryptedBudgetElement, updateCurrent: Boolean) -> Unit,
 	onError: (Throwable) -> Unit,
 ) {
 	val scope = rememberCoroutineScope()
@@ -112,7 +110,7 @@ fun MobileTemplateScreen(
 										elements = updatedAmounts
 									)
 								)
-								onUpdateBudgetsTemplate(updatedElement.type, updatedElement.toReference(), updatedCurrentBudget)
+								onUpdateBudgetsTemplate(updatedElement.type, updatedElement, updatedCurrentBudget)
 							}.onFailure(onError)
 							runCatching {
 								templatesOrNull = retrieveLatestTemplates(space)

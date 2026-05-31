@@ -5,9 +5,12 @@ import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.client.model.ReturnDocument
+import com.mongodb.client.model.UpdateOptions
 import com.mongodb.client.model.Updates
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.dao.EntryDAO
 import org.testadirapa.sesterzo.model.EncryptedEntry
@@ -58,4 +61,20 @@ class EntryDAOImpl(
 			),
 			options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 		)
+
+	override fun softDeleteEntries(spaceId: String, entryIds: List<String>): Flow<EncryptedEntry> = flow {
+		getCollection(spaceId).updateMany(
+			filter = Filters.`in`("_id", entryIds),
+			update = Updates.combine(
+				Updates.set(EncryptedEntry::updated.name, System.currentTimeMillis()),
+				Updates.set(EncryptedEntry::deleted.name, true)
+			)
+		)
+		emitAll(
+			getByIds(
+				spaceId = spaceId,
+				ids = entryIds.toSet()
+			)
+		)
+	}
 }

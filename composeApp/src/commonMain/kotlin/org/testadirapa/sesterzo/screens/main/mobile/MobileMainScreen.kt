@@ -83,9 +83,9 @@ fun MobileMainScreen(
 					Page.Template -> {
 						MobileTemplateScreen(
 							space = space,
-							onUpdateBudgetsTemplate = { type, reference, updateCurrentBudget ->
+							onUpdateBudgetsTemplate = { type, budgetElement, updateCurrentBudget ->
 								viewModel.acceptIntent(
-									BudgetIntent.UpdateCurrentBudgetTemplate(type, reference, updateCurrentBudget)
+									BudgetIntent.UpdateCurrentBudgetTemplate(type, budgetElement, updateCurrentBudget)
 								)
 							},
 							onError = onError,

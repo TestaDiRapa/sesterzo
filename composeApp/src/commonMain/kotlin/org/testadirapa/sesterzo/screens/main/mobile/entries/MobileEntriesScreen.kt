@@ -47,14 +47,18 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
 import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.components.entries.EntryScheduledBadge
 import org.testadirapa.sesterzo.components.entries.EntryTypeBadge
 import org.testadirapa.sesterzo.model.DecryptedEntry
+import org.testadirapa.sesterzo.model.Timestamp
 import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleMedium
+import org.testadirapa.sesterzo.utils.currentLocalDate
 import org.testadirapa.sesterzo.utils.dayName
 import org.testadirapa.sesterzo.utils.entryTypeColor
 import org.testadirapa.sesterzo.utils.monthName
@@ -64,6 +68,7 @@ import sesterzo.composeapp.generated.resources.entry_list_page_today
 import sesterzo.composeapp.generated.resources.entry_list_page_yesterday
 import sesterzo.composeapp.generated.resources.trash
 import kotlin.time.Clock
+import kotlin.time.Instant
 
 @Composable
 fun MobileEntriesScreen(
@@ -200,6 +205,10 @@ fun EntryCard(
 						EntryTypeBadge(
 							entryType = entry.type,
 						)
+						if (entry.updated.toLocalDate() > currentLocalDate()) {
+							Spacer(Modifier.width(12.dp))
+							EntryScheduledBadge()
+						}
 						Spacer(Modifier.width(12.dp))
 						Text(
 							text = user?.name ?: "???",
@@ -271,3 +280,6 @@ fun SectionDateDivider(
 		)
 	}
 }
+
+private fun Timestamp.toLocalDate() =
+	Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).date

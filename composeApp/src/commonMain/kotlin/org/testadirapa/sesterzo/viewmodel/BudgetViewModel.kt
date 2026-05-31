@@ -13,6 +13,7 @@ import org.testadirapa.sesterzo.exceptions.ExceptionWithMessage
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudget
+import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.utils.BudgetReference
@@ -49,7 +50,7 @@ class BudgetViewModel(
 			is BudgetIntent.CreateBudget -> createBudget(reference = intent.newReference)
 			is BudgetIntent.UpdateCurrentBudgetTemplate -> updateCurrentBudgetTemplate(
 				type = intent.type,
-				reference = intent.reference,
+				budgetElement = intent.budgetElement,
 				updateCurrentBudget = intent.updateCurrentBudget,
 			)
 			is BudgetIntent.UpdateBudgetAmount -> updateBudgetAmount(
@@ -137,7 +138,7 @@ class BudgetViewModel(
 
 	private suspend fun updateCurrentBudgetTemplate(
 		type: BudgetElement.BudgetElementType,
-		reference: VersionableReference,
+		budgetElement: DecryptedBudgetElement,
 		updateCurrentBudget: Boolean
 	) {
 		val result = AppCtx.api.budget.updateBudgetsTemplate(
@@ -145,7 +146,7 @@ class BudgetViewModel(
 			startingReference = currentBudgetReference(),
 			inclusiveStart = updateCurrentBudget,
 			type = type,
-			budgetElementReference = reference,
+			budgetElement = budgetElement,
 		)
 		result
 			.filter { !it.success }

@@ -50,7 +50,7 @@ fun MobileBudgetScreen(
 	onError: (e: Throwable) -> Unit,
 ) {
 	var calendarOpen by remember { mutableStateOf(false) }
-	val viewModel = viewModel(key = "${space.id}-${budget.id}") {
+	val viewModel = viewModel(key = "${space.id}-${budget.id}-${budget.version}") {
 		EntriesViewModel(
 			spaceId = space.id,
 			budget = budget,

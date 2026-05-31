@@ -34,4 +34,16 @@ interface EntryApi {
 	): List<DecryptedEntry>
 
 	suspend fun deleteEntryAndRetrieve(spaceId: String, entryId: String): List<DecryptedEntry>
+	suspend fun createOrUpdateBuiltInEntries(
+		spaceId: String,
+		budgetReference: BudgetReference,
+		type: Entry.EntryType,
+		entries: Map<String, Amount>
+	)
+
+	suspend fun createEntriesAndRetrieve(
+		spaceId: String,
+		budgetReference: BudgetReference,
+		entries: List<DecryptedEntry>
+	): List<DecryptedEntry>
 }

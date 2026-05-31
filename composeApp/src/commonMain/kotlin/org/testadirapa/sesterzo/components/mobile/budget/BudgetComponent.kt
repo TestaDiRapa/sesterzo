@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.components.budget.BudgetSummaryStatsCard
 import org.testadirapa.sesterzo.components.mobile.entries.AddEntryForm
 import org.testadirapa.sesterzo.components.mobile.template.MobileSourceUpdateForm
 import org.testadirapa.sesterzo.model.Amount
@@ -41,6 +42,7 @@ import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
 import org.testadirapa.sesterzo.utils.BudgetReference
+import org.testadirapa.sesterzo.utils.daysToEndOfValidity
 import org.testadirapa.sesterzo.utils.toReference
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.main_page_mode_expenses
@@ -90,6 +92,16 @@ fun BudgetComponent(
 	Column(
 		modifier = Modifier.padding(scaffoldPadding)
 	) {
+		Spacer(modifier = Modifier.height(16.dp))
+		val budgetReference = budget.toReference()
+		BudgetSummaryStatsCard(
+			month = budgetReference.month,
+			daysLeft = budgetReference.daysToEndOfValidity(),
+			incomeTotal = entries.filter { !it.deleted && it.type == Entry.EntryType.Income }.sumOf { it.amount },
+			spentTotal = entries.filter { !it.deleted && it.type == Entry.EntryType.Expense }.sumOf { it.amount },
+			savedTotal = entries.filter { !it.deleted && it.type == Entry.EntryType.Saving }.sumOf { it.amount }
+		)
+		Spacer(modifier = Modifier.height(16.dp))
 		ModeSelector(
 			mode = displayMode,
 			entries = entries,

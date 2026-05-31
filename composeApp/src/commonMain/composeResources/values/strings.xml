@@ -151,6 +151,11 @@
     <string name="template_page_subtitle">MONTHLY TEMPLATE</string>
     <string name="template_page_title">How each month is shaped</string>
 
+    <!--  Budget summary stats card  -->
+    <string name="budget_summary_stats_card_days_left">days left</string>
+    <string name="budget_summary_stats_card_spent">Spent</string>
+    <string name="budget_summary_stats_card_saved">Saved</string>
+
     <!--  Email field  -->
     <string name="email_field">Email</string>
     <string name="email_field_placeholder">test@example.com</string>
@@ -217,4 +222,5 @@
     <!--  Other  -->
     <string name="out_of">of</string>
     <string name="update">Update</string>
+    <string name="scheduled">Scheduled</string>
 </resources>

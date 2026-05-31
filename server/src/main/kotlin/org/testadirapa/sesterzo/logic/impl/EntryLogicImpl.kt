@@ -1,6 +1,8 @@
 package org.testadirapa.sesterzo.logic.impl
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import org.testadirapa.sesterzo.dao.EntryDAO
 import org.testadirapa.sesterzo.exceptions.ExpenseDeletionFailedException
 import org.testadirapa.sesterzo.logic.EntryLogic
@@ -35,5 +37,31 @@ class EntryLogicImpl(
 			spaceId = spaceId,
 			entity = entry,
 		)
+	}
+
+	override fun updateBuiltInEntries(
+		spaceId: String,
+		entriesToCreate: List<EncryptedEntry>,
+		entryIdsToDelete: List<String>,
+	): Flow<EncryptedEntry> = flow {
+		entriesToCreate.forEach { entry ->
+			entry.requireSizeIsUnderThreshold()
+		}
+		if (entriesToCreate.isNotEmpty()) {
+			emitAll(
+				entryDAO.save(
+					spaceId = spaceId,
+					entities = entriesToCreate,
+				)
+			)
+		}
+		if (entryIdsToDelete.isNotEmpty()) {
+			emitAll(
+				entryDAO.softDeleteEntries(
+					spaceId = spaceId,
+					entryIds = entryIdsToDelete
+				)
+			)
+		}
 	}
 }

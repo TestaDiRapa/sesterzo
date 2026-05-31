@@ -45,6 +45,8 @@ class FullSesterzoApiImpl(
 			cryptoService = cryptoService,
 			spaceApi = space,
 			budgetElementApi = budgetElement,
+			entryApi = entry,
+			userApi = user,
 		)
 	}
 

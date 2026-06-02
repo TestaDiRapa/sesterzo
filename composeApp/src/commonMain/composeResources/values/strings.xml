@@ -155,6 +155,8 @@
     <string name="budget_summary_stats_card_days_left">days left</string>
     <string name="budget_summary_stats_card_spent">Spent</string>
     <string name="budget_summary_stats_card_saved">Saved</string>
+    <string name="budget_summary_stats_card_show_income_details">Show details</string>
+    <string name="budget_summary_stats_card_hide_income_details">Hide details</string>
 
     <!--  Email field  -->
     <string name="email_field">Email</string>

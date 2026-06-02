@@ -94,12 +94,17 @@ fun BudgetComponent(
 	) {
 		Spacer(modifier = Modifier.height(16.dp))
 		val budgetReference = budget.toReference()
+		val incomeSources = entries
+			.filter { !it.deleted && it.type == Entry.EntryType.Income }
+			.groupBy { it.label }
+			.mapValues { (_, v) -> v.sumOf { it.amount } }
 		BudgetSummaryStatsCard(
 			month = budgetReference.month,
 			daysLeft = budgetReference.daysToEndOfValidity(),
-			incomeTotal = entries.filter { !it.deleted && it.type == Entry.EntryType.Income }.sumOf { it.amount },
+			incomeTotal = incomeSources.values.sum(),
 			spentTotal = entries.filter { !it.deleted && it.type == Entry.EntryType.Expense }.sumOf { it.amount },
-			savedTotal = entries.filter { !it.deleted && it.type == Entry.EntryType.Saving }.sumOf { it.amount }
+			savedTotal = entries.filter { !it.deleted && it.type == Entry.EntryType.Saving }.sumOf { it.amount },
+			incomeSources = incomeSources
 		)
 		Spacer(modifier = Modifier.height(16.dp))
 		ModeSelector(

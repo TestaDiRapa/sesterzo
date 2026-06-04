@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,10 +21,10 @@ fun FormButton(
 	enabled: Boolean = true,
 	isLoading: Boolean = false,
 	colors: ButtonColors = ButtonColors(
-		containerColor = MaterialTheme.colorScheme.secondary,
-		contentColor = MaterialTheme.colorScheme.onSecondary,
-		disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-		disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+		containerColor = colorScheme.primary,
+		contentColor = colorScheme.onPrimary,
+		disabledContainerColor = colorScheme.surfaceContainerHigh,
+		disabledContentColor = colorScheme.onTertiary,
 	)
 ) {
 	Button(

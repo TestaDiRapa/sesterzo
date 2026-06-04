@@ -7,6 +7,7 @@ import org.koin.ktor.ext.inject
 import org.testadirapa.sesterzo.logic.SpaceLogic
 import org.testadirapa.sesterzo.model.EncryptedAttachment
 import org.testadirapa.sesterzo.model.SpaceStub
+import org.testadirapa.sesterzo.model.dto.SpaceUpdatePayload
 import org.testadirapa.sesterzo.security.authenticatedGet
 import org.testadirapa.sesterzo.security.authenticatedPost
 import org.testadirapa.sesterzo.security.authenticatedPut
@@ -34,6 +35,14 @@ fun Routing.spaceController() = route("/space") {
 		val spaceId = call.getPathParameter("spaceId")
 		val spaceStub = call.receive<EncryptedAttachment>()
 		call.respond(spaceLogic.setSpacePicture(spaceId = spaceId, picture = spaceStub))
+	}
+
+	authenticatedPut("/{spaceId}") {
+		val spaceId = call.getPathParameter("spaceId")
+		val updatePayload = call.receive<SpaceUpdatePayload>()
+		call.respond(
+			spaceLogic.setSpaceNameAndColor(spaceId = spaceId, name = updatePayload.name, color = updatePayload.color)
+		)
 	}
 
 }

@@ -36,21 +36,9 @@ import sesterzo.composeapp.generated.resources.arrow_down
 @Composable
 fun SpaceMenuBadge(
 	space: Space,
+	spaceThumbnail: Base64String?,
 	onClick: () -> Unit,
-	onError: (Throwable) -> Unit
 ) {
-	var spaceImage by remember { mutableStateOf<Base64String?>(null) }
-	LaunchedEffect(space.pictureReference) {
-		space.pictureReference?.also {
-			runCatching {
-				spaceImage = AppCtx.api.attachment.getAttachmentInSpace(
-					spaceId = space.id,
-					attachmentId = it,
-					bypassCache = false
-				)?.data
-			}.onFailure(onError)
-		}
-	}
 	Card(
 		modifier = Modifier.clickable(onClick = onClick),
 		border = BorderStroke(width = 1.dp, color = colorScheme.outline),
@@ -66,7 +54,7 @@ fun SpaceMenuBadge(
 			SpaceThumbnailBadge(
 				placeholderLetter = space.name.first().uppercase(),
 				color = space.colorOrDefault(),
-				imageBytes = spaceImage
+				imageBytes = spaceThumbnail
 			)
 			Spacer(modifier = Modifier.width(8.dp))
 			Text(

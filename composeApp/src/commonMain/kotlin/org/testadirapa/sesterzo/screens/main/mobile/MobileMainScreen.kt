@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,15 +14,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.mobile.main.BottomMenu
 import org.testadirapa.sesterzo.components.mobile.main.HeaderBar
+import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.screens.main.mobile.budget.MobileBudgetScreen
+import org.testadirapa.sesterzo.screens.main.mobile.settings.SettingsMobilePage
 import org.testadirapa.sesterzo.screens.main.mobile.template.MobileTemplateScreen
 import org.testadirapa.sesterzo.viewmodel.BudgetViewModel
 import org.testadirapa.sesterzo.viewmodel.intents.BudgetIntent
 
-enum class Page { Budget, Entries, Template }
+enum class Page { Budget, Entries, Template, Settings }
 
 @Composable
 fun MobileMainScreen(
@@ -31,16 +35,31 @@ fun MobileMainScreen(
 ) {
 	var currentPage by remember { mutableStateOf(Page.Budget) }
 	var space by remember { mutableStateOf(initialSpace) }
+	var spaceThumbnail by remember { mutableStateOf<Base64String?>(null) }
 	val viewModel = viewModel(key = "${space.id}-budget") {
 		BudgetViewModel(spaceId = space.id, errorHandler = onError)
 	}
 	val budgetView = viewModel.budgetViewState.collectAsState()
 	val loadingState = viewModel.loadingState.collectAsState()
+
+	LaunchedEffect(initialSpace.pictureReference) {
+		initialSpace.pictureReference?.also {
+			runCatching {
+				spaceThumbnail = AppCtx.api.attachment.getAttachmentInSpace(
+					spaceId = space.id,
+					attachmentId = it,
+					bypassCache = false
+				)?.data
+			}.onFailure(onError)
+		}
+	}
+
 	Scaffold(
 		topBar = {
 			HeaderBar(
 				space = space,
 				onCreateSpace = onCreateSpace,
+				spaceThumbnail = spaceThumbnail,
 				onSwitchSpace = { space = it },
 				onError = onError,
 			)
@@ -89,6 +108,17 @@ fun MobileMainScreen(
 								)
 							},
 							onError = onError,
+						)
+					}
+					Page.Settings -> {
+						SettingsMobilePage(
+							space = space,
+							spaceThumbnail = spaceThumbnail,
+							onError = onError,
+							onSpaceUpdate = { updatedSpace, updatedThumbnail ->
+								space = updatedSpace
+								spaceThumbnail = updatedThumbnail
+							}
 						)
 					}
 				}

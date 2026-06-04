@@ -27,8 +27,10 @@ import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.bank
 import sesterzo.composeapp.generated.resources.bottom_menu_budget_page
 import sesterzo.composeapp.generated.resources.bottom_menu_history_page
+import sesterzo.composeapp.generated.resources.bottom_menu_settings_page
 import sesterzo.composeapp.generated.resources.bottom_menu_template_page
 import sesterzo.composeapp.generated.resources.receipt
+import sesterzo.composeapp.generated.resources.settings
 import sesterzo.composeapp.generated.resources.template
 
 @Composable
@@ -64,6 +66,12 @@ fun BottomMenu(
 				name = stringResource(Res.string.bottom_menu_template_page),
 				isSelected = currentPage == Page.Template,
 				onClick = { onPageChange(Page.Template) }
+			)
+			MenuIcon(
+				painter = painterResource(Res.drawable.settings),
+				name = stringResource(Res.string.bottom_menu_settings_page),
+				isSelected = currentPage == Page.Settings,
+				onClick = { onPageChange(Page.Settings) }
 			)
 		}
 	}

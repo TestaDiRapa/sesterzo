@@ -15,12 +15,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.testadirapa.sesterzo.components.mobile.space.MobileSpaceSwitcher
+import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Space
 import kotlin.time.Clock
 
 @Composable
 fun HeaderBar(
 	space: Space,
+	spaceThumbnail: Base64String?,
 	onCreateSpace: (Space) -> Unit,
 	onSwitchSpace: (Space) -> Unit,
 	onError: (Throwable) -> Unit
@@ -38,11 +40,11 @@ fun HeaderBar(
 		) {
 			SpaceMenuBadge(
 				space = space,
+				spaceThumbnail = spaceThumbnail,
 				onClick = {
 					openKey = Clock.System.now().toEpochMilliseconds()
 					sheetOpen = true
 				},
-				onError = onError
 			)
 		}
 		Spacer(modifier = Modifier.fillMaxWidth().height(8.dp))

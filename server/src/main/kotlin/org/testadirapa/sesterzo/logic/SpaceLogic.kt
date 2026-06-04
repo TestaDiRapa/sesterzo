@@ -5,6 +5,7 @@ import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.SpaceStub
 import org.testadirapa.sesterzo.exceptions.QuotaExceededException
 import org.testadirapa.sesterzo.model.EncryptedAttachment
+import org.testadirapa.sesterzo.model.RGBColor
 
 interface SpaceLogic {
 
@@ -24,4 +25,5 @@ interface SpaceLogic {
 	suspend fun createSpace(spaceStub: SpaceStub): Space
 	suspend fun getSpace(spaceId: String): Space
 	suspend fun setSpacePicture(spaceId: String, picture: EncryptedAttachment): Space
+	suspend fun setSpaceNameAndColor(spaceId: String, name: String, color: RGBColor): Space
 }

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.components.text.MenuElementWithSubtitle
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
@@ -102,19 +103,10 @@ private fun TemplateRow(
 					.background(color, RoundedCornerShape(5.dp))
 			)
 			Spacer(Modifier.width(16.dp))
-			Column {
-				Text(
-					text = label,
-					color = colorScheme.onSurface,
-					style = MaterialTheme.typography.bodyLarge
-				)
-				Spacer(Modifier.height(4.dp))
-				Text(
-					text = subtitle,
-					color = colorScheme.onSurfaceVariant,
-					style = MaterialTheme.typography.bodyMedium
-				)
-			}
+			MenuElementWithSubtitle(
+				label = label,
+				subtitle = subtitle,
+			)
 		}
 		Row(
 			verticalAlignment = Alignment.CenterVertically,

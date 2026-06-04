@@ -17,6 +17,7 @@ import org.testadirapa.sesterzo.logic.SpaceLogic
 import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.EncryptedAttachment
 import org.testadirapa.sesterzo.model.EncryptedBudgetElement
+import org.testadirapa.sesterzo.model.RGBColor
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.SpaceStub
 import org.testadirapa.sesterzo.security.SecurityContext.Companion.flowOnSecurityContext
@@ -55,7 +56,7 @@ class SpaceLogicImpl(
 			spaceId = spaceId,
 			entity = picture
 		).id
-		return spaceDAO.updateSpacePicture(
+		return spaceDAO.setSpaceThumbnail(
 			spaceId = spaceId,
 			pictureRef = imageRef
 		) ?: throw SpacePictureUpdateFailed(spaceId = spaceId)
@@ -114,6 +115,20 @@ class SpaceLogicImpl(
 				color = spaceStub.color,
 			)
 		)
+	}
+
+	override suspend fun setSpaceNameAndColor(spaceId: String, name: String, color: RGBColor): Space = withSecurityContext {
+		if (spaceId !in spaces.keys) {
+			throw InvalidSpaceAuthorizationException(spaceId)
+		}
+		if (!defaultNameValidator.isValid(name)) {
+			throw IllegalArgumentException("Invalid space name: $name")
+		}
+		spaceDAO.setSpaceNameAndColor(
+			spaceId = spaceId,
+			name = name,
+			color = color
+		) ?: throw EntityNotFoundException(entityId = spaceId, label = ExceptionLabel.SpaceNotFound)
 	}
 
 }

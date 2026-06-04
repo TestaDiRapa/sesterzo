@@ -9,4 +9,5 @@ interface SpaceApi {
 
 	suspend fun createSpace(name: String, picture: ByteArray?, fallbackColor: RGBColor?): Space
 	suspend fun getSpace(spaceId: String, bypassCache: Boolean): Space
+	suspend fun updateSpace(spaceId: String, name: String, picture: ByteArray?, color: RGBColor): Space
 }

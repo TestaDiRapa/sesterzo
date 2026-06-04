@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.dao
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.Flow
 import org.testadirapa.sesterzo.components.mongodb.DBClient
+import org.testadirapa.sesterzo.model.RGBColor
 import org.testadirapa.sesterzo.model.Space
 
 abstract class SpaceDAO(client: DBClient) : GenericSingleCollectionDAO<Space>(client) {
@@ -24,5 +25,6 @@ abstract class SpaceDAO(client: DBClient) : GenericSingleCollectionDAO<Space>(cl
 	 */
 	abstract fun getByOwner(userId: String): Flow<Space>
 
-	abstract suspend fun updateSpacePicture(spaceId: String, pictureRef: String): Space?
+	abstract suspend fun setSpaceThumbnail(spaceId: String, pictureRef: String): Space?
+	abstract suspend fun setSpaceNameAndColor(spaceId: String, name: String, color: RGBColor): Space?
 }

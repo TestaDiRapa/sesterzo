@@ -1,8 +1,6 @@
 package org.testadirapa.sesterzo.screens
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,33 +23,20 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.testadirapa.sesterzo.components.input.FormButton
-import org.testadirapa.sesterzo.components.input.ImagePicker
-import org.testadirapa.sesterzo.components.input.TextField
+import org.testadirapa.sesterzo.components.mobile.space.SpaceCreateOrUpdateForm
 import org.testadirapa.sesterzo.model.Space
-import org.testadirapa.sesterzo.models.FormValue
 import org.testadirapa.sesterzo.styles.colors.SpaceColor
-import org.testadirapa.sesterzo.validators.defaultNameValidator
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.arrow_back
 import sesterzo.composeapp.generated.resources.create_space_create_button
 import sesterzo.composeapp.generated.resources.create_space_first_space
 import sesterzo.composeapp.generated.resources.create_space_other_space
-import sesterzo.composeapp.generated.resources.create_space_space_name
-import sesterzo.composeapp.generated.resources.create_space_space_name_error
-import sesterzo.composeapp.generated.resources.create_space_space_name_placeholder
 
 @Composable
 fun CreateSpaceScreen(
@@ -63,9 +47,6 @@ fun CreateSpaceScreen(
 	onCreateSpace: (name: String, image: ByteArray?, color: SpaceColor) -> Unit,
 	onCancel: (Space) -> Unit,
 ) {
-	var imageBytes by remember { mutableStateOf<ByteArray?>(null) }
-	var spaceName by remember { mutableStateOf(FormValue(validator = defaultNameValidator)) }
-	var selectedColor by remember { mutableStateOf(SpaceColor.Amber) }
 	Scaffold { innerPadding ->
 		Box(
 			modifier = Modifier.fillMaxSize().padding(innerPadding),
@@ -119,41 +100,12 @@ fun CreateSpaceScreen(
 						modifier = Modifier.weight(1f).fillMaxWidth(),
 						contentAlignment = Alignment.Center,
 					) {
-						Column(
-							verticalArrangement = Arrangement.spacedBy(16.dp),
-							horizontalAlignment = Alignment.CenterHorizontally,
-						) {
-							ImagePicker(
-								imageBytes = imageBytes,
-								placeholderLetter = spaceName.value.orNull?.firstOrNull()?.uppercase() ?: "S",
-								placeholderBackground = selectedColor,
-								onImageSelected = { imageBytes = it },
-								onError = {
-									onError(IllegalStateException(it))
-								},
-							)
-							SpaceColorPicker(
-								selectedColor = selectedColor,
-								onColorSelected = { selectedColor = it },
-							)
-							TextField(
-								title = stringResource(Res.string.create_space_space_name),
-								value = spaceName,
-								onValueChange = {
-									spaceName = spaceName.update(it)
-								},
-								placeholder = stringResource(Res.string.create_space_space_name_placeholder),
-								errorMessage = stringResource(Res.string.create_space_space_name_error),
-							)
-							FormButton(
-								text = stringResource(Res.string.create_space_create_button),
-								enabled = spaceName.isValid,
-								isLoading = isLoading,
-								onClick = {
-									onCreateSpace(spaceName.validValue, imageBytes, selectedColor)
-								}
-							)
-						}
+						SpaceCreateOrUpdateForm(
+							isLoading = isLoading,
+							buttonLabel = stringResource(Res.string.create_space_create_button),
+							onSubmit = onCreateSpace,
+							onError = onError,
+						)
 					}
 				}
 
@@ -170,46 +122,6 @@ fun CreateSpaceScreen(
 					colors = CardDefaults.cardColors(containerColor = colorScheme.background),
 				) {
 					content()
-				}
-			}
-		}
-	}
-
-}
-
-@Composable
-private fun SpaceColorPicker(
-	selectedColor: SpaceColor,
-	onColorSelected: (SpaceColor) -> Unit,
-) {
-	Column(
-		modifier = Modifier.width(222.dp)
-	) {
-		SpaceColor.entries.chunked(5).forEach { colors ->
-			Row(
-				modifier = Modifier.fillMaxWidth(),
-				horizontalArrangement = Arrangement.SpaceEvenly,
-				verticalAlignment = Alignment.CenterVertically,
-			) {
-				colors.forEach { spaceColor ->
-					val isSelected = spaceColor == selectedColor
-					Box(
-						modifier = Modifier
-							.size(38.dp)
-							.clip(RoundedCornerShape(12.dp))
-							.background(
-								if (isSelected) Color.Black.copy(alpha = 0.15f) else Color.Transparent
-							)
-							.clickable { onColorSelected(spaceColor) },
-						contentAlignment = Alignment.Center,
-					) {
-						Box(
-							modifier = Modifier
-								.size(if (isSelected) 30.dp else 34.dp)
-								.clip(RoundedCornerShape(12.dp))
-								.background(spaceColor.color)
-						)
-					}
 				}
 			}
 		}

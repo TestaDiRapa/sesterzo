@@ -12,6 +12,7 @@ import org.testadirapa.sesterzo.annotations.Index
 import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.dao.UserDAO
 import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.Currency
 import org.testadirapa.sesterzo.model.User
 
 class UserDAOImpl(client: DBClient) : UserDAO(client) {
@@ -35,6 +36,20 @@ class UserDAOImpl(client: DBClient) : UserDAO(client) {
 		collection.findOneAndUpdate(
 			filter = eq("_id", userId),
 			update = Updates.set(User::hasBackup.name, true),
+			options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+		)
+
+	override suspend fun setName(userId: String, name: String): User? =
+		collection.findOneAndUpdate(
+			filter = eq("_id", userId),
+			update = Updates.set(User::name.name, name),
+			options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+		)
+
+	override suspend fun setCurrency(userId: String, currency: Currency): User? =
+		collection.findOneAndUpdate(
+			filter = eq("_id", userId),
+			update = Updates.set(User::preferredCurrency.name, currency),
 			options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 		)
 }

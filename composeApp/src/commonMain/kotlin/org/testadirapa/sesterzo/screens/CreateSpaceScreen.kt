@@ -29,7 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.testadirapa.sesterzo.components.mobile.space.SpaceCreateOrUpdateForm
+import org.testadirapa.sesterzo.components.space.SpaceCreateOrUpdateForm
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.styles.colors.SpaceColor
 import sesterzo.composeapp.generated.resources.Res

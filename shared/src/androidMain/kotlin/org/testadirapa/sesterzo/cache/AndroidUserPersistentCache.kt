@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.testadira.sesterzo.AppDatabase
 import org.testadirapa.sesterzo.cache.model.CachedUser
+import org.testadirapa.sesterzo.model.Currency
 import db.CachedUser as UserRow
 import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.serialization.Serialization
@@ -24,6 +25,7 @@ class AndroidUserPersistentCache(
 			authenticationTokens = Serialization.json.encodeToString(user.authenticationTokens),
 			publicKey = user.publicKey,
 			hasBackup = if (user.hasBackup) 1 else 0,
+			preferredCurrency = user.preferredCurrency.name,
 			inserted_at = System.currentTimeMillis()
 		)
 	}
@@ -35,6 +37,7 @@ class AndroidUserPersistentCache(
 			name = row.name,
 			email = row.email,
 			authenticationTokens = Serialization.json.decodeFromString(row.authenticationTokens),
+			preferredCurrency = Currency.valueOf(row.preferredCurrency),
 			publicKey = row.publicKey,
 			hasBackup = row.hasBackup == 1L,
 		),

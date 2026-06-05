@@ -9,11 +9,14 @@ import org.testadirapa.sesterzo.exceptions.PublicKeyUpdateFailedException
 import org.testadirapa.sesterzo.exceptions.EntityNotFoundException
 import org.testadirapa.sesterzo.exceptions.EntityUpdateFailedException
 import org.testadirapa.sesterzo.exceptions.ExceptionLabel
+import org.testadirapa.sesterzo.exceptions.InvalidRegistrationParametersException
 import org.testadirapa.sesterzo.logic.UserLogic
 import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.Currency
 import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.security.SecurityContext.Companion.flowOnSecurityContext
 import org.testadirapa.sesterzo.security.SecurityContext.Companion.withSecurityContext
+import org.testadirapa.sesterzo.validators.defaultNameValidator
 
 class UserLogicImpl(
 	val userDAO: UserDAO,
@@ -42,6 +45,23 @@ class UserLogicImpl(
 				else -> result
 			}
 		}
+	}
+
+	override suspend fun setName(name: String): User = withSecurityContext {
+		if (!defaultNameValidator.isValid(name)) {
+			throw InvalidRegistrationParametersException()
+		}
+		userDAO.setName(
+			userId = currentUserId,
+			name = name
+		) ?: throw EntityUpdateFailedException(currentUserId, ExceptionLabel.UserUpdateFailed)
+	}
+
+	override suspend fun setCurrency(currency: Currency): User = withSecurityContext {
+		userDAO.setCurrency(
+			userId = currentUserId,
+			currency = currency
+		) ?: throw EntityUpdateFailedException(currentUserId, ExceptionLabel.UserUpdateFailed)
 	}
 
 	override fun getUsers(userIds: Set<String>): Flow<User> = flowOnSecurityContext { ctx ->

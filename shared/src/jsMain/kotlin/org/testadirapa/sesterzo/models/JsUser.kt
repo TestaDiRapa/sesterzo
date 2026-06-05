@@ -1,6 +1,7 @@
 package org.testadirapa.sesterzo.models
 
 import org.testadirapa.sesterzo.cache.model.CachedUser
+import org.testadirapa.sesterzo.model.Currency
 import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.utils.currentTimeMillis
 import org.testadirapa.sesterzo.utils.emptyObject
@@ -15,6 +16,7 @@ external interface JsUser : JsAny {
 	var authenticationTokens: Record<String, JsAuthenticationToken>
 	var publicKey: String?
 	var hasBackup: Boolean
+	var preferredCurrency: String
 	var insertedAt: Double
 }
 
@@ -26,6 +28,7 @@ fun User.toJs(insertedAt: Double = currentTimeMillis()): JsUser {
 	js.authenticationTokens = mapToObject(authenticationTokens) { it.toJs() }
 	js.publicKey = publicKey
 	js.hasBackup = hasBackup
+	js.preferredCurrency = preferredCurrency.name
 	js.insertedAt = insertedAt
 	return js
 }
@@ -38,6 +41,7 @@ fun JsUser.toKt(): CachedUser = CachedUser(
 		email = email,
 		authenticationTokens = objectToMap(authenticationTokens) { it.toKt() },
 		publicKey = publicKey,
+		preferredCurrency = Currency.valueOf(preferredCurrency),
 		hasBackup = hasBackup
 	),
 	insertedAt = insertedAt.toLong()

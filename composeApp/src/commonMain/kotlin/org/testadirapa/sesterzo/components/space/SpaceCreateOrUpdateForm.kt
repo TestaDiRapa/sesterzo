@@ -1,4 +1,4 @@
-package org.testadirapa.sesterzo.components.mobile.space
+package org.testadirapa.sesterzo.components.space
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

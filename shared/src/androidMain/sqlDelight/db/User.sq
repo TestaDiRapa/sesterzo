@@ -4,6 +4,7 @@ CREATE TABLE CachedUser (
     email                       TEXT    NOT NULL,
     authenticationTokens        TEXT    NOT NULL,  -- JSON-encoded Map<String, AuthenticationToken>
     publicKey                   TEXT,              -- nullable Base64String
+    preferredCurrency           TEXT    NOT NULL,
     hasBackup                   INTEGER    NOT NULL,
     inserted_at                 INTEGER NOT NULL   -- Unix timestamp ms, added by us
 );
@@ -24,10 +25,10 @@ ORDER BY inserted_at DESC;
 upsert:
 INSERT OR REPLACE INTO CachedUser(
     id, name, email,
-    authenticationTokens, publicKey,
+    authenticationTokens, publicKey, preferredCurrency,
     hasBackup, inserted_at
 )
-VALUES (?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 deleteOne:
 DELETE FROM CachedUser

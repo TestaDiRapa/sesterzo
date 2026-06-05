@@ -17,6 +17,7 @@ import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrap
 import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.Currency
 import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.model.dto.PublicKeyPayload
 import org.testadirapa.sesterzo.services.AuthService
@@ -81,6 +82,26 @@ class UserApiImpl(
 			accept(Application.Json)
 		}.wrap()
 
+	private suspend fun setNameForCurrentUser(name: String): HttpResponse<User> =
+		put {
+			url {
+				takeFrom(baseUrl)
+				appendPathSegments(baseSegment, "current", "name", name)
+			}
+			bearerAuth(authService.getJwt())
+			accept(Application.Json)
+		}.wrap()
+
+	private suspend fun setCurrencyForCurrentUser(currency: Currency): HttpResponse<User> =
+		put {
+			url {
+				takeFrom(baseUrl)
+				appendPathSegments(baseSegment, "current", "currency", currency.name)
+			}
+			bearerAuth(authService.getJwt())
+			accept(Application.Json)
+		}.wrap()
+
 	override suspend fun getCurrentUser(): User {
 		val currentUserId = localStorage.getItem(CURRENT_USER_ID_KEY)
 		return if (currentUserId != null) {
@@ -107,4 +128,14 @@ class UserApiImpl(
 		ids = userIds,
 		bypassCache = bypassCache
 	) { ids -> retrieveUsers(userIds = ids.toSet()) }
+
+	override suspend fun setName(name: String): User =
+		setNameForCurrentUser(name).bodyOrThrow().also {
+			putInCache(it)
+		}
+
+	 override suspend fun setCurrency(currency: Currency): User =
+		setCurrencyForCurrentUser(currency).bodyOrThrow().also {
+			putInCache(it)
+		}
 }

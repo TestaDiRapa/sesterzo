@@ -3,6 +3,7 @@ package org.testadirapa.sesterzo.dao
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import org.testadirapa.sesterzo.components.mongodb.DBClient
 import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.Currency
 import org.testadirapa.sesterzo.model.User
 
 abstract class UserDAO(client: DBClient) : GenericSingleCollectionDAO<User>(client) {
@@ -19,4 +20,6 @@ abstract class UserDAO(client: DBClient) : GenericSingleCollectionDAO<User>(clie
 	abstract suspend fun setPublicKey(userId: String, publicKey: Base64String): User?
 
 	abstract suspend fun setBackupConfirmation(userId: String): User?
+	abstract suspend fun setName(userId: String, name: String): User?
+	abstract suspend fun setCurrency(userId: String, currency: Currency): User?
 }

@@ -2,6 +2,7 @@ package org.testadirapa.sesterzo.logic
 
 import kotlinx.coroutines.flow.Flow
 import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.Currency
 import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.security.SecurityContext
 
@@ -22,4 +23,6 @@ interface UserLogic {
 	 */
 	suspend fun setBackupConfirmation(): User
 	fun getUsers(userIds: Set<String>): Flow<User>
+	suspend fun setName(name: String): User
+	suspend fun setCurrency(currency: Currency): User
 }

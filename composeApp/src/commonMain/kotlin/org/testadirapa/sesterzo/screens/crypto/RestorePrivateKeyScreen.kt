@@ -4,7 +4,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
@@ -24,6 +26,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.input.FormButton
 import org.testadirapa.sesterzo.components.input.TextField
 import org.testadirapa.sesterzo.components.qr.QrScanner
+import org.testadirapa.sesterzo.components.text.MultilineBodyText
 import org.testadirapa.sesterzo.components.text.TitleAndSubtitle
 import org.testadirapa.sesterzo.components.ui.OrDivider
 import org.testadirapa.sesterzo.model.Base64String
@@ -38,6 +41,8 @@ import sesterzo.composeapp.generated.resources.recover_key_button_confirm
 import sesterzo.composeapp.generated.resources.recover_key_description_1
 import sesterzo.composeapp.generated.resources.recover_key_invalid_key_format
 import sesterzo.composeapp.generated.resources.recover_key_option_qr_code
+import sesterzo.composeapp.generated.resources.recover_key_option_qr_code_instructions_1
+import sesterzo.composeapp.generated.resources.recover_key_option_qr_code_instructions_2
 import sesterzo.composeapp.generated.resources.recover_key_option_recovery_key
 import sesterzo.composeapp.generated.resources.recover_key_option_restore_key
 import sesterzo.composeapp.generated.resources.recover_key_private_key_placeholder
@@ -71,7 +76,7 @@ fun RestorePrivateKeyScreen(
 				) {
 					TitleAndSubtitle(
 						title = stringResource(Res.string.recover_key_title),
-						subtitle = stringResource(Res.string.recover_key_description_1),
+						subtitle = if (recoveryOption == null) stringResource(Res.string.recover_key_description_1) else null,
 					)
 					when (recoveryOption) {
 						RecoveryOption.PrivateKey -> {
@@ -140,6 +145,13 @@ fun RestorePrivateKeyScreen(
 							)
 						}
 						RecoveryOption.QR -> {
+							MultilineBodyText(
+								resources = listOf(
+									Res.string.recover_key_option_qr_code_instructions_1,
+									Res.string.recover_key_option_qr_code_instructions_2,
+								)
+							)
+							Spacer(modifier = Modifier.height(8.dp))
 							QrScanner { result ->
 								runCatching {
 									Serialization.json.decodeFromString<List<Int>>(result)
@@ -147,6 +159,18 @@ fun RestorePrivateKeyScreen(
 									onRestoreWithRecoveryKeyIndexes(bip39Indexes)
 								}
 							}
+							Spacer(modifier = Modifier.height(8.dp))
+							FormButton(
+								onClick = { recoveryOption = RecoveryOption.RecoveryKey },
+								enabled = true,
+								text = stringResource(Res.string.recover_key_option_recovery_key),
+							)
+							OrDivider()
+							FormButton(
+								onClick = { recoveryOption = RecoveryOption.PrivateKey },
+								enabled = true,
+								text = stringResource(Res.string.recover_key_option_restore_key),
+							)
 						}
 						null -> {
 							if (canReadQrCodes()) {
@@ -158,15 +182,15 @@ fun RestorePrivateKeyScreen(
 								OrDivider()
 							}
 							FormButton(
-								onClick = { recoveryOption = RecoveryOption.PrivateKey },
-								enabled = true,
-								text = stringResource(Res.string.recover_key_option_restore_key),
-							)
-							OrDivider()
-							FormButton(
 								onClick = { recoveryOption = RecoveryOption.RecoveryKey },
 								enabled = true,
 								text = stringResource(Res.string.recover_key_option_recovery_key),
+							)
+							OrDivider()
+							FormButton(
+								onClick = { recoveryOption = RecoveryOption.PrivateKey },
+								enabled = true,
+								text = stringResource(Res.string.recover_key_option_restore_key),
 							)
 						}
 					}

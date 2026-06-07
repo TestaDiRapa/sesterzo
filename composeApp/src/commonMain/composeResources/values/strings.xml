@@ -121,8 +121,10 @@
     <string name="recover_key_title">Your private key was not found on the device</string>
     <string name="recover_key_description_1">Recover your key using one of the following options:</string>
     <string name="recover_key_option_restore_key">Paste the private key directly</string>
-    <string name="recover_key_option_recovery_key">Use a recovery key</string>
+    <string name="recover_key_option_recovery_key">Use a recovery sentence</string>
     <string name="recover_key_option_qr_code">Generate a QR code on another device</string>
+    <string name="recover_key_option_qr_code_instructions_1">Open Sesterzo on a device where you are logged in.</string>
+    <string name="recover_key_option_qr_code_instructions_2">Go to settings > generate recovery QR to generate the code.</string>
     <string name="recover_key_button_confirm">Confirm</string>
     <string name="recover_key_private_key_placeholder">MIIEvAIBADANBgkqhkiG9w...</string>
     <string name="recover_key_recovery_key_placeholder">skill green winter...</string>

@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TitleAndSubtitle(
 	title: String,
-	subtitle: String,
+	subtitle: String?,
 ) {
 	Column(
 		verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -23,10 +23,12 @@ fun TitleAndSubtitle(
 			fontWeight = FontWeight.Bold,
 			color = colorScheme.onBackground,
 		)
-		Text(
-			text = subtitle,
-			style = MaterialTheme.typography.titleMedium,
-			color = colorScheme.onSurfaceVariant,
-		)
+		if (subtitle != null) {
+			Text(
+				text = subtitle,
+				style = MaterialTheme.typography.titleMedium,
+				color = colorScheme.onSurfaceVariant,
+			)
+		}
 	}
 }

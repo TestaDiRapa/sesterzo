@@ -21,10 +21,12 @@ interface FullRecoveryApi : RecoveryApi {
 	 * Creates a new [RecoveryKey] for the private key of the current user, saves it to the backend and returns the
 	 * recovery AES key.
 	 *
-	 * @param owner the user that will be able to access the key.
+	 * @param receiver the user that will be able to access the key.
 	 * @param expiresAt an expiration timestamp for the key. If null the key will have no expiration.
 	 * @return a [Bip39RecoveryKey].
 	 */
-	suspend fun generateRecoveryKey(owner: String, expiresAt: Timestamp?): Bip39RecoveryKey
+	suspend fun generateRecoveryKey(receiver: String?, expiresAt: Timestamp?): Bip39RecoveryKey
+
+	suspend fun generateRecoveryKeyAndReturnBipIndexes(receiver: String?, expiresAt: Timestamp?): List<Int>
 
 }

@@ -35,7 +35,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.BuildKonfig
-import org.testadirapa.sesterzo.components.loading.PulsingRoundedSquare
+import org.testadirapa.sesterzo.components.loading.PulsatingRoundedSquare
 import org.testadirapa.sesterzo.components.ui.ActionRow
 import org.testadirapa.sesterzo.components.space.SpaceRow
 import org.testadirapa.sesterzo.model.Base64String
@@ -134,7 +134,7 @@ fun MobileSpaceSwitcher(
 			} else {
 				Column(Modifier.padding(horizontal = 12.dp)) {
 					(0 until 4).forEach { idx ->
-						PulsingRoundedSquare(
+						PulsatingRoundedSquare(
 							index = idx,
 							total = 4,
 							height = 50.dp,

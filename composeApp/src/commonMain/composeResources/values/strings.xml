@@ -145,6 +145,12 @@
     <string name="settings_page_edit_user_name">Change name</string>
     <string name="settings_page_edit_currency">Change currency</string>
     <string name="settings_page_current">Current</string>
+    <string name="settings_page_recovery_sentence">Generate a recovery sentence</string>
+    <string name="settings_page_recovery_sentence_subtitle">You can use it to access on another device.</string>
+    <string name="settings_page_display_private_key">Display your private key</string>
+    <string name="settings_page_recovery_private_key_subtitle">You can use it to access on another device.</string>
+    <string name="settings_page_recovery_qr">Generate recovery QR</string>
+    <string name="settings_page_recovery_qr_subtitle">To access on another device.</string>
 
     <!--  Login page  -->
     <string name="login_title">Welcome back!</string>

@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Month
 import kotlinx.datetime.number
 import org.testadirapa.sesterzo.AppCtx
-import org.testadirapa.sesterzo.components.loading.PulsingRoundedSquare
+import org.testadirapa.sesterzo.components.loading.PulsatingRoundedSquare
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.budgetReferenceOf
@@ -188,7 +188,7 @@ private fun MonthsGrid(
 			) {
 				monthEntries.forEachIndexed { index, month ->
 					if (isLoading) {
-						PulsingRoundedSquare(
+						PulsatingRoundedSquare(
 							index = monthIndex * 4 + index,
 							total = 12,
 							width = 70.dp,

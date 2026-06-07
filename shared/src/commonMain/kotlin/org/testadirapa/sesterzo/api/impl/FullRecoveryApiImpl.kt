@@ -18,10 +18,10 @@ open class FullRecoveryApiImpl(
 	private val cryptoService: CryptoService,
 ) : RecoveryApiImpl(httpConfig, authService), FullRecoveryApi {
 
-	override suspend fun generateRecoveryKey(
-		owner: String,
+	private suspend fun doGenerateRecoveryKey(
+		receiver: String?,
 		expiresAt: Timestamp?
-	): Bip39RecoveryKey {
+	): ByteArray {
 		val privateKey = cryptoService.exportPrivateKey()
 		val recoveryKey = defaultCryptoService.aes.generateKey(CbcWithPkcs7Padding)
 		val encryptedPrivateKey = base64Encode(
@@ -38,10 +38,29 @@ open class FullRecoveryApiImpl(
 			RecoveryKey(
 				id = recoveryKeyHash,
 				expiresAt = expiresAt,
-				owner = owner,
+				owner = cryptoService.userId,
+				receiver = receiver ?: cryptoService.userId,
 				encryptedKey = encryptedPrivateKey
 			)
 		).bodyOrThrow()
-		return bip39Encode(exportedRecoveryKey)
+		return exportedRecoveryKey
+	}
+
+	override suspend fun generateRecoveryKey(
+		receiver: String?,
+		expiresAt: Timestamp?
+	): Bip39RecoveryKey = bip39Encode(
+		doGenerateRecoveryKey(receiver = receiver, expiresAt = expiresAt)
+	)
+
+	override suspend fun generateRecoveryKeyAndReturnBipIndexes(
+		receiver: String?,
+		expiresAt: Timestamp?
+	): List<Int> = bip39EncodeAsIndexes(
+		doGenerateRecoveryKey(receiver = receiver, expiresAt = expiresAt)
+	)
+
+	override suspend fun recoverKey(bip39RecoveryKey: Bip39RecoveryKey): ByteArray {
+		return super.recoverKey(bip39RecoveryKey)
 	}
 }

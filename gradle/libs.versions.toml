@@ -28,6 +28,7 @@ kermit = "2.1.0"
 sql-delight = "2.3.2"
 mongo = "5.7.0"
 indexedDb = "0.12.0"
+qrose = "1.1.2"
 
 [libraries]
 # Ktor server
@@ -99,6 +100,9 @@ kryptom = { module = "com.icure.kryptom:kryptom", version.ref = "kryptom" }
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 kerberus = { module = "com.icure:kerberus", version.ref = "kerberus" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
+
+#QR
+qrose = { module = "io.github.alexzhirkevich:qrose", version.ref = "qrose" }
 
 #Test
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

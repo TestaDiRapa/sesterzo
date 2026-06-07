@@ -63,6 +63,7 @@ kotlin {
 			implementation(libs.androidx.lifecycle.viewmodelCompose)
 			implementation(libs.androidx.lifecycle.runtimeCompose)
 			implementation(libs.kermit)
+			implementation(libs.qrose)
 		}
 		androidMain.dependencies {
 			implementation(libs.androidx.activity.compose)

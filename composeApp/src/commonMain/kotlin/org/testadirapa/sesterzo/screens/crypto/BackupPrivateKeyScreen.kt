@@ -136,7 +136,7 @@ fun BackupPrivateKeyScreen(
 									scope.launch {
 										runCatching {
 											recoveryKey = AppCtx.api.recovery.generateRecoveryKey(
-												owner = AppCtx.api.currentUserId,
+												receiver = null,
 												expiresAt = null
 											)
 										}.onFailure(onError)

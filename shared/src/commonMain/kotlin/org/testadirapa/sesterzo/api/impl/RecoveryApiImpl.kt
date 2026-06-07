@@ -69,9 +69,8 @@ open class RecoveryApiImpl(
 		return bip39WordList!!
 	}
 
-	protected suspend fun bip39Encode(key: ByteArray): Bip39RecoveryKey {
+	protected suspend fun bip39EncodeAsIndexes(key: ByteArray): List<Int> {
 		require(key.size == 32) { "Must be 256 bits (32 bytes)" }
-		val wordList = getOrLoadWordList()
 		val hash = defaultCryptoService.digest.sha256(key)
 		val checksumByte = hash[0]
 
@@ -80,9 +79,13 @@ open class RecoveryApiImpl(
 			bits.setOctet(i, key[i])
 		}
 		bits.setOctet(32, checksumByte)
+		return List(24) { bits.getInt(it * 11, 11) }
+	}
+
+	protected suspend fun bip39Encode(key: ByteArray): Bip39RecoveryKey {
+		val wordList = getOrLoadWordList()
 		return Bip39RecoveryKey(
-			words = List(24) { i ->
-				val index = bits.getInt(i * 11, 11)
+			words = bip39EncodeAsIndexes(key).map { index ->
 				wordList[index]
 			}
 		)

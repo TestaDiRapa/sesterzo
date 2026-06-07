@@ -11,8 +11,10 @@ import org.testadirapa.sesterzo.security.SecurityContext.Companion.withSecurityC
 class RecoveryLogicImpl(
 	private val recoveryDAO: RecoveryDAO
 ) : RecoveryLogic {
-	override suspend fun createRecoveryKey(recoveryKey: RecoveryKey): RecoveryKey {
-		recoveryDAO.save(recoveryKey)
+	override suspend fun createRecoveryKey(recoveryKey: RecoveryKey): RecoveryKey = withSecurityContext {
+		recoveryDAO.save(
+			recoveryKey.copy(owner = currentUserId)
+		)
 		return recoveryDAO.getById(recoveryKey.id)
 			?: throw IllegalStateException("Recovery key ${recoveryKey.id} was not created")
 	}

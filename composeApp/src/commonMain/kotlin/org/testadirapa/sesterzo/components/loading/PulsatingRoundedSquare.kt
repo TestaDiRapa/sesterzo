@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PulsingRoundedSquare(
+fun PulsatingRoundedSquare(
 	index: Int,
 	total: Int,
 	height: Dp,

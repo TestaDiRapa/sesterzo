@@ -36,30 +36,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.icure.kryptom.utils.base64Decode
 import com.icure.kryptom.utils.base64Encode
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.components.input.Bip39RecoveryField
+import org.testadirapa.sesterzo.components.input.ReadOnlyCopyField
+import org.testadirapa.sesterzo.components.loading.PulsatingRoundedSquare
+import org.testadirapa.sesterzo.components.qr.SesterzoQr
 import org.testadirapa.sesterzo.components.space.SpaceCreateOrUpdateForm
 import org.testadirapa.sesterzo.components.text.MenuElementWithSubtitle
 import org.testadirapa.sesterzo.components.user.UserCurrencyUpdateForm
 import org.testadirapa.sesterzo.components.user.UserNameUpdateForm
 import org.testadirapa.sesterzo.model.Base64String
+import org.testadirapa.sesterzo.model.Bip39RecoveryKey
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.User
+import org.testadirapa.sesterzo.serialization.Serialization
 import org.testadirapa.sesterzo.styles.colors.colorOrDefault
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.arrow_right
+import sesterzo.composeapp.generated.resources.backup_key_private_key
+import sesterzo.composeapp.generated.resources.backup_key_recovery_title
 import sesterzo.composeapp.generated.resources.settings_page_confirm_update
 import sesterzo.composeapp.generated.resources.settings_page_current
+import sesterzo.composeapp.generated.resources.settings_page_display_private_key
 import sesterzo.composeapp.generated.resources.settings_page_edit_currency
 import sesterzo.composeapp.generated.resources.settings_page_edit_space
 import sesterzo.composeapp.generated.resources.settings_page_edit_space_subtitle
 import sesterzo.composeapp.generated.resources.settings_page_edit_user_name
+import sesterzo.composeapp.generated.resources.settings_page_recovery_private_key_subtitle
+import sesterzo.composeapp.generated.resources.settings_page_recovery_qr
+import sesterzo.composeapp.generated.resources.settings_page_recovery_qr_subtitle
+import sesterzo.composeapp.generated.resources.settings_page_recovery_sentence
+import sesterzo.composeapp.generated.resources.settings_page_recovery_sentence_subtitle
 import sesterzo.composeapp.generated.resources.settings_page_space_settings
 import sesterzo.composeapp.generated.resources.settings_page_user_settings
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
+
+private enum class OverlayContentType { QR, RecoveryKey, PrivateKey }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,6 +97,7 @@ fun SettingsMobilePage(
 	val nameUpdateSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 	var showCurrencyUpdateSheet by remember { mutableStateOf(false) }
 	val currencyUpdateSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+	var overlayContentType by remember { mutableStateOf<OverlayContentType?>(null) }
 
 	LaunchedEffect(Unit) {
 		runCatching { currentUser = AppCtx.api.user.getCurrentUser() }.onFailure(onError)
@@ -108,6 +128,24 @@ fun SettingsMobilePage(
 					label = stringResource(Res.string.settings_page_edit_currency),
 					subtitle = "${stringResource(Res.string.settings_page_current)}: ${user.preferredCurrency.name}",
 					onClick = { showCurrencyUpdateSheet = true }
+				)
+				HorizontalDivider(color = colorScheme.outline)
+				SettingsRow(
+					label = stringResource(Res.string.settings_page_recovery_qr),
+					subtitle = stringResource(Res.string.settings_page_recovery_qr_subtitle),
+					onClick = { overlayContentType = OverlayContentType.QR }
+				)
+				HorizontalDivider(color = colorScheme.outline)
+				SettingsRow(
+					label = stringResource(Res.string.settings_page_recovery_sentence),
+					subtitle = stringResource(Res.string.settings_page_recovery_sentence_subtitle),
+					onClick = { overlayContentType = OverlayContentType.RecoveryKey }
+				)
+				HorizontalDivider(color = colorScheme.outline)
+				SettingsRow(
+					label = stringResource(Res.string.settings_page_display_private_key),
+					subtitle = stringResource(Res.string.settings_page_recovery_private_key_subtitle),
+					onClick = { overlayContentType = OverlayContentType.PrivateKey }
 				)
 			}
 
@@ -206,6 +244,98 @@ fun SettingsMobilePage(
 		}
 	}
 
+	overlayContentType?.let { type ->
+		KeyOverlay(
+			contentType = type,
+			onDismiss = { overlayContentType = null },
+			onError = onError,
+		)
+	}
+
+}
+
+@Composable
+private fun KeyOverlay(
+	contentType: OverlayContentType,
+	onDismiss: () -> Unit,
+	onError: (Throwable) -> Unit,
+) {
+	var isLoading by remember { mutableStateOf(true) }
+	var privateKey by remember { mutableStateOf<Base64String?>(null) }
+	var recoveryKeyAsListOfInt by remember { mutableStateOf<List<Int>?>(null) }
+	var recoveryKey by remember { mutableStateOf<Bip39RecoveryKey?>(null) }
+
+	LaunchedEffect(contentType) {
+		runCatching {
+			isLoading = true
+			when (contentType) {
+				OverlayContentType.PrivateKey -> {
+					privateKey = AppCtx.api.cryptoService.exportAndEncodePrivateKey()
+				}
+				OverlayContentType.QR -> {
+					recoveryKeyAsListOfInt = AppCtx.api.recovery.generateRecoveryKeyAndReturnBipIndexes(
+						receiver = null,
+						expiresAt = Clock.System.now().toEpochMilliseconds() + 5.minutes.inWholeMilliseconds,
+					)
+				}
+				OverlayContentType.RecoveryKey -> {
+					recoveryKey = AppCtx.api.recovery.generateRecoveryKey(
+						receiver = null,
+						expiresAt = null,
+					)
+				}
+			}
+			isLoading = false
+		}.onFailure(onError)
+
+	}
+
+	Dialog(onDismissRequest = onDismiss) {
+		Card(
+			modifier = Modifier
+				.padding(vertical = 32.dp)
+				.fillMaxWidth(),
+			border = BorderStroke(width = 1.dp, color = colorScheme.outline),
+			colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+		) {
+			Row(
+				modifier = Modifier.padding(16.dp).fillMaxWidth(),
+				horizontalArrangement = Arrangement.Center,
+			) {
+				when {
+					isLoading -> PulsatingRoundedSquare(
+						index = 1,
+						total = 1,
+						height = 192.dp,
+						width = 192.dp,
+					)
+					contentType == OverlayContentType.QR -> {
+						recoveryKeyAsListOfInt?.let { key ->
+							SesterzoQr(data = Serialization.json.encodeToString(key), description = "Recovery QR")
+						}
+					}
+					contentType == OverlayContentType.RecoveryKey -> {
+						recoveryKey?.let { key ->
+							Bip39RecoveryField(
+								words = key.words,
+								label = "Recovery Key",
+								title = stringResource(Res.string.backup_key_recovery_title),
+							)
+						}
+					}
+					contentType == OverlayContentType.PrivateKey -> {
+						privateKey?.let { key ->
+							ReadOnlyCopyField(
+								value = key,
+								label = "Private Key",
+								title = stringResource(Res.string.backup_key_private_key),
+							)
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 @Composable

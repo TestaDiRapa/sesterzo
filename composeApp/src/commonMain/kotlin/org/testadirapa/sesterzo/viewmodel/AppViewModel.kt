@@ -93,6 +93,18 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 					_appState.update { mainScreenOrCreateSpace() }
 				}
 			}
+			is AppIntent.RestoreWithRecoveryKeyIndexes -> {
+				expectStateAs<RecoverKeyState>(appState.value) {
+					val recoveryKey = it.api.recovery.bip39IndexesToKey(intent.recoveryKeyIndexes)
+					AppCtx.api = it.api.toFullApiWithRecoveryKey(
+						storage = PlatformContext.storageFacade(),
+						cache = PlatformContext.persistentCache(),
+						cacheTtl = BuildKonfig.cacheTtl.minutes,
+						recoveryKey = recoveryKey,
+					)
+					_appState.update { mainScreenOrCreateSpace() }
+				}
+			}
 			is AppIntent.CreateSpaceIntent -> {
 				val space = AppCtx.api.space.createSpace(
 					name = intent.name,

@@ -23,24 +23,28 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.input.FormButton
 import org.testadirapa.sesterzo.components.input.TextField
+import org.testadirapa.sesterzo.components.qr.QrScanner
 import org.testadirapa.sesterzo.components.text.TitleAndSubtitle
 import org.testadirapa.sesterzo.components.ui.OrDivider
 import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Bip39RecoveryKey
 import org.testadirapa.sesterzo.models.FormValue
+import org.testadirapa.sesterzo.serialization.Serialization
+import org.testadirapa.sesterzo.utils.canReadQrCodes
 import org.testadirapa.sesterzo.validators.Base64Validator
 import org.testadirapa.sesterzo.validators.Bip39Validator
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.recover_key_button_confirm
 import sesterzo.composeapp.generated.resources.recover_key_description_1
 import sesterzo.composeapp.generated.resources.recover_key_invalid_key_format
+import sesterzo.composeapp.generated.resources.recover_key_option_qr_code
 import sesterzo.composeapp.generated.resources.recover_key_option_recovery_key
 import sesterzo.composeapp.generated.resources.recover_key_option_restore_key
 import sesterzo.composeapp.generated.resources.recover_key_private_key_placeholder
 import sesterzo.composeapp.generated.resources.recover_key_recovery_key_placeholder
 import sesterzo.composeapp.generated.resources.recover_key_title
 
-private enum class RecoveryOption { PrivateKey, RecoveryKey }
+private enum class RecoveryOption { PrivateKey, RecoveryKey, QR }
 
 @Composable
 fun RestorePrivateKeyScreen(
@@ -48,6 +52,7 @@ fun RestorePrivateKeyScreen(
 	isMobile: Boolean,
 	onRestoreWithPrivateKey: (Base64String) -> Unit,
 	onRestoreWithRecoveryKey: (Bip39RecoveryKey) -> Unit,
+	onRestoreWithRecoveryKeyIndexes: (List<Int>) -> Unit,
 ) {
 	var privateKeyBase64 by remember { mutableStateOf(FormValue(validator = Base64Validator)) }
 	var recoveryKeyBip39 by remember { mutableStateOf(FormValue(validator = Bip39Validator)) }
@@ -84,6 +89,14 @@ fun RestorePrivateKeyScreen(
 								enabled = privateKeyBase64.isValid,
 								text = stringResource(Res.string.recover_key_button_confirm),
 							)
+							if (canReadQrCodes()) {
+								OrDivider()
+								FormButton(
+									onClick = { recoveryOption = RecoveryOption.QR },
+									isLoading = isLoading,
+									text = stringResource(Res.string.recover_key_option_qr_code),
+								)
+							}
 							OrDivider()
 							FormButton(
 								onClick = { recoveryOption = RecoveryOption.RecoveryKey },
@@ -111,6 +124,14 @@ fun RestorePrivateKeyScreen(
 								isLoading = isLoading,
 								text = stringResource(Res.string.recover_key_button_confirm),
 							)
+							if (canReadQrCodes()) {
+								OrDivider()
+								FormButton(
+									onClick = { recoveryOption = RecoveryOption.QR },
+									isLoading = isLoading,
+									text = stringResource(Res.string.recover_key_option_qr_code),
+								)
+							}
 							OrDivider()
 							FormButton(
 								onClick = { recoveryOption = RecoveryOption.PrivateKey },
@@ -118,7 +139,24 @@ fun RestorePrivateKeyScreen(
 								text = stringResource(Res.string.recover_key_option_restore_key),
 							)
 						}
+						RecoveryOption.QR -> {
+							QrScanner { result ->
+								runCatching {
+									Serialization.json.decodeFromString<List<Int>>(result)
+								}.getOrNull()?.let { bip39Indexes ->
+									onRestoreWithRecoveryKeyIndexes(bip39Indexes)
+								}
+							}
+						}
 						null -> {
+							if (canReadQrCodes()) {
+								FormButton(
+									onClick = { recoveryOption = RecoveryOption.QR },
+									isLoading = isLoading,
+									text = stringResource(Res.string.recover_key_option_qr_code),
+								)
+								OrDivider()
+							}
 							FormButton(
 								onClick = { recoveryOption = RecoveryOption.PrivateKey },
 								enabled = true,

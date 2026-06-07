@@ -82,6 +82,13 @@ open class RecoveryApiImpl(
 		return List(24) { bits.getInt(it * 11, 11) }
 	}
 
+	override suspend fun bip39IndexesToKey(indexes: List<Int>): Bip39RecoveryKey {
+		val wordList = getOrLoadWordList()
+		return Bip39RecoveryKey(
+			words = indexes.map { index -> wordList[index] }
+		)
+	}
+
 	protected suspend fun bip39Encode(key: ByteArray): Bip39RecoveryKey {
 		val wordList = getOrLoadWordList()
 		return Bip39RecoveryKey(

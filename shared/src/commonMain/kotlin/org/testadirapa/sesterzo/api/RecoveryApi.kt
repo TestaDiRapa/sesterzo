@@ -13,6 +13,7 @@ interface RecoveryApi {
 	 * @return the bytes of the private key.
 	 */
 	suspend fun recoverKey(bip39RecoveryKey: Bip39RecoveryKey): ByteArray
+	suspend fun bip39IndexesToKey(indexes: List<Int>): Bip39RecoveryKey
 }
 
 interface FullRecoveryApi : RecoveryApi {

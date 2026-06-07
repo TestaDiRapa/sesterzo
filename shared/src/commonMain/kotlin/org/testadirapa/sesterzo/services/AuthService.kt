@@ -1,5 +1,6 @@
 package org.testadirapa.sesterzo.services
 
+import io.ktor.client.call.body
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex
@@ -39,9 +40,16 @@ class AuthService(
 					_jwtState.value = null
 				}
 				currentJwt == null || isJwtExpiredOrInvalid(jwt = currentJwt, refreshPadding = expirationPadding) -> {
-					val newState = authApi.refresh(refreshToken = currentRefresh).bodyOrThrow()
-					propertyRepository.setJwt(newState.jwt)
-					_jwtState.value = JwtState(accessToken = newState.jwt, refreshToken = currentRefresh)
+					val newStateResponse = authApi.refresh(refreshToken = currentRefresh)
+					if (newStateResponse.isSuccess) {
+						val newState = newStateResponse.bodyOrThrow()
+						propertyRepository.setJwt(newState.jwt)
+						_jwtState.value = JwtState(accessToken = newState.jwt, refreshToken = currentRefresh)
+					} else {
+						propertyRepository.resetJwt()
+						propertyRepository.resetRefreshJwt()
+						_jwtState.value = null
+					}
 				}
 			}
 		}

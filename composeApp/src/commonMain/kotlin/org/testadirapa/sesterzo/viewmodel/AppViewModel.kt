@@ -13,8 +13,9 @@ import org.testadirapa.sesterzo.api.FullSesterzoApi
 import org.testadirapa.sesterzo.api.RecoverableSesterzoApi
 import org.testadirapa.sesterzo.api.SesterzoApi
 import org.testadirapa.sesterzo.config.PlatformContext
+import org.testadirapa.sesterzo.exceptions.ResponseStatusException
 import org.testadirapa.sesterzo.repository.PropertyRepository
-import org.testadirapa.sesterzo.styles.colors.randomSpaceColor
+import org.testadirapa.sesterzo.security.JwtPayload.Companion.isJwtExpiredOrInvalid
 import org.testadirapa.sesterzo.utils.expectStateAs
 import org.testadirapa.sesterzo.viewmodel.errors.ErrorState
 import org.testadirapa.sesterzo.viewmodel.errors.toErrorState
@@ -118,6 +119,9 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 
 	override fun onError(error: Throwable) {
 		viewModelScope.launch {
+			if (error is ResponseStatusException && error.status == 401) {
+				AppCtx.api.authService.invalidateToken()
+			}
 			_errorState.update { error.toErrorState() }
 		}
 	}
@@ -134,7 +138,11 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 			AppCtx.propertyRepository = propertyRepository
 			val jwt = propertyRepository.getJwt()
 			val refreshJwt = propertyRepository.getRefreshJwt()
-			if (jwt != null && refreshJwt != null) {
+			if (jwt != null &&
+					refreshJwt != null &&
+					!isJwtExpiredOrInvalid(jwt) &&
+				!isJwtExpiredOrInvalid(refreshJwt)
+			) {
 				val api = SesterzoApi.initializeWithTokens(
 					baseUrl = BuildKonfig.apiUrl,
 					jwt = jwt,

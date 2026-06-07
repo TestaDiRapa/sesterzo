@@ -8,6 +8,7 @@ import org.testadirapa.sesterzo.model.UserSpaceRole
 import org.testadirapa.sesterzo.security.UserJwtClaims.Companion.SPACES_KEY
 import org.testadirapa.sesterzo.security.UserJwtClaims.Companion.USER_ID_KEY
 import org.testadirapa.sesterzo.serialization.Serialization
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -28,7 +29,7 @@ data class JwtPayload(
 
 		fun isJwtExpiredOrInvalid(jwt: String, refreshPadding: Duration = 0L.seconds): Boolean = runCatching {
 			val payload = decodeClaims(jwt)
-			(payload.exp * 1000) < (GMTDate().timestamp - refreshPadding.inWholeMilliseconds)
+			(payload.exp * 1000) < (Clock.System.now().toEpochMilliseconds() - refreshPadding.inWholeMilliseconds)
 		}.getOrDefault(true)
 	}
 }

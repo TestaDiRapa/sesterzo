@@ -37,6 +37,7 @@ class HttpResponse<T>(
 		val statusResponse = responseBodyText?.let { Json.decodeFromString<StatusResponse>(it) }
 		return ResponseStatusException(
 			msg = statusResponse?.message,
+			status = response.status.value,
 			label = statusResponse?.label,
 		)
 	}

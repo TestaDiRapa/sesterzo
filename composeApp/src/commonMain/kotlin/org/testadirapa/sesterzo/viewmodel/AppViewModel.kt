@@ -152,8 +152,7 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 			val refreshJwt = propertyRepository.getRefreshJwt()
 			if (jwt != null &&
 					refreshJwt != null &&
-					!isJwtExpiredOrInvalid(jwt) &&
-				!isJwtExpiredOrInvalid(refreshJwt)
+					!isJwtExpiredOrInvalid(refreshJwt)
 			) {
 				val api = SesterzoApi.initializeWithTokens(
 					baseUrl = BuildKonfig.apiUrl,

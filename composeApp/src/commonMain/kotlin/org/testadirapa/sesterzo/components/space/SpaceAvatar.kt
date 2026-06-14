@@ -25,10 +25,10 @@ import org.testadirapa.sesterzo.utils.toImageBitmap
 @Composable
 fun SpaceAvatar(
 	space: Space,
-	picture: Base64String?,
+	thumbnail: Base64String?,
 	size: Dp
 ) {
-	val imageBitmap = picture?.toImageBitmap()
+	val imageBitmap = thumbnail?.toImageBitmap()
 	Box(
 		contentAlignment = Alignment.Center,
 		modifier = Modifier

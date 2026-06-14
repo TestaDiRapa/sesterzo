@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,10 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import org.testadirapa.sesterzo.components.mobile.space.MobileSpaceSwitcher
 import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Space
-import kotlin.time.Clock
+import org.testadirapa.sesterzo.viewmodel.components.SpaceSwitcherViewModel
 
 @Composable
 fun HeaderBar(
@@ -28,8 +30,11 @@ fun HeaderBar(
 	onSwitchSpace: (Space) -> Unit,
 	onError: (Throwable) -> Unit
 ) {
+	val viewModel = viewModel { SpaceSwitcherViewModel(errorHandler = onError) }
 	var sheetOpen by remember { mutableStateOf(false) }
-	var openKey by remember { mutableStateOf(0L) }
+	val isLoading = viewModel.loadingState.collectAsState()
+	val spaces = viewModel.spacesState.collectAsState()
+	val spaceThumbnails = viewModel.spaceThumbnailsState.collectAsState()
 
 	Column(modifier = Modifier.statusBarsPadding()) {
 		Spacer(modifier = Modifier.fillMaxWidth().height(8.dp))
@@ -43,8 +48,8 @@ fun HeaderBar(
 				space = space,
 				spaceThumbnail = spaceThumbnail,
 				onClick = {
-					openKey = Clock.System.now().toEpochMilliseconds()
 					sheetOpen = true
+					viewModel.acceptIntent(SpaceSwitcherViewModel.RefreshSpacesIntent)
 				},
 			)
 		}
@@ -53,7 +58,9 @@ fun HeaderBar(
 		if (sheetOpen) {
 			MobileSpaceSwitcher(
 				activeId = space.id,
-				openKey = openKey,
+				isLoading = isLoading.value,
+				spaces = spaces.value,
+				spaceThumbnails = spaceThumbnails.value,
 				onSelect = {
 					onSwitchSpace(it)
 					sheetOpen = false
@@ -61,7 +68,6 @@ fun HeaderBar(
 				onCreate = { onCreateSpace(space) },
 				onJoin = {},
 				onDismiss = { sheetOpen = false },
-				onError = onError
 			)
 		}
 	}

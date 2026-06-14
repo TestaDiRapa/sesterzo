@@ -20,11 +20,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,14 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.BuildKonfig
 import org.testadirapa.sesterzo.components.loading.PulsatingRoundedSquare
 import org.testadirapa.sesterzo.components.ui.ActionRow
 import org.testadirapa.sesterzo.components.space.SpaceRow
 import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Space
-import org.testadirapa.sesterzo.model.Timestamp
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.create_new_space
 import sesterzo.composeapp.generated.resources.create_new_space_subtitle
@@ -56,38 +49,15 @@ import sesterzo.composeapp.generated.resources.your_spaces
 @Composable
 fun MobileSpaceSwitcher(
 	activeId: String,
-	openKey: Timestamp,
+	spaces: List<Space>,
+	spaceThumbnails: Map<String, Base64String>,
+	isLoading: Boolean,
 	onSelect: (Space) -> Unit,
 	onCreate: () -> Unit,
 	onJoin: () -> Unit,
 	onDismiss: () -> Unit,
-	onError: (Throwable) -> Unit
 ) {
-	var isLoading by remember { mutableStateOf(false) }
 	val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-	var spaces by remember { mutableStateOf<List<Space>>(emptyList()) }
-	var spacePictures by remember { mutableStateOf<Map<String, Base64String>>(emptyMap()) }
-
-	LaunchedEffect(openKey) {
-		isLoading = true
-		runCatching {
-			spaces = AppCtx.api.space.getSpaces()
-			spacePictures = spaces.mapNotNull {
-				it.pictureReference?.let { ref ->
-					AppCtx.api.attachment.getAttachmentInSpace(
-						spaceId = it.id,
-						attachmentId = ref,
-						bypassCache = false
-					)?.let { attachment ->
-						it.id to attachment.data
-					}
-				}
-			}.toMap()
-			isLoading = false
-		}.onFailure {
-			onError(it)
-		}
-	}
 
 	ModalBottomSheet(
 		onDismissRequest = onDismiss,
@@ -104,7 +74,7 @@ fun MobileSpaceSwitcher(
 					spaces.sortedBy { it.name }.forEach { space ->
 						SpaceRow(
 							space = space,
-							picture = spacePictures[space.id],
+							picture = spaceThumbnails[space.id],
 							active = space.id == activeId,
 							onClick = { onSelect(space) },
 						)

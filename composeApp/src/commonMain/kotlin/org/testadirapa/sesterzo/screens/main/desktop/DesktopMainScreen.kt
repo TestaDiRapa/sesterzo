@@ -1,6 +1,10 @@
 package org.testadirapa.sesterzo.screens.main.desktop
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import org.testadirapa.sesterzo.components.desktop.DesktopNavBar
 import org.testadirapa.sesterzo.components.scaffold.DesktopScaffold
 import org.testadirapa.sesterzo.model.Amount
@@ -10,6 +14,7 @@ import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.Space
+import org.testadirapa.sesterzo.screens.main.mobile.Page
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.viewmodel.BudgetViewModel
 
@@ -30,13 +35,18 @@ fun DesktopMainScreen(
 	onCreateSpace: (currentSpace: Space) -> Unit,
 	onSwitchSpace: (Space) -> Unit,
 ) {
+
+	var currentPage by remember { mutableStateOf(Page.Budget) }
+
 	DesktopScaffold(
 		navBar = {
 			DesktopNavBar(
 				space = space,
 				spaceThumbnail = spaceThumbnail,
+				currentPage = currentPage,
 				onCreateSpace = onCreateSpace,
 				onSwitchSpace = onSwitchSpace,
+				onPageChange = { currentPage = it },
 				onError = onError,
 			)
 		},

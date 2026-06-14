@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 @Composable
 fun DesktopScaffold(
 	navBar: @Composable () -> Unit,
-	topBar: @Composable () -> Unit,
 	mainContent: @Composable () -> Unit,
 ) {
 	Row(
@@ -28,7 +27,6 @@ fun DesktopScaffold(
 			Column(
 				modifier = Modifier.weight(4f)
 			) {
-				topBar()
 				mainContent()
 			}
 		}

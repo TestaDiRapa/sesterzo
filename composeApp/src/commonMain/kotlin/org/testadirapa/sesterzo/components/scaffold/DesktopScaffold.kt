@@ -25,7 +25,7 @@ fun DesktopScaffold(
 				navBar()
 			}
 			Column(
-				modifier = Modifier.weight(4f)
+				modifier = Modifier.weight(4f).fillMaxSize(),
 			) {
 				mainContent()
 			}

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -48,11 +49,11 @@ fun BudgetMonthSelector(
 	onNext: (() -> Unit)?,
 	onPrev: (() -> Unit)?,
 	onCreate: (reference: BudgetReference) -> Unit,
+	modifier: Modifier,
 ) {
-	val iconButtonsModifier = Modifier.width(24.dp).height(24.dp)
+	val iconButtonsModifier = Modifier.size(24.dp)
 	Card(
-		modifier = Modifier
-			.fillMaxWidth(),
+		modifier = modifier.fillMaxWidth(),
 		border = BorderStroke(width = 1.dp, color = colorScheme.outline),
 		colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
 	) {

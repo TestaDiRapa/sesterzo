@@ -29,7 +29,7 @@ data class JwtPayload(
 
 		fun isJwtExpiredOrInvalid(jwt: String, refreshPadding: Duration = 0L.seconds): Boolean = runCatching {
 			val payload = decodeClaims(jwt)
-			(payload.exp * 1000) < (Clock.System.now().toEpochMilliseconds() - refreshPadding.inWholeMilliseconds)
+			(payload.exp * 1000) < (Clock.System.now().toEpochMilliseconds() + refreshPadding.inWholeMilliseconds)
 		}.getOrDefault(true)
 	}
 }

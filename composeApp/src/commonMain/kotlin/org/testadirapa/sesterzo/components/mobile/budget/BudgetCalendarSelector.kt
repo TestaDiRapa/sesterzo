@@ -55,6 +55,7 @@ fun BudgetCalendarSelector(
 	currentBudget: BudgetReference,
 	onMonthSelected: (BudgetReference) -> Unit,
 	onError: (e: Throwable) -> Unit,
+	modifier: Modifier,
 ) {
 	val scope = rememberCoroutineScope()
 	var isLoading by remember { mutableStateOf(true) }
@@ -71,7 +72,7 @@ fun BudgetCalendarSelector(
 		isLoading = false
 	}
 	Card(
-		modifier = Modifier.fillMaxWidth(),
+		modifier = modifier.fillMaxWidth(),
 		border = BorderStroke(width = 1.dp, color = colorScheme.outline),
 		colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
 	) {

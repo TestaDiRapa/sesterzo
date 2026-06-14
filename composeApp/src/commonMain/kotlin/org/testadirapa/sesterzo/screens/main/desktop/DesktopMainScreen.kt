@@ -14,6 +14,7 @@ import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.Space
+import org.testadirapa.sesterzo.screens.main.desktop.budget.DesktopBudgetScreen
 import org.testadirapa.sesterzo.screens.main.mobile.Page
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.viewmodel.BudgetViewModel
@@ -50,7 +51,31 @@ fun DesktopMainScreen(
 				onError = onError,
 			)
 		},
-		topBar = {},
-		mainContent = {}
+		mainContent = {
+			budgetView?.let { budgets ->
+				when (currentPage) {
+					Page.Budget, Page.Entries -> {
+						DesktopBudgetScreen(
+							space = space,
+							page = currentPage,
+							budget = budgets.currentBudget,
+							budgetLoadingState = loadingState,
+							onPreviousBudget = budgets.previousBudget?.let { onPreviousBudget },
+							onNextBudget = budgets.nextBudget?.let { onNextBudget },
+							onMonthSelect = onMonthSelect,
+							onCreateBudget = onCreateBudget,
+							onBudgetUpdate = onBudgetUpdate,
+							onError = onError,
+						)
+					}
+					Page.Template -> {
+
+					}
+					Page.Settings -> {
+
+					}
+				}
+			}
+		}
 	)
 }

@@ -19,6 +19,8 @@ import org.testadirapa.sesterzo.model.Space
 fun DesktopNavBar(
 	space: Space,
 	spaceThumbnail: Base64String?,
+	onCreateSpace: (currentSpace: Space) -> Unit,
+	onSwitchSpace: (Space) -> Unit,
 	onError: (error: Throwable) -> Unit,
 ) {
 	Column(
@@ -34,8 +36,8 @@ fun DesktopNavBar(
 			DesktopSpaceSwitcher(
 				space = space,
 				spaceThumbnail = spaceThumbnail,
-				onSelect = {},
-				onCreate = {},
+				onSelect = onSwitchSpace,
+				onCreate = { onCreateSpace(space) },
 				onJoin = {},
 				onError = onError,
 			)

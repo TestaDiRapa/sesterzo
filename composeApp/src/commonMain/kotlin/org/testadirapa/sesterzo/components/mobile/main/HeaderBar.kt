@@ -26,7 +26,7 @@ import org.testadirapa.sesterzo.viewmodel.components.SpaceSwitcherViewModel
 fun HeaderBar(
 	space: Space,
 	spaceThumbnail: Base64String?,
-	onCreateSpace: (Space) -> Unit,
+	onCreateSpace: (currentSpace: Space) -> Unit,
 	onSwitchSpace: (Space) -> Unit,
 	onError: (Throwable) -> Unit
 ) {
@@ -49,7 +49,7 @@ fun HeaderBar(
 				spaceThumbnail = spaceThumbnail,
 				onClick = {
 					sheetOpen = true
-					viewModel.acceptIntent(SpaceSwitcherViewModel.RefreshSpacesIntent)
+					viewModel.acceptIntent(SpaceSwitcherViewModel.SpaceSwitcherIntent.RefreshSpaces)
 				},
 			)
 		}
@@ -65,7 +65,10 @@ fun HeaderBar(
 					onSwitchSpace(it)
 					sheetOpen = false
 				},
-				onCreate = { onCreateSpace(space) },
+				onCreate = {
+					viewModel.acceptIntent(SpaceSwitcherViewModel.SpaceSwitcherIntent.ResetSpaces)
+					onCreateSpace(space)
+				},
 				onJoin = {},
 				onDismiss = { sheetOpen = false },
 			)

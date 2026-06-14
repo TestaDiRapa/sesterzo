@@ -27,7 +27,7 @@ fun DesktopMainScreen(
 	onUpdateBudgetsTemplate: (type: BudgetElement.BudgetElementType, budgetElement: DecryptedBudgetElement, updateCurrent: Boolean) -> Unit,
 	onSpaceUpdate: (space: Space, thumbnail: Base64String?) -> Unit,
 	onError: (e: Throwable) -> Unit,
-	onCreateSpace: (Space) -> Unit,
+	onCreateSpace: (currentSpace: Space) -> Unit,
 	onSwitchSpace: (Space) -> Unit,
 ) {
 	DesktopScaffold(
@@ -35,6 +35,8 @@ fun DesktopMainScreen(
 			DesktopNavBar(
 				space = space,
 				spaceThumbnail = spaceThumbnail,
+				onCreateSpace = onCreateSpace,
+				onSwitchSpace = onSwitchSpace,
 				onError = onError,
 			)
 		},

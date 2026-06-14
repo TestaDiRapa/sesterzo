@@ -1,49 +1,34 @@
 package org.testadirapa.sesterzo.components.mobile.space
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.BuildKonfig
+import org.testadirapa.sesterzo.components.icons.JoinBadge
+import org.testadirapa.sesterzo.components.icons.PlusBadge
 import org.testadirapa.sesterzo.components.loading.PulsatingRoundedSquare
 import org.testadirapa.sesterzo.components.ui.ActionRow
 import org.testadirapa.sesterzo.components.space.SpaceRow
+import org.testadirapa.sesterzo.components.space.SpaceSwitcherHeader
 import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Space
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.create_new_space
 import sesterzo.composeapp.generated.resources.create_new_space_subtitle
-import sesterzo.composeapp.generated.resources.join
 import sesterzo.composeapp.generated.resources.join_space
 import sesterzo.composeapp.generated.resources.join_space_subtitle
-import sesterzo.composeapp.generated.resources.out_of
-import sesterzo.composeapp.generated.resources.plus
-import sesterzo.composeapp.generated.resources.swich_space_label
-import sesterzo.composeapp.generated.resources.your_spaces
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +52,10 @@ fun MobileSpaceSwitcher(
 		shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
 	) {
 		Column(Modifier.padding(bottom = 28.dp)) {
-			SheetHeader(count = spaces.size)
+			SpaceSwitcherHeader(
+				count = spaces.size,
+				modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 14.dp),
+			)
 
 			if (!isLoading && !sheetState.isAnimationRunning) {
 				Column(Modifier.padding(horizontal = 12.dp)) {
@@ -115,71 +103,5 @@ fun MobileSpaceSwitcher(
 				}
 			}
 		}
-	}
-}
-
-@Composable
-private fun SheetHeader(count: Int) {
-	Row(
-		modifier = Modifier
-			.fillMaxWidth()
-			.padding(start = 20.dp, end = 20.dp, top = 10.dp, bottom = 14.dp),
-		verticalAlignment = Alignment.Bottom,
-	) {
-		Column(Modifier.weight(1f)) {
-			Text(
-				text = stringResource(Res.string.swich_space_label),
-				style = MaterialTheme.typography.labelSmall,
-				color = MaterialTheme.colorScheme.onSurfaceVariant,
-			)
-			Spacer(Modifier.height(4.dp))
-			Text(
-				text = stringResource(Res.string.your_spaces),
-				fontSize = 17.sp,
-				fontWeight = FontWeight.SemiBold,
-				color = MaterialTheme.colorScheme.onSurface,
-			)
-		}
-		Text(
-			text = "$count ${stringResource(Res.string.out_of)} ${BuildKonfig.spaceLimit}",
-			style = MaterialTheme.typography.labelMedium,
-			color = MaterialTheme.colorScheme.onSurfaceVariant,
-		)
-	}
-}
-
-@Composable
-private fun PlusBadge() {
-	Box(
-		Modifier
-			.size(36.dp)
-			.clip(RoundedCornerShape(11.dp))
-			.background(MaterialTheme.colorScheme.primaryContainer),
-		contentAlignment = Alignment.Center,
-	) {
-		Icon(
-			modifier = Modifier.height(24.dp).width(24.dp),
-			painter = painterResource(Res.drawable.plus),
-			contentDescription = null,
-			tint = MaterialTheme.colorScheme.primary,
-		)
-	}
-}
-
-@Composable
-private fun JoinBadge() {
-	Box(
-		Modifier
-			.size(36.dp)
-			.clip(RoundedCornerShape(11.dp))
-			.background(MaterialTheme.colorScheme.surfaceContainerHigh),
-		contentAlignment = Alignment.Center,
-	) {
-		Icon(
-			modifier = Modifier.height(24.dp).width(24.dp),
-			painter = painterResource(Res.drawable.join),
-			contentDescription = null,
-			tint = MaterialTheme.colorScheme.onSurfaceVariant,
-		)
 	}
 }

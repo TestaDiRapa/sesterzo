@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class SpaceSwitcherViewModel(
 	private val errorHandler: (Throwable) -> Unit,
-) : AbstractViewModel<SpaceSwitcherViewModel.RefreshSpacesIntent>() {
+) : AbstractViewModel<SpaceSwitcherViewModel.SpaceSwitcherIntent>() {
 	override val logger = Logger.withTag("AppViewModel")
 
 	private val _spacesState = MutableStateFlow<List<Space>>(emptyList())
@@ -27,25 +27,35 @@ class SpaceSwitcherViewModel(
 	@Volatile
 	private var lastUpdateTimestamp: Timestamp? = null
 
-	data object RefreshSpacesIntent: Intent
+	sealed interface SpaceSwitcherIntent : Intent {
+		data object RefreshSpaces: SpaceSwitcherIntent
+		data object ResetSpaces: SpaceSwitcherIntent
+	}
 
-	override suspend fun processIntent(intent: RefreshSpacesIntent) {
-		val now = Clock.System.now().toEpochMilliseconds()
-		if (lastUpdateTimestamp == null || (now - lastUpdateTimestamp!!) >= 60.seconds.inWholeMilliseconds) {
-			val spaces = AppCtx.api.space.getSpaces()
-			_spacesState.value = spaces
-			_spaceThumbnailsState.value = spaces.mapNotNull {
-				it.pictureReference?.let { ref ->
-					AppCtx.api.attachment.getAttachmentInSpace(
-						spaceId = it.id,
-						attachmentId = ref,
-						bypassCache = false
-					)?.let { attachment ->
-						it.id to attachment.data
-					}
+	override suspend fun processIntent(intent: SpaceSwitcherIntent) {
+		when(intent) {
+			is SpaceSwitcherIntent.RefreshSpaces -> {
+				val now = Clock.System.now().toEpochMilliseconds()
+				if (lastUpdateTimestamp == null || (now - lastUpdateTimestamp!!) >= 60.seconds.inWholeMilliseconds) {
+					val spaces = AppCtx.api.space.getSpaces()
+					_spacesState.value = spaces
+					_spaceThumbnailsState.value = spaces.mapNotNull {
+						it.pictureReference?.let { ref ->
+							AppCtx.api.attachment.getAttachmentInSpace(
+								spaceId = it.id,
+								attachmentId = ref,
+								bypassCache = false
+							)?.let { attachment ->
+								it.id to attachment.data
+							}
+						}
+					}.toMap()
+					lastUpdateTimestamp = now
 				}
-			}.toMap()
-			lastUpdateTimestamp = now
+			}
+			is SpaceSwitcherIntent.ResetSpaces -> {
+				lastUpdateTimestamp = null
+			}
 		}
 	}
 

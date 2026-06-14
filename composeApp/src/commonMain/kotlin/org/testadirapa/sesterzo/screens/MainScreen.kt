@@ -77,7 +77,7 @@ fun MainScreen(
 
 	if (isMobile) {
 		MobileMainScreen(
-			space = initialSpace,
+			space = space,
 			spaceThumbnail = spaceThumbnail,
 			budgetView = budgetView.value,
 			loadingState = loadingState.value,
@@ -94,7 +94,7 @@ fun MainScreen(
 		)
 	} else {
 		DesktopMainScreen(
-			space = initialSpace,
+			space = space,
 			spaceThumbnail = spaceThumbnail,
 			budgetView = budgetView.value,
 			loadingState = loadingState.value,

@@ -18,8 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import org.testadirapa.sesterzo.components.mobile.budget.BudgetCalendarSelector
-import org.testadirapa.sesterzo.components.mobile.budget.BudgetMonthSelector
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.utils.BudgetReference

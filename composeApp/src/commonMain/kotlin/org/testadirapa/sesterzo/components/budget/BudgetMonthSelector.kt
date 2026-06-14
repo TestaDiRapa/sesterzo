@@ -1,4 +1,4 @@
-package org.testadirapa.sesterzo.components.mobile.budget
+package org.testadirapa.sesterzo.components.budget
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

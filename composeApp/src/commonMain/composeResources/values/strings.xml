@@ -72,6 +72,7 @@
     <string name="add_entry_form_type_label_invalid_error">Label must be not empty and shorter than 60 characters</string>
     <string name="add_entry_form_type_description_invalid_error">Description cannot be longer than 300 characters</string>
     <string name="add_entry_form_type_add_button">Add</string>
+    <string name="add_entry_form_type_add_button_desktop">Add entry</string>
 
     <!--  Add source page  -->
     <string name="add_source_page_new_source">New source</string>

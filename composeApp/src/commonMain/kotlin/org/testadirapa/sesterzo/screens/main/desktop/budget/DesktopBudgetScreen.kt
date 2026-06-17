@@ -8,10 +8,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,8 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.budget.BudgetSelector
+import org.testadirapa.sesterzo.components.mobile.entries.AddEntryForm
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.Entry
@@ -35,6 +45,10 @@ import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.monthName
 import org.testadirapa.sesterzo.utils.toReference
 import org.testadirapa.sesterzo.viewmodel.EntriesViewModel
+import org.testadirapa.sesterzo.viewmodel.intents.EntryIntent
+import sesterzo.composeapp.generated.resources.Res
+import sesterzo.composeapp.generated.resources.add_entry_form_type_add_button_desktop
+import sesterzo.composeapp.generated.resources.plus
 
 @Composable
 fun DesktopBudgetScreen(
@@ -66,10 +80,22 @@ fun DesktopBudgetScreen(
 		BudgetHeader(
 			space = space,
 			budget = budget,
+			loadingState = loadingState.value,
 			onPreviousBudget = onPreviousBudget,
 			onNextBudget = onNextBudget,
 			onMonthSelect = onMonthSelect,
 			onCreateBudget = onCreateBudget,
+			onCreateEntry = { budgetReference, type, label, amount, description ->
+				viewModel.acceptIntent(
+					EntryIntent.CreateEntry(
+						budgetReference = budgetReference,
+						type = type,
+						label = label,
+						amount = amount,
+						description = description,
+					)
+				)
+			},
 			onError = onError
 		)
 		HorizontalDivider(color = colorScheme.outline)
@@ -80,12 +106,15 @@ fun DesktopBudgetScreen(
 fun BudgetHeader(
 	space: Space,
 	budget: DecryptedBudget,
+	loadingState: Boolean,
 	onPreviousBudget: (() -> Unit)?,
 	onNextBudget: (() -> Unit)?,
 	onMonthSelect: (reference: BudgetReference) -> Unit,
 	onCreateBudget: (reference: BudgetReference) -> Unit,
+	onCreateEntry: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
 	onError: (e: Throwable) -> Unit
 ) {
+	var addEntryFormOpen by remember { mutableStateOf(false) }
 	Row(
 		modifier = Modifier.padding(16.dp).fillMaxWidth(),
 		verticalAlignment = Alignment.CenterVertically,
@@ -105,16 +134,69 @@ fun BudgetHeader(
 				color = colorScheme.onSurfaceVariant,
 			)
 		}
-		BudgetSelector(
-			space = space,
-			budget = budget,
-			onPreviousBudget = onPreviousBudget,
-			onNextBudget = onNextBudget,
-			onMonthSelect = onMonthSelect,
-			onCreateBudget = onCreateBudget,
-			onError = onError,
-			modifier = Modifier.width(360.dp),
-			floatOverContent = true
-		)
+		Row(
+			verticalAlignment = Alignment.CenterVertically,
+			horizontalArrangement = Arrangement.spacedBy(16.dp),
+		) {
+			BudgetSelector(
+				space = space,
+				budget = budget,
+				onPreviousBudget = onPreviousBudget,
+				onNextBudget = onNextBudget,
+				onMonthSelect = onMonthSelect,
+				onCreateBudget = onCreateBudget,
+				onError = onError,
+				modifier = Modifier.width(360.dp),
+				floatOverContent = true
+			)
+			Button(
+				onClick = { addEntryFormOpen = true },
+				shape = RoundedCornerShape(12.dp),
+				modifier = Modifier.height(60.dp),
+				colors = ButtonColors(
+					containerColor = colorScheme.primary,
+					contentColor = colorScheme.onPrimary,
+					disabledContainerColor = colorScheme.surfaceContainerHigh,
+					disabledContentColor = colorScheme.onTertiary,
+				)
+			) {
+				Row(
+					verticalAlignment = Alignment.CenterVertically,
+					horizontalArrangement = Arrangement.spacedBy(8.dp),
+				) {
+					Icon(
+						modifier = Modifier.size(30.dp),
+						tint = colorScheme.onPrimary,
+						painter = painterResource(Res.drawable.plus),
+						contentDescription = null,
+					)
+					Text(
+						text = stringResource(Res.string.add_entry_form_type_add_button_desktop),
+						fontSize = 17.sp,
+						fontWeight = FontWeight.SemiBold,
+						color = colorScheme.onPrimary,
+					)
+				}
+			}
+		}
+	}
+	if (addEntryFormOpen) {
+		Dialog(onDismissRequest = { addEntryFormOpen = false }) {
+			Surface(
+				shape = RoundedCornerShape(16.dp),
+				color = colorScheme.surface,
+				modifier = Modifier.width(480.dp)
+			) {
+				AddEntryForm(
+					space = space,
+					currentBudgetReference = budget.toReference(),
+					onCreate = { budgetReference, type, label, amount, description ->
+						onCreateEntry(budgetReference, type, label, amount, description)
+						addEntryFormOpen = false
+					},
+					loadingState = loadingState,
+				)
+			}
+		}
 	}
 }

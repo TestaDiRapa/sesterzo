@@ -1,6 +1,5 @@
 package org.testadirapa.sesterzo.services
 
-import io.ktor.client.call.body
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.sync.Mutex

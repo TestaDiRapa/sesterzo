@@ -2,9 +2,7 @@ package org.testadirapa.sesterzo.components.icons
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -27,7 +25,7 @@ fun JoinBadge() {
 		contentAlignment = Alignment.Center,
 	) {
 		Icon(
-			modifier = Modifier.height(24.dp).width(24.dp),
+			modifier = Modifier.size(24.dp),
 			painter = painterResource(Res.drawable.join),
 			contentDescription = null,
 			tint = colorScheme.onSurfaceVariant,

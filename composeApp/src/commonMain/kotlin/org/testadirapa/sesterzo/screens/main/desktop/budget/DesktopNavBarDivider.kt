@@ -44,6 +44,7 @@ import org.testadirapa.sesterzo.screens.main.mobile.Page
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.monthName
 import org.testadirapa.sesterzo.utils.toReference
+import org.testadirapa.sesterzo.viewmodel.BudgetViewModel
 import org.testadirapa.sesterzo.viewmodel.EntriesViewModel
 import org.testadirapa.sesterzo.viewmodel.intents.EntryIntent
 import sesterzo.composeapp.generated.resources.Res
@@ -54,7 +55,7 @@ import sesterzo.composeapp.generated.resources.plus
 fun DesktopNavBarDivider(
 	space: Space,
 	page: Page,
-	budget: DecryptedBudget,
+	budget: BudgetViewModel.BudgetWithTemplates,
 	budgetLoadingState: Boolean,
 	onPreviousBudget: (() -> Unit)?,
 	onNextBudget: (() -> Unit)?,
@@ -63,10 +64,10 @@ fun DesktopNavBarDivider(
 	onBudgetUpdate: (budget: DecryptedBudget, newAmounts: Map<String, Amount>, type: Entry.EntryType) -> Unit,
 	onError: (e: Throwable) -> Unit,
 ) {
-	val viewModel = viewModel(key = "${space.id}-${budget.id}-${budget.version}") {
+	val viewModel = viewModel(key = "${space.id}-${budget.budget.id}-${budget.budget.version}") {
 		EntriesViewModel(
 			spaceId = space.id,
-			budget = budget,
+			budget = budget.budget,
 			errorHandler = onError
 		)
 	}
@@ -79,7 +80,7 @@ fun DesktopNavBarDivider(
 	) {
 		BudgetHeader(
 			space = space,
-			budget = budget,
+			budget = budget.budget,
 			loadingState = loadingState.value,
 			onPreviousBudget = onPreviousBudget,
 			onNextBudget = onNextBudget,

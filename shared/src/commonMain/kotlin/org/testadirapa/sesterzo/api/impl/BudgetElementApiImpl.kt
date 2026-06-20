@@ -16,6 +16,7 @@ import org.testadirapa.sesterzo.cache.model.CachedBudgetElement
 import org.testadirapa.sesterzo.config.HttpConfig
 import org.testadirapa.sesterzo.http.HttpResponse
 import org.testadirapa.sesterzo.http.wrap
+import org.testadirapa.sesterzo.model.BudgetElement
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.EncryptedBudgetElement
 import org.testadirapa.sesterzo.model.VersionableReference
@@ -61,6 +62,21 @@ class BudgetElementApiImpl(
 		accept(Application.Json)
 	}.wrap()
 
+	private suspend fun retrieveBudgetElementByIds(
+		spaceId: String,
+		budgetElementsIds: List<String>,
+	): HttpResponse<List<EncryptedBudgetElement>> = get {
+		url {
+			takeFrom(baseUrl)
+			appendPathSegments(baseSegment, "inSpace", spaceId, "byIds")
+			parameter("ts", GMTDate().timestamp)
+		}
+		bearerAuth(authService.getJwt())
+		accept(Application.Json)
+		contentType(Application.Json)
+		setBody(budgetElementsIds)
+	}.wrap()
+
 
 	private suspend fun saveBudgetElement(
 		spaceId: String,
@@ -91,6 +107,21 @@ class BudgetElementApiImpl(
 	) {
 		retrieveBudgetElementById(spaceId = spaceId, budgetElementId = budgetElementReference.id, version = budgetElementReference.version)
 	}.let {
+		cryptoService.decrypt(it)
+	}
+
+	override suspend fun getBugetElements(
+		spaceId: String,
+		budgetElementReferences: List<VersionableReference>
+	): List<DecryptedBudgetElement> = cachedAndGetMissing(
+		ids = budgetElementReferences.map { it.toId() },
+		bypassCache = false
+	) { ids ->
+		retrieveBudgetElementByIds(
+			spaceId = spaceId,
+			budgetElementsIds = ids
+		)
+	}.map {
 		cryptoService.decrypt(it)
 	}
 

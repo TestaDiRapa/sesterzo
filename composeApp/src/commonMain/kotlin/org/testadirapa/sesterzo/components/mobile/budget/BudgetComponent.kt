@@ -46,6 +46,7 @@ import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.daysToEndOfValidity
 import org.testadirapa.sesterzo.utils.toReference
+import org.testadirapa.sesterzo.viewmodel.BudgetViewModel
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.main_page_mode_expenses
 import sesterzo.composeapp.generated.resources.main_page_mode_savings
@@ -63,39 +64,24 @@ private enum class DisplayMode(val entryType: Entry.EntryType) {
 @Composable
 fun BudgetComponent(
 	space: Space,
-	budget: DecryptedBudget,
+	budget: BudgetViewModel.BudgetWithTemplates,
 	scaffoldPadding: PaddingValues,
 	entries: List<DecryptedEntry>,
 	loadingState: Boolean,
 	budgetLoadingState: Boolean,
 	onCreateEntry: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
 	onBudgetUpdate: (budget: DecryptedBudget, newAmounts: Map<String, Amount>, type: Entry.EntryType) -> Unit,
-	onError: (error: Throwable) -> Unit,
 ) {
 	var showTemplateUpdateFormSheet by remember { mutableStateOf(false) }
 	var addEntryFormInfo by remember { mutableStateOf<Pair<String, Entry.EntryType>?>(null) }
 	val entryFormSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 	val templateFormSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 	var displayMode by remember { mutableStateOf(DisplayMode.Expenses) }
-	var expensesTemplate by remember { mutableStateOf<DecryptedBudgetElement?>(null) }
-	var savingsTemplate by remember { mutableStateOf<DecryptedBudgetElement?>(null) }
-	LaunchedEffect(budget.expensesReference) {
-		runCatching {
-			expensesTemplate = AppCtx.api.budgetElement.getBudgetElement(
-				spaceId = budget.spaceId,
-				budgetElementReference = budget.expensesReference
-			)
-			savingsTemplate = AppCtx.api.budgetElement.getBudgetElement(
-				spaceId = budget.spaceId,
-				budgetElementReference = budget.savingsReference
-			)
-		}.onFailure(onError)
-	}
 	Column(
 		modifier = Modifier.padding(scaffoldPadding).verticalScroll(rememberScrollState()),
 	) {
 		Spacer(modifier = Modifier.height(16.dp))
-		val budgetReference = budget.toReference()
+		val budgetReference = budget.budget.toReference()
 		val incomeSources = entries
 			.filter { !it.deleted && it.type == Entry.EntryType.Income }
 			.groupBy { it.label }
@@ -123,8 +109,8 @@ fun BudgetComponent(
 				DisplayMode.Savings -> stringResource(Res.string.main_page_mode_savings)
 			},
 			scheduled = when(displayMode) {
-				DisplayMode.Expenses -> expensesTemplate?.elements.orEmpty() + budget.fixedExpenses
-				DisplayMode.Savings -> savingsTemplate?.elements.orEmpty() + budget.savings
+				DisplayMode.Expenses -> budget.expensesTemplate.elements + budget.budget.fixedExpenses
+				DisplayMode.Savings -> budget.savingsTemplate.elements + budget.budget.savings
 			},
 			entries = entries.filter { !it.deleted && it.type == displayMode.entryType },
 			overLimitTextColor = when(displayMode) {
@@ -147,7 +133,7 @@ fun BudgetComponent(
 		) {
 			AddEntryForm(
 				space = space,
-				currentBudgetReference = budget.toReference(),
+				currentBudgetReference = budget.budget.toReference(),
 				onCreate = { budgetReference, type, label, amount, description ->
 					onCreateEntry(budgetReference, type, label, amount, description)
 					addEntryFormInfo = null
@@ -172,17 +158,17 @@ fun BudgetComponent(
 				},
 				type = stringResource(Res.string.main_page_template_form_subtitle),
 				sources = when(displayMode) {
-					DisplayMode.Expenses -> expensesTemplate?.elements.orEmpty() + budget.fixedExpenses
-					DisplayMode.Savings -> savingsTemplate?.elements.orEmpty() + budget.savings
+					DisplayMode.Expenses -> budget.expensesTemplate.elements + budget.budget.fixedExpenses
+					DisplayMode.Savings -> budget.savingsTemplate.elements + budget.budget.savings
 				},
 				entity = when(displayMode) {
-					DisplayMode.Expenses -> Triple(budget, expensesTemplate, displayMode.entryType)
-					DisplayMode.Savings -> Triple(budget, savingsTemplate, displayMode.entryType)
+					DisplayMode.Expenses -> Triple(budget.budget, budget.expensesTemplate, displayMode.entryType)
+					DisplayMode.Savings -> Triple(budget.budget, budget.savingsTemplate, displayMode.entryType)
 				},
 				loadingState = budgetLoadingState,
 				onSourceUpdate = { (budget, template, type), updatedAmounts, _ ->
 					val amounts = updatedAmounts.filter { (k, v) ->
-						template?.elements?.get(k) != v
+						template.elements[k] != v
 					}
 					onBudgetUpdate(budget, amounts, type)
 					showTemplateUpdateFormSheet = false

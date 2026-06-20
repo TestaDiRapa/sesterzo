@@ -9,19 +9,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -40,16 +33,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.components.input.EditButton
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleMedium
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleSmall
-import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.main_page_edit_block
-import sesterzo.composeapp.generated.resources.pencil
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
@@ -213,37 +202,8 @@ private fun CardHeader(
 				)
 			}
 		}
-		Button(
-			onClick = onEdit,
-			enabled = true,
-			modifier = Modifier
-				.height(36.dp)
-				.defaultMinSize(minWidth = 42.dp),
-			shape = RoundedCornerShape(8.dp),
-			border = BorderStroke(width = 1.dp, color = colorScheme.outline),
-			colors = ButtonColors(
-				containerColor = colorScheme.surfaceVariant,
-				contentColor = colorScheme.onSurface,
-				disabledContainerColor = colorScheme.surfaceVariant,
-				disabledContentColor = colorScheme.onSurface,
-			)
-		) {
-			Row(
-				verticalAlignment = Alignment.CenterVertically,
-			) {
-				Icon(
-					modifier = Modifier.size(14.dp),
-					painter = painterResource(Res.drawable.pencil),
-					contentDescription = "Edit",
-					tint = colorScheme.onSurface,
-				)
-				Spacer(modifier = Modifier.width(8.dp))
-				Text(
-					text = stringResource(Res.string.main_page_edit_block),
-					color = colorScheme.onSurface,
-					style = MaterialTheme.typography.bodyMedium
-				)
-			}
-		}
+		EditButton(
+			onEdit = onEdit,
+		)
 	}
 }

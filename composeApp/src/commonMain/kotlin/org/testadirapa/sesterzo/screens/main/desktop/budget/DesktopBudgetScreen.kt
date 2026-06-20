@@ -23,20 +23,21 @@ import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.budget.BudgetStats
 import org.testadirapa.sesterzo.components.desktop.budget.BudgetSectionSelector
 import org.testadirapa.sesterzo.model.Amount
-import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
 import org.testadirapa.sesterzo.utils.daysToEndOfValidity
 import org.testadirapa.sesterzo.utils.toReference
+import org.testadirapa.sesterzo.viewmodel.BudgetViewModel
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.arrow_back
 import sesterzo.composeapp.generated.resources.arrow_forward
 import sesterzo.composeapp.generated.resources.banknotes
 import sesterzo.composeapp.generated.resources.template_page_expenses
-import sesterzo.composeapp.generated.resources.template_page_income
 import sesterzo.composeapp.generated.resources.template_page_income_sources
 import sesterzo.composeapp.generated.resources.template_page_savings
+import kotlin.collections.orEmpty
+import kotlin.collections.plus
 
 private data class MenuOption(
 	val label: String,
@@ -48,17 +49,17 @@ private data class MenuOption(
 
 @Composable
 fun DesktopBudgetScreen(
-	budget: DecryptedBudget,
+	budget: BudgetViewModel.BudgetWithTemplates,
 	entries: List<DecryptedEntry>,
 ) {
-	var typeShown by remember { mutableStateOf(Entry.EntryType.Expense) }
+	var displayMode by remember { mutableStateOf(Entry.EntryType.Expense) }
 	Row(
 		modifier = Modifier.fillMaxSize(),
 	) {
 		Column(
 			modifier = Modifier.weight(1f),
 		) {
-			val budgetReference = budget.toReference()
+			val budgetReference = budget.budget.toReference()
 			val incomeTotal = entries.filter { !it.deleted && it.type == Entry.EntryType.Income }.sumOf { it.amount }
 			val spentTotal = entries.filter { !it.deleted && it.type == Entry.EntryType.Expense }.sumOf { it.amount }
 			val savedTotal = entries.filter { !it.deleted && it.type == Entry.EntryType.Saving }.sumOf { it.amount }
@@ -101,12 +102,12 @@ fun DesktopBudgetScreen(
 					Spacer(modifier = Modifier.height(16.dp))
 					BudgetSectionSelector(
 						label = options.label,
-						isSelected = typeShown == options.type,
+						isSelected = displayMode == options.type,
 						totalAmount = options.amount,
 						color = options.color,
 						painter = options.painter,
 						onClick = {
-							typeShown = options.type
+							displayMode = options.type
 						}
 					)
 				}
@@ -117,16 +118,23 @@ fun DesktopBudgetScreen(
 			modifier = Modifier.weight(2f),
 		) {
 			DesktopBudgetDetailsScreen(
-				label = when (typeShown) {
+				label = when (displayMode) {
 					Entry.EntryType.Expense -> stringResource(Res.string.template_page_expenses)
 					Entry.EntryType.Saving -> stringResource(Res.string.template_page_savings)
 					Entry.EntryType.Income -> stringResource(Res.string.template_page_income_sources)
 				},
-				color = when (typeShown) {
+				color = when (displayMode) {
 					Entry.EntryType.Expense -> LocalFinanceColors.current.spent
 					Entry.EntryType.Saving -> LocalFinanceColors.current.saved
 					Entry.EntryType.Income -> colorScheme.primary
-				}
+				},
+				type = displayMode,
+				scheduled = when(displayMode) {
+					Entry.EntryType.Expense -> budget.expensesTemplate.elements + budget.budget.fixedExpenses
+					Entry.EntryType.Saving -> budget.savingsTemplate.elements + budget.budget.savings
+					Entry.EntryType.Income -> budget.incomeTemplate.elements
+				},
+				entries = entries.filter { !it.deleted && it.type == displayMode },
 			)
 		}
 	}

@@ -7,6 +7,7 @@ import io.ktor.server.routing.route
 import org.koin.ktor.ext.inject
 import org.testadirapa.sesterzo.logic.BudgetElementLogic
 import org.testadirapa.sesterzo.model.EncryptedBudgetElement
+import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.security.authenticateGetInSpace
 import org.testadirapa.sesterzo.security.authenticatedPostInSpace
 import org.testadirapa.sesterzo.utils.getIntPathParameter
@@ -35,6 +36,16 @@ fun Routing.budgetElementController() = route("/budgetElement") {
 				spaceId = spaceId,
 				budgetElementId = budgetElementId,
 				version = version
+			)
+		)
+	}
+
+	authenticatedPostInSpace("/byIds") { spaceId ->
+		val budgetElementIds = call.receive<List<String>>()
+		call.respond(
+			budgetElementLogic.getBudgetElements(
+				spaceId = spaceId,
+				budgetElementIds = budgetElementIds
 			)
 		)
 	}

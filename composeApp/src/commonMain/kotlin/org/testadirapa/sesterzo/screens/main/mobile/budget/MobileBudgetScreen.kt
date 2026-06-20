@@ -19,6 +19,7 @@ import org.testadirapa.sesterzo.screens.main.mobile.Page
 import org.testadirapa.sesterzo.screens.main.mobile.entries.MobileEntriesScreen
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.toReference
+import org.testadirapa.sesterzo.viewmodel.BudgetViewModel
 import org.testadirapa.sesterzo.viewmodel.EntriesViewModel
 import org.testadirapa.sesterzo.viewmodel.intents.EntryIntent
 
@@ -26,7 +27,7 @@ import org.testadirapa.sesterzo.viewmodel.intents.EntryIntent
 fun MobileBudgetScreen(
 	space: Space,
 	page: Page,
-	budget: DecryptedBudget,
+	budget: BudgetViewModel.BudgetWithTemplates,
 	budgetLoadingState: Boolean,
 	onPreviousBudget: (() -> Unit)?,
 	onNextBudget: (() -> Unit)?,
@@ -35,10 +36,10 @@ fun MobileBudgetScreen(
 	onBudgetUpdate: (budget: DecryptedBudget, newAmounts: Map<String, Amount>, type: Entry.EntryType) -> Unit,
 	onError: (e: Throwable) -> Unit,
 ) {
-	val viewModel = viewModel(key = "${space.id}-${budget.id}-${budget.version}") {
+	val viewModel = viewModel(key = "${space.id}-${budget.budget.id}-${budget.budget.version}") {
 		EntriesViewModel(
 			spaceId = space.id,
-			budget = budget,
+			budget = budget.budget,
 			errorHandler = onError
 		)
 	}
@@ -48,7 +49,7 @@ fun MobileBudgetScreen(
 		topBar = {
 			BudgetSelector(
 				space = space,
-				budget = budget,
+				budget = budget.budget,
 				onPreviousBudget = onPreviousBudget,
 				onNextBudget = onNextBudget,
 				onMonthSelect = onMonthSelect,
@@ -60,7 +61,7 @@ fun MobileBudgetScreen(
 		floatingActionButton = {
 			AddEntryButtonWithForm(
 				space = space,
-				currentBudget = budget.toReference(),
+				currentBudget = budget.budget.toReference(),
 				loadingState = loadingState.value,
 				onCreate = { budgetReference, type, label, amount, description ->
 					viewModel.acceptIntent(
@@ -87,7 +88,6 @@ fun MobileBudgetScreen(
 						budget = budget,
 						budgetLoadingState = budgetLoadingState,
 						loadingState = loadingState.value,
-						onError = onError,
 						onCreateEntry = { budgetReference, type, label, amount, description ->
 							viewModel.acceptIntent(
 								EntryIntent.CreateEntry(

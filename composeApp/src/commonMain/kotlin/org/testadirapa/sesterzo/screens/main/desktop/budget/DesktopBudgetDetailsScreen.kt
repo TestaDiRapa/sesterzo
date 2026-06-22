@@ -1,5 +1,6 @@
 package org.testadirapa.sesterzo.screens.main.desktop.budget
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
@@ -20,11 +22,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.input.EditButton
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.model.Entry
+import org.testadirapa.sesterzo.styles.colors.FinanceColors
+import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
+import org.testadirapa.sesterzo.styles.typography.amountTextStyleLarge
+import org.testadirapa.sesterzo.styles.typography.amountTextStyleVeryLarge
+import sesterzo.composeapp.generated.resources.Res
+import sesterzo.composeapp.generated.resources.budget_page_desktop_actual_label
+import sesterzo.composeapp.generated.resources.budget_page_desktop_expected_label
 
 @Composable
 fun DesktopBudgetDetailsScreen(
@@ -47,28 +59,80 @@ fun DesktopBudgetDetailsScreen(
 				EditButton(onEdit = {})
 			}
 		}
-
+		Spacer(modifier = Modifier.height(8.dp))
+		SummaryCards(
+			type = type,
+			scheduled = scheduled,
+			entries = entries,
+		)
 	}
 }
 
 @Composable
 private fun SummaryCards(
+	type: Entry.EntryType,
 	scheduled: Map<String, Amount>,
 	entries: List<DecryptedEntry>
 ) {
-
+	val totalScheduled = scheduled.values.sum()
+	val actualTotal = entries.sumOf { it.amount }
+	Row(
+		modifier = Modifier.fillMaxWidth(),
+		verticalAlignment = Alignment.CenterVertically,
+		horizontalArrangement = Arrangement.SpaceBetween,
+	) {
+		SummaryCard(
+			label = stringResource(Res.string.budget_page_desktop_expected_label),
+			amount = totalScheduled,
+			color = colorScheme.onBackground,
+			modifier = Modifier.weight(1f),
+		)
+		SummaryCard(
+			label = stringResource(Res.string.budget_page_desktop_actual_label),
+			amount = actualTotal,
+			color = when {
+				(type == Entry.EntryType.Income || type == Entry.EntryType.Saving) &&
+					totalScheduled > actualTotal -> colorScheme.onBackground
+				type == Entry.EntryType.Income || type == Entry.EntryType.Saving -> LocalFinanceColors.current.saved
+				totalScheduled <= actualTotal -> LocalFinanceColors.current.spent
+				else -> LocalFinanceColors.current.saved
+			},
+			modifier = Modifier.weight(1f),
+		)
+	}
 }
 
 @Composable
 private fun SummaryCard(
 	label: String,
 	amount: Amount,
-	color: Color
+	color: Color,
+	modifier: Modifier = Modifier,
 ) {
 	Card(
-
+		border = BorderStroke(width = 1.dp, color = colorScheme.outline),
+		colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceVariant),
+		modifier = modifier.padding(all = 16.dp),
 	) {
-		
+		Column(
+			modifier = Modifier.fillMaxWidth().height(96.dp),
+			verticalArrangement = Arrangement.Center,
+			horizontalAlignment = Alignment.CenterHorizontally,
+		) {
+			Text(
+				text = label,
+				color = colorScheme.onTertiaryContainer,
+				textAlign = TextAlign.Start,
+				style = MaterialTheme.typography.bodyMedium,
+			)
+			Spacer(modifier = Modifier.height(4.dp))
+			Text(
+				text = AppCtx.currency.writer(amount),
+				color = color,
+				style = amountTextStyleVeryLarge(),
+				fontWeight = FontWeight.Bold,
+			)
+		}
 	}
 }
 

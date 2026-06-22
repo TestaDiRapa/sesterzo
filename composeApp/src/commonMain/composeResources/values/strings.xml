@@ -74,6 +74,10 @@
     <string name="add_entry_form_type_add_button">Add</string>
     <string name="add_entry_form_type_add_button_desktop">Add entry</string>
 
+    <!--  Budget page desktop  -->
+    <string name="budget_page_desktop_expected_label">Scheduled</string>
+    <string name="budget_page_desktop_actual_label">Actual</string>
+
     <!--  Add source page  -->
     <string name="add_source_page_new_source">New source</string>
     <string name="add_source_page_add_new_source">Add a new source</string>

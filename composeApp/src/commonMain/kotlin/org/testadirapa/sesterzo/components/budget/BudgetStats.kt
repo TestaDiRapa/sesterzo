@@ -64,7 +64,10 @@ fun BudgetStats(
 
 		Spacer(Modifier.height(10.dp))
 
-		Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+		Row(
+			modifier = Modifier.fillMaxWidth(),
+			horizontalArrangement = Arrangement.SpaceBetween
+		) {
 			StatColumn(label = stringResource(Res.string.add_entry_form_type_income), amount = incomeTotal, color = colorScheme.onSurface)
 			StatColumn(label = stringResource(Res.string.budget_summary_stats_card_spent),  amount = spentTotal,  color = LocalFinanceColors.current.spent)
 			StatColumn(label = stringResource(Res.string.budget_summary_stats_card_saved),  amount = savedTotal,  color = LocalFinanceColors.current.saved)
@@ -88,16 +91,17 @@ private fun StatColumn(
 ) {
 	Column {
 		Text(
-			text = AppCtx.currency.writer(amount),
-			color = color,
-			style = amountTextStyleLarge(),
-			fontWeight = FontWeight.Bold,
-		)
-		Text(
 			text = label,
 			color = colorScheme.onTertiaryContainer,
 			textAlign = TextAlign.Center,
 			style = MaterialTheme.typography.bodyMedium,
+		)
+		Spacer(Modifier.height(8.dp))
+		Text(
+			text = AppCtx.currency.writer(amount),
+			color = color,
+			style = amountTextStyleLarge(),
+			fontWeight = FontWeight.Bold,
 		)
 	}
 }

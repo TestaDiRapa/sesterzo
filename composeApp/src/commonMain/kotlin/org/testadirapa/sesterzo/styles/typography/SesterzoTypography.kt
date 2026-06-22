@@ -35,6 +35,15 @@ fun sesterzoTypography(
 )
 
 @Composable
+fun amountTextStyleVeryLarge() = TextStyle(
+	fontFamily = jetBrainsMonoFontFamily(),
+	fontWeight = FontWeight.Bold,
+	fontSize = 27.sp,
+	lineHeight = 22.sp
+)
+
+
+@Composable
 fun amountTextStyleLarge() = TextStyle(
 	fontFamily = jetBrainsMonoFontFamily(),
 	fontWeight = FontWeight.Bold,

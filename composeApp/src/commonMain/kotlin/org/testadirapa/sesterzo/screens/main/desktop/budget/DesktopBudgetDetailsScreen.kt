@@ -47,6 +47,7 @@ fun DesktopBudgetDetailsScreen(
 	scheduled: Map<String, Amount>,
 	entries: List<DecryptedEntry>,
 	onOpenCreateEntryForm: (Entry.EntryType, String) -> Unit,
+	onEditMonthTemplate: (Entry.EntryType) -> Unit,
 ) {
 	val cardRowsValues = getRowValues(scheduled = scheduled, entries = entries)
 	val overLimitTextColor = when(type) {
@@ -64,7 +65,7 @@ fun DesktopBudgetDetailsScreen(
 		) {
 			DetailsHeader(label = label, color = color)
 			if (type != Entry.EntryType.Income) {
-				EditButton(onEdit = {})
+				EditButton(onEdit = { onEditMonthTemplate(type) })
 			}
 		}
 		Spacer(modifier = Modifier.height(8.dp))

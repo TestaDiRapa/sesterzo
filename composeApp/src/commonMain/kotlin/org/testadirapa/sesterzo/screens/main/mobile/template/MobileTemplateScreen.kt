@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
-import org.testadirapa.sesterzo.components.mobile.template.MobileSourceUpdateForm
+import org.testadirapa.sesterzo.components.template.SourceUpdateForm
 import org.testadirapa.sesterzo.components.template.TemplateStatsCard
 import org.testadirapa.sesterzo.components.template.TemplateUpdateMenu
 import org.testadirapa.sesterzo.components.text.TextWithIcon
@@ -93,7 +93,7 @@ fun MobileTemplateScreen(
 			containerColor = colorScheme.surface,
 		) {
 			templateToUpdate?.let { (title, template) ->
-				MobileSourceUpdateForm(
+				SourceUpdateForm(
 					title = title,
 					type = stringResource(Res.string.add_source_type_template),
 					sources = template.elements,

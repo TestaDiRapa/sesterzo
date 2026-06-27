@@ -77,10 +77,15 @@ fun SummaryRow(
 				)
 			}
 			Spacer(modifier = Modifier.height(8.dp))
+			val fraction = if (threshold.toFloat() > 0f) {
+				(amount.toFloat() / threshold.toFloat()).coerceIn(0f, 1.0f)
+			} else {
+				if (amount.toFloat() > 0f) 1.0f else 0f
+			}
 			AnimatedProgressBar(
-				value = (amount.toFloat() / threshold.toFloat()).coerceAtMost(1.0f),
+				value = fraction,
 				overLimitColor = overLimitTextColor,
-				delayMillis = 150 * idx
+				delayMillis = 150 * idx.coerceAtMost(9)
 			)
 		}
 	}

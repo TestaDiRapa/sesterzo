@@ -1,4 +1,4 @@
-package org.testadirapa.sesterzo.components.mobile.template
+package org.testadirapa.sesterzo.components.template
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -68,7 +68,7 @@ import sesterzo.composeapp.generated.resources.plus
 import sesterzo.composeapp.generated.resources.update
 
 @Composable
-fun <T> MobileSourceUpdateForm(
+fun <T> SourceUpdateForm(
 	title: String,
 	type: String,
 	sources: Map<String, Amount>,

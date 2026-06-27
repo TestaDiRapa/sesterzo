@@ -35,7 +35,7 @@ import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.budget.BudgetSummaryCard
 import org.testadirapa.sesterzo.components.budget.BudgetSummaryStatsCard
 import org.testadirapa.sesterzo.components.mobile.entries.AddEntryForm
-import org.testadirapa.sesterzo.components.mobile.template.MobileSourceUpdateForm
+import org.testadirapa.sesterzo.components.template.SourceUpdateForm
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.DecryptedEntry
@@ -150,7 +150,7 @@ fun BudgetComponent(
 			sheetState = templateFormSheetState,
 			containerColor = colorScheme.surface,
 		) {
-			MobileSourceUpdateForm(
+			SourceUpdateForm(
 				title = when(displayMode) {
 					DisplayMode.Expenses -> stringResource(Res.string.template_page_expenses)
 					DisplayMode.Savings -> stringResource(Res.string.template_page_savings)

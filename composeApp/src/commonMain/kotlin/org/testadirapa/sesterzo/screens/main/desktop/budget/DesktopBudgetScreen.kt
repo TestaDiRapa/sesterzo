@@ -1,6 +1,5 @@
 package org.testadirapa.sesterzo.screens.main.desktop.budget
 
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -54,6 +53,7 @@ fun DesktopBudgetScreen(
 	budget: BudgetViewModel.BudgetWithTemplates,
 	entries: List<DecryptedEntry>,
 	onOpenCreateEntryForm: (Entry.EntryType, String) -> Unit,
+	onEditMonthTemplate: (Entry.EntryType) -> Unit,
 ) {
 	var displayMode by remember { mutableStateOf(Entry.EntryType.Expense) }
 	Row(
@@ -139,6 +139,7 @@ fun DesktopBudgetScreen(
 				},
 				entries = entries.filter { !it.deleted && it.type == displayMode },
 				onOpenCreateEntryForm = onOpenCreateEntryForm,
+				onEditMonthTemplate = onEditMonthTemplate,
 			)
 		}
 	}

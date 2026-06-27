@@ -36,6 +36,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.budget.BudgetSelector
 import org.testadirapa.sesterzo.components.mobile.entries.AddEntryForm
+import org.testadirapa.sesterzo.components.template.SourceUpdateForm
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.Entry
@@ -49,7 +50,13 @@ import org.testadirapa.sesterzo.viewmodel.EntriesViewModel
 import org.testadirapa.sesterzo.viewmodel.intents.EntryIntent
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.add_entry_form_type_add_button_desktop
+import sesterzo.composeapp.generated.resources.main_page_template_form_subtitle
+import sesterzo.composeapp.generated.resources.main_page_template_form_warning
 import sesterzo.composeapp.generated.resources.plus
+import sesterzo.composeapp.generated.resources.template_page_expenses
+import sesterzo.composeapp.generated.resources.template_page_savings
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 @Composable
 fun DesktopNavBarDivider(
@@ -72,6 +79,7 @@ fun DesktopNavBarDivider(
 		)
 	}
 	var addEntryFormDetails by remember { mutableStateOf<Pair<Entry.EntryType?, String?>?>(null) }
+	var typeOfTemplateToUpdate by remember { mutableStateOf<Entry.EntryType?>(null) }
 	val entries = viewModel.entriesViewState.collectAsState()
 	val loadingState = viewModel.loadingState.collectAsState()
 
@@ -96,11 +104,14 @@ fun DesktopNavBarDivider(
 			entries = entries.value,
 			onOpenCreateEntryForm = { type, label ->
 				addEntryFormDetails = type to label
+			},
+			onEditMonthTemplate = { type ->
+				typeOfTemplateToUpdate = type
 			}
 		)
 	}
 
-	addEntryFormDetails?.let { (entryType, label) ->
+	addEntryFormDetails?.also { (entryType, label) ->
 		Dialog(onDismissRequest = { addEntryFormDetails = null }) {
 			Surface(
 				shape = RoundedCornerShape(16.dp),
@@ -125,6 +136,45 @@ fun DesktopNavBarDivider(
 					loadingState = loadingState.value,
 					entryType = entryType ?: Entry.EntryType.Expense,
 					label = label
+				)
+			}
+		}
+	}
+
+	typeOfTemplateToUpdate?.also { type ->
+		Dialog(onDismissRequest = { typeOfTemplateToUpdate = null }) {
+			Surface(
+				shape = RoundedCornerShape(16.dp),
+				color = colorScheme.surface,
+				modifier = Modifier.width(480.dp)
+			) {
+				SourceUpdateForm(
+					title = when (type) {
+						Entry.EntryType.Expense -> stringResource(Res.string.template_page_expenses)
+						Entry.EntryType.Saving -> stringResource(Res.string.template_page_savings)
+						Entry.EntryType.Income -> throw UnsupportedOperationException("Cannot edit income template")
+					},
+					type = stringResource(Res.string.main_page_template_form_subtitle),
+					sources = when (type) {
+						Entry.EntryType.Expense  -> budget.expensesTemplate.elements + budget.budget.fixedExpenses
+						Entry.EntryType.Saving -> budget.savingsTemplate.elements + budget.budget.savings
+						Entry.EntryType.Income -> throw UnsupportedOperationException("Cannot edit income template")
+					},
+					entity = when (type) {
+						Entry.EntryType.Expense -> Triple(budget.budget, budget.expensesTemplate, type)
+						Entry.EntryType.Saving -> Triple(budget.budget, budget.savingsTemplate, type)
+						Entry.EntryType.Income -> throw UnsupportedOperationException("Cannot edit income template")
+					},
+					loadingState = budgetLoadingState,
+					onSourceUpdate = { (budget, template, type), updatedAmounts, _ ->
+						val amounts = updatedAmounts.filter { (k, v) ->
+							template.elements[k] != v
+						}
+						onBudgetUpdate(budget, amounts, type)
+						typeOfTemplateToUpdate = null
+					},
+					showUpdateCurrentBudgetSwitch = false,
+					warningText = stringResource(Res.string.main_page_template_form_warning)
 				)
 			}
 		}

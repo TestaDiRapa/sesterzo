@@ -174,7 +174,7 @@ fun BudgetHeader(
 				onCreateBudget = onCreateBudget,
 				onError = onError,
 				modifier = Modifier.width(360.dp),
-				floatOverContent = true
+				useDialog = true
 			)
 			Button(
 				onClick = onCreateEntry,

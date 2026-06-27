@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,13 +27,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.components.budget.SummaryRow
+import org.testadirapa.sesterzo.components.budget.getRowValues
 import org.testadirapa.sesterzo.components.input.EditButton
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.model.Entry
-import org.testadirapa.sesterzo.styles.colors.FinanceColors
 import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
-import org.testadirapa.sesterzo.styles.typography.amountTextStyleLarge
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleVeryLarge
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.budget_page_desktop_actual_label
@@ -45,7 +46,14 @@ fun DesktopBudgetDetailsScreen(
 	type: Entry.EntryType,
 	scheduled: Map<String, Amount>,
 	entries: List<DecryptedEntry>,
+	onOpenCreateEntryForm: (Entry.EntryType, String) -> Unit,
 ) {
+	val cardRowsValues = getRowValues(scheduled = scheduled, entries = entries)
+	val overLimitTextColor = when(type) {
+		Entry.EntryType.Expense -> LocalFinanceColors.current.spent
+		Entry.EntryType.Income -> colorScheme.primary
+		Entry.EntryType.Saving -> LocalFinanceColors.current.saved
+	}
 	Column(
 		modifier = Modifier.padding(all = 32.dp),
 	) {
@@ -65,6 +73,28 @@ fun DesktopBudgetDetailsScreen(
 			scheduled = scheduled,
 			entries = entries,
 		)
+		Spacer(modifier = Modifier.height(16.dp))
+		cardRowsValues.forEachIndexed { idx, (label, amount, threshold) ->
+			key(label) {
+				Card(
+					border = BorderStroke(width = 1.dp, color = colorScheme.outline),
+					colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
+					modifier = Modifier.fillMaxWidth(),
+				) {
+					SummaryRow(
+						label = label,
+						amount = amount,
+						threshold = threshold,
+						overLimitTextColor = overLimitTextColor,
+						onClick = {
+							onOpenCreateEntryForm(type, label)
+						},
+						idx = idx,
+					)
+				}
+				Spacer(modifier = Modifier.height(16.dp))
+			}
+		}
 	}
 }
 

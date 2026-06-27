@@ -21,7 +21,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,12 +32,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
+import org.testadirapa.sesterzo.components.budget.BudgetSummaryCard
 import org.testadirapa.sesterzo.components.budget.BudgetSummaryStatsCard
 import org.testadirapa.sesterzo.components.mobile.entries.AddEntryForm
 import org.testadirapa.sesterzo.components.mobile.template.MobileSourceUpdateForm
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
-import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.Space

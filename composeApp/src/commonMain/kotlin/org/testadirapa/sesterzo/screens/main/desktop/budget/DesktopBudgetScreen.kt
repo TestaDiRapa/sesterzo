@@ -36,7 +36,6 @@ import sesterzo.composeapp.generated.resources.banknotes
 import sesterzo.composeapp.generated.resources.template_page_expenses
 import sesterzo.composeapp.generated.resources.template_page_income_sources
 import sesterzo.composeapp.generated.resources.template_page_savings
-import kotlin.collections.orEmpty
 import kotlin.collections.plus
 
 private data class MenuOption(
@@ -51,6 +50,7 @@ private data class MenuOption(
 fun DesktopBudgetScreen(
 	budget: BudgetViewModel.BudgetWithTemplates,
 	entries: List<DecryptedEntry>,
+	onOpenCreateEntryForm: (Entry.EntryType, String) -> Unit,
 ) {
 	var displayMode by remember { mutableStateOf(Entry.EntryType.Expense) }
 	Row(
@@ -135,6 +135,7 @@ fun DesktopBudgetScreen(
 					Entry.EntryType.Income -> budget.incomeTemplate.elements
 				},
 				entries = entries.filter { !it.deleted && it.type == displayMode },
+				onOpenCreateEntryForm = onOpenCreateEntryForm,
 			)
 		}
 	}

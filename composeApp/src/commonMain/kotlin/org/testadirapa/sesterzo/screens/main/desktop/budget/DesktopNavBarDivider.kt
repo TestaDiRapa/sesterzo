@@ -71,7 +71,7 @@ fun DesktopNavBarDivider(
 			errorHandler = onError
 		)
 	}
-	var calendarOpen by remember { mutableStateOf(false) }
+	var addEntryFormDetails by remember { mutableStateOf<Pair<Entry.EntryType?, String?>?>(null) }
 	val entries = viewModel.entriesViewState.collectAsState()
 	val loadingState = viewModel.loadingState.collectAsState()
 
@@ -81,21 +81,12 @@ fun DesktopNavBarDivider(
 		BudgetHeader(
 			space = space,
 			budget = budget.budget,
-			loadingState = loadingState.value,
 			onPreviousBudget = onPreviousBudget,
 			onNextBudget = onNextBudget,
 			onMonthSelect = onMonthSelect,
 			onCreateBudget = onCreateBudget,
-			onCreateEntry = { budgetReference, type, label, amount, description ->
-				viewModel.acceptIntent(
-					EntryIntent.CreateEntry(
-						budgetReference = budgetReference,
-						type = type,
-						label = label,
-						amount = amount,
-						description = description,
-					)
-				)
+			onCreateEntry = {
+				addEntryFormDetails = Pair(null, null)
 			},
 			onError = onError
 		)
@@ -103,7 +94,40 @@ fun DesktopNavBarDivider(
 		DesktopBudgetScreen(
 			budget = budget,
 			entries = entries.value,
+			onOpenCreateEntryForm = { type, label ->
+				addEntryFormDetails = type to label
+			}
 		)
+	}
+
+	addEntryFormDetails?.let { (entryType, label) ->
+		Dialog(onDismissRequest = { addEntryFormDetails = null }) {
+			Surface(
+				shape = RoundedCornerShape(16.dp),
+				color = colorScheme.surface,
+				modifier = Modifier.width(480.dp)
+			) {
+				AddEntryForm(
+					space = space,
+					currentBudgetReference = budget.budget.toReference(),
+					onCreate = { budgetReference, type, label, amount, description ->
+						viewModel.acceptIntent(
+							EntryIntent.CreateEntry(
+								budgetReference = budgetReference,
+								type = type,
+								label = label,
+								amount = amount,
+								description = description,
+							)
+						)
+						addEntryFormDetails = null
+					},
+					loadingState = loadingState.value,
+					entryType = entryType ?: Entry.EntryType.Expense,
+					label = label
+				)
+			}
+		}
 	}
 }
 
@@ -111,15 +135,13 @@ fun DesktopNavBarDivider(
 fun BudgetHeader(
 	space: Space,
 	budget: DecryptedBudget,
-	loadingState: Boolean,
 	onPreviousBudget: (() -> Unit)?,
 	onNextBudget: (() -> Unit)?,
 	onMonthSelect: (reference: BudgetReference) -> Unit,
 	onCreateBudget: (reference: BudgetReference) -> Unit,
-	onCreateEntry: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
+	onCreateEntry: () -> Unit,
 	onError: (e: Throwable) -> Unit
 ) {
-	var addEntryFormOpen by remember { mutableStateOf(false) }
 	Row(
 		modifier = Modifier.padding(16.dp).fillMaxWidth(),
 		verticalAlignment = Alignment.CenterVertically,
@@ -155,7 +177,7 @@ fun BudgetHeader(
 				floatOverContent = true
 			)
 			Button(
-				onClick = { addEntryFormOpen = true },
+				onClick = onCreateEntry,
 				shape = RoundedCornerShape(12.dp),
 				modifier = Modifier.height(60.dp),
 				colors = ButtonColors(
@@ -182,25 +204,6 @@ fun BudgetHeader(
 						color = colorScheme.onPrimary,
 					)
 				}
-			}
-		}
-	}
-	if (addEntryFormOpen) {
-		Dialog(onDismissRequest = { addEntryFormOpen = false }) {
-			Surface(
-				shape = RoundedCornerShape(16.dp),
-				color = colorScheme.surface,
-				modifier = Modifier.width(480.dp)
-			) {
-				AddEntryForm(
-					space = space,
-					currentBudgetReference = budget.toReference(),
-					onCreate = { budgetReference, type, label, amount, description ->
-						onCreateEntry(budgetReference, type, label, amount, description)
-						addEntryFormOpen = false
-					},
-					loadingState = loadingState,
-				)
 			}
 		}
 	}

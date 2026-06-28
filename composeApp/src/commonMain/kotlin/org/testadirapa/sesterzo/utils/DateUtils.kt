@@ -3,7 +3,10 @@ package org.testadirapa.sesterzo.utils
 import androidx.compose.runtime.Composable
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Month
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
+import org.testadirapa.sesterzo.model.Timestamp
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.april_abbreviated
 import sesterzo.composeapp.generated.resources.august_abbreviated
@@ -43,6 +46,7 @@ import sesterzo.composeapp.generated.resources.tuesday
 import sesterzo.composeapp.generated.resources.tuesday_abbreviated
 import sesterzo.composeapp.generated.resources.wednesday
 import sesterzo.composeapp.generated.resources.wednesday_abbreviated
+import kotlin.time.Instant
 
 @Composable
 fun monthName(month: Month, abbreviated: Boolean): String = when (month) {
@@ -70,3 +74,6 @@ fun dayName(day: DayOfWeek, abbreviated: Boolean): String = when (day) {
 	DayOfWeek.SATURDAY -> if(abbreviated) stringResource(Res.string.saturday_abbreviated) else stringResource(Res.string.saturday)
 	DayOfWeek.SUNDAY -> if(abbreviated) stringResource(Res.string.sunday_abbreviated) else stringResource(Res.string.sunday)
 }
+
+fun Timestamp.toLocalDate() =
+	Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).date

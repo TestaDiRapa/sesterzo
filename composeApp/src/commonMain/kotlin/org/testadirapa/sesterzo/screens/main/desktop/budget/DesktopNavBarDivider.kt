@@ -41,6 +41,7 @@ import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.Space
+import org.testadirapa.sesterzo.screens.main.desktop.entries.DesktopEntryScreen
 import org.testadirapa.sesterzo.screens.main.mobile.Page
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.monthName
@@ -99,16 +100,29 @@ fun DesktopNavBarDivider(
 			onError = onError
 		)
 		HorizontalDivider(color = colorScheme.outline)
-		DesktopBudgetScreen(
-			budget = budget,
-			entries = entries.value,
-			onOpenCreateEntryForm = { type, label ->
-				addEntryFormDetails = type to label
-			},
-			onEditMonthTemplate = { type ->
-				typeOfTemplateToUpdate = type
+		when (page) {
+			Page.Budget -> {
+				DesktopBudgetScreen(
+					budget = budget,
+					entries = entries.value,
+					onOpenCreateEntryForm = { type, label ->
+						addEntryFormDetails = type to label
+					},
+					onEditMonthTemplate = { type ->
+						typeOfTemplateToUpdate = type
+					}
+				)
 			}
-		)
+			Page.Entries -> {
+				DesktopEntryScreen(
+					entries = entries.value,
+					onDeleteEntry = { entryId ->
+						viewModel.acceptIntent(EntryIntent.DeleteEntry(entryId))
+					}
+				)
+			}
+			else -> {}
+		}
 	}
 
 	addEntryFormDetails?.also { (entryType, label) ->

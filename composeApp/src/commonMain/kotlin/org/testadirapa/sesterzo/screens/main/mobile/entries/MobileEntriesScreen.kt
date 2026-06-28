@@ -42,33 +42,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
-import kotlinx.datetime.toLocalDateTime
-import kotlinx.datetime.todayIn
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.entries.EntryScheduledBadge
+import org.testadirapa.sesterzo.components.entries.EntrySectionDateDivider
 import org.testadirapa.sesterzo.components.entries.EntryTypeBadge
 import org.testadirapa.sesterzo.model.DecryptedEntry
-import org.testadirapa.sesterzo.model.Timestamp
 import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleMedium
 import org.testadirapa.sesterzo.utils.currentLocalDate
-import org.testadirapa.sesterzo.utils.dayName
 import org.testadirapa.sesterzo.utils.entryTypeColor
-import org.testadirapa.sesterzo.utils.monthName
+import org.testadirapa.sesterzo.utils.groupActiveByDay
+import org.testadirapa.sesterzo.utils.toLocalDate
 import org.testadirapa.sesterzo.utils.toLocalDateTime
 import sesterzo.composeapp.generated.resources.Res
-import sesterzo.composeapp.generated.resources.entry_list_page_today
-import sesterzo.composeapp.generated.resources.entry_list_page_yesterday
 import sesterzo.composeapp.generated.resources.trash
-import kotlin.time.Clock
-import kotlin.time.Instant
 
 @Composable
 fun MobileEntriesScreen(
@@ -83,9 +71,6 @@ fun MobileEntriesScreen(
 			bypassCache = false
 		).associateBy { it.id }
 	}
-	val activeEntriesByDay = entries
-		.filterNot { it.deleted }
-		.groupBy { it.updated.toLocalDateTime().day }
 	Column(
 		modifier = Modifier
 			.padding(scaffoldPadding)
@@ -93,10 +78,11 @@ fun MobileEntriesScreen(
 		verticalArrangement = Arrangement.spacedBy(8.dp),
 	) {
 		Spacer(Modifier.height(8.dp))
-		activeEntriesByDay.forEach { (_, entriesInDay) ->
+		entries.groupActiveByDay().forEach { (_, entriesInDay) ->
 			val date = entriesInDay.first().updated.toLocalDateTime().date
-			SectionDateDivider(
+			EntrySectionDateDivider(
 				date = date,
+				numEntries = null,
 			)
 			entriesInDay.forEach { entry ->
 				key(entry.id) {
@@ -113,7 +99,7 @@ fun MobileEntriesScreen(
 }
 
 @Composable
-fun EntryCard(
+private fun EntryCard(
 	entry: DecryptedEntry,
 	user: User?,
 	onDelete: (String) -> Unit = {},
@@ -222,64 +208,3 @@ fun EntryCard(
 		}
 	}
 }
-
-@Composable
-fun SectionDateDivider(
-	date: LocalDate
-) {
-	val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-	Row(
-		modifier = Modifier.fillMaxWidth(),
-		verticalAlignment = Alignment.Bottom,
-	) {
-		when {
-			date == today -> {
-				Text(
-					text = stringResource(Res.string.entry_list_page_today),
-					fontSize = 17.sp,
-					fontWeight = FontWeight.SemiBold,
-					color = colorScheme.onSurface,
-				)
-			}
-			date.plus(1, DateTimeUnit.DAY) == today -> {
-				Text(
-					text = stringResource(Res.string.entry_list_page_yesterday),
-					fontSize = 17.sp,
-					fontWeight = FontWeight.SemiBold,
-					color = colorScheme.onSurface,
-				)
-			}
-			else -> {
-				Text(
-					text = "${monthName(date.month, abbreviated = true)} ${date.day}",
-					fontSize = 17.sp,
-					fontWeight = FontWeight.SemiBold,
-					color = colorScheme.onSurface,
-				)
-			}
-		}
-		if (date == today || date.plus(1, DateTimeUnit.DAY) == today) {
-			Spacer(modifier = Modifier.width(8.dp))
-			Text(
-				text =  "${monthName(date.month, abbreviated = true)} ${date.day}",
-				style = MaterialTheme.typography.labelMedium,
-				color = colorScheme.onSurfaceVariant,
-			)
-			Spacer(modifier = Modifier.width(8.dp))
-			Text(
-				text =  "·",
-				style = MaterialTheme.typography.labelMedium,
-				color = colorScheme.onSurfaceVariant,
-			)
-		}
-		Spacer(modifier = Modifier.width(8.dp))
-		Text(
-			text = dayName(date.dayOfWeek, abbreviated = true),
-			style = MaterialTheme.typography.labelMedium,
-			color = colorScheme.onSurfaceVariant,
-		)
-	}
-}
-
-private fun Timestamp.toLocalDate() =
-	Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.currentSystemDefault()).date

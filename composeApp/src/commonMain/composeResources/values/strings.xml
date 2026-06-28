@@ -114,6 +114,9 @@
     <!--  Entry list page  -->
     <string name="entry_list_page_today">Today</string>
     <string name="entry_list_page_yesterday">Yesterday</string>
+    <string name="entry_list_page_created_by">Created by</string>
+    <string name="entry_list_page_when">When</string>
+    <string name="entry_list_page_delete_emtry">Delete entry</string>
 
     <!--  Main page  -->
     <string name="main_page_mode_expenses">Expenses</string>
@@ -250,4 +253,6 @@
     <string name="out_of">of</string>
     <string name="update">Update</string>
     <string name="scheduled">Scheduled</string>
+    <string name="entries">entries</string>
+    <string name="entry">entry</string>
 </resources>

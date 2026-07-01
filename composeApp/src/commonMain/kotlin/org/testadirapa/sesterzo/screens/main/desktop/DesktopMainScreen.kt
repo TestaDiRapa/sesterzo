@@ -14,7 +14,8 @@ import org.testadirapa.sesterzo.model.DecryptedBudget
 import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.Space
-import org.testadirapa.sesterzo.screens.main.desktop.budget.DesktopNavBarDivider
+import org.testadirapa.sesterzo.screens.main.desktop.budget.DesktopBudgetEntryScreen
+import org.testadirapa.sesterzo.screens.main.desktop.template.DesktopTemplateScreen
 import org.testadirapa.sesterzo.screens.main.mobile.Page
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.viewmodel.BudgetViewModel
@@ -55,7 +56,7 @@ fun DesktopMainScreen(
 			budgetView?.let { budgets ->
 				when (currentPage) {
 					Page.Budget, Page.Entries -> {
-						DesktopNavBarDivider(
+						DesktopBudgetEntryScreen(
 							space = space,
 							page = currentPage,
 							budget = budgets.currentBudget,
@@ -69,7 +70,11 @@ fun DesktopMainScreen(
 						)
 					}
 					Page.Template -> {
-
+						DesktopTemplateScreen(
+							space = space,
+							onUpdateBudgetsTemplate = onUpdateBudgetsTemplate,
+							onError = onError,
+						)
 					}
 					Page.Settings -> {
 

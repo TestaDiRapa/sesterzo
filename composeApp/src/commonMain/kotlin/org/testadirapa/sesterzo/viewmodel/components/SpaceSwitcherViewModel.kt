@@ -16,7 +16,7 @@ import kotlin.time.Duration.Companion.seconds
 class SpaceSwitcherViewModel(
 	private val errorHandler: (Throwable) -> Unit,
 ) : AbstractViewModel<SpaceSwitcherViewModel.SpaceSwitcherIntent>() {
-	override val logger = Logger.withTag("AppViewModel")
+	override val logger = Logger.withTag("SpaceSwitcherViewModel")
 
 	private val _spacesState = MutableStateFlow<List<Space>>(emptyList())
 	val spacesState: StateFlow<List<Space>> = _spacesState

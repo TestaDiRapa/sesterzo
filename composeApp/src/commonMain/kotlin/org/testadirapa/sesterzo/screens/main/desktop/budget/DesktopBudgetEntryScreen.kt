@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -36,6 +34,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.budget.BudgetSelector
 import org.testadirapa.sesterzo.components.mobile.entries.AddEntryForm
+import org.testadirapa.sesterzo.components.scaffold.DesktopTopBarScaffold
 import org.testadirapa.sesterzo.components.template.SourceUpdateForm
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
@@ -60,7 +59,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 
 @Composable
-fun DesktopNavBarDivider(
+fun DesktopBudgetEntryScreen(
 	space: Space,
 	page: Page,
 	budget: BudgetViewModel.BudgetWithTemplates,
@@ -84,22 +83,22 @@ fun DesktopNavBarDivider(
 	val entries = viewModel.entriesViewState.collectAsState()
 	val loadingState = viewModel.loadingState.collectAsState()
 
-	Column(
-		modifier = Modifier.fillMaxSize()
+	DesktopTopBarScaffold(
+		headerComponent = {
+			BudgetHeader(
+				space = space,
+				budget = budget.budget,
+				onPreviousBudget = onPreviousBudget,
+				onNextBudget = onNextBudget,
+				onMonthSelect = onMonthSelect,
+				onCreateBudget = onCreateBudget,
+				onCreateEntry = {
+					addEntryFormDetails = Pair(null, null)
+				},
+				onError = onError
+			)
+		}
 	) {
-		BudgetHeader(
-			space = space,
-			budget = budget.budget,
-			onPreviousBudget = onPreviousBudget,
-			onNextBudget = onNextBudget,
-			onMonthSelect = onMonthSelect,
-			onCreateBudget = onCreateBudget,
-			onCreateEntry = {
-				addEntryFormDetails = Pair(null, null)
-			},
-			onError = onError
-		)
-		HorizontalDivider(color = colorScheme.outline)
 		when (page) {
 			Page.Budget -> {
 				DesktopBudgetScreen(

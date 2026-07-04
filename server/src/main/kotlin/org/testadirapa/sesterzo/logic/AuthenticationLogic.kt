@@ -11,6 +11,7 @@ interface AuthenticationLogic {
 		val id: String,
 		val email: String,
 		val name: String,
+		val logsOptIn: Boolean,
 		val token: String
 	)
 
@@ -22,10 +23,11 @@ interface AuthenticationLogic {
 	 * @param email the email of the user.
 	 * @param name the name of the user.
 	 * @param solution the captcha [Solution].
+	 * @param logsOptIn whether the user accepts to send anonymous logs in case of error.
 	 * @return the id of the [RegistrationProcess].
 	 * @throws [InvalidCaptchaException] if the provided captcha solution is not valid.
 	 */
-	suspend fun startRegistration(email: String, name: String, solution: Solution): String
+	suspend fun startRegistration(email: String, name: String, logsOptIn: Boolean, solution: Solution): String
 
 	/**
 	 * Completes the registration process by verifying the token against the cached data. If the verification is

@@ -1,6 +1,7 @@
 package org.testadirapa.sesterzo.http
 
 import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.request
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import io.ktor.util.reflect.TypeInfo
@@ -39,6 +40,8 @@ class HttpResponse<T>(
 			msg = statusResponse?.message,
 			status = response.status.value,
 			label = statusResponse?.label,
+			url = response.request.url.toString(),
+			method = response.request.method.value,
 		)
 	}
 

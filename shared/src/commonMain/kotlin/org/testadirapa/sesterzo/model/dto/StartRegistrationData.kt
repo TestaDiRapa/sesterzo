@@ -7,5 +7,6 @@ import kotlinx.serialization.Serializable
 data class StartRegistrationData(
 	val email: String,
 	val name: String,
+	val logsOptIn: Boolean,
 	val captchaSolution: Solution
 )

@@ -17,4 +17,5 @@ interface UserApi {
 	suspend fun getUsers(userIds: List<String>, bypassCache: Boolean): List<User>
 	suspend fun setName(name: String): User
 	suspend fun setCurrency(currency: Currency): User
+	suspend fun setLogsOptIn(optIn: Boolean): User
 }

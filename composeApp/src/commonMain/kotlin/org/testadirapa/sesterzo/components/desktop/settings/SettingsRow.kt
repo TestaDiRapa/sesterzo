@@ -28,6 +28,7 @@ fun SettingsRow(
 	label: String,
 	subtitle: String,
 	onClick: () -> Unit,
+	showIcon: Boolean = true,
 ) {
 	Row(
 		modifier = Modifier
@@ -35,7 +36,7 @@ fun SettingsRow(
 			.padding(12.dp)
 			.clickable(onClick = onClick),
 		verticalAlignment = Alignment.CenterVertically,
-		horizontalArrangement = Arrangement.SpaceBetween,
+		horizontalArrangement = if (showIcon) Arrangement.Start else Arrangement.SpaceBetween,
 	) {
 		Row(
 			verticalAlignment = Alignment.CenterVertically,
@@ -53,11 +54,13 @@ fun SettingsRow(
 				subtitle = subtitle,
 			)
 		}
-		Icon(
-			modifier = Modifier.size(24.dp),
-			painter = painterResource(Res.drawable.arrow_right),
-			contentDescription = "Next",
-			tint = colorScheme.onSurfaceVariant,
-		)
+		if (showIcon) {
+			Icon(
+				modifier = Modifier.size(24.dp),
+				painter = painterResource(Res.drawable.arrow_right),
+				contentDescription = "Next",
+				tint = colorScheme.onSurfaceVariant,
+			)
+		}
 	}
 }

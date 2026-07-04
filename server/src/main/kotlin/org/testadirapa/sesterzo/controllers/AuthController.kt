@@ -39,7 +39,12 @@ fun Routing.authController() =
 			post("/startRegistration") {
 				val data = call.receive<StartRegistrationData>()
 				call.respond(
-					authLogic.startRegistration(email = data.email, name = data.name, solution = data.captchaSolution)
+					authLogic.startRegistration(
+						email = data.email,
+						name = data.name,
+						logsOptIn = data.logsOptIn,
+						solution = data.captchaSolution
+					)
 				)
 			}
 

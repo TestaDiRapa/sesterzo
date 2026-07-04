@@ -52,4 +52,11 @@ class UserDAOImpl(client: DBClient) : UserDAO(client) {
 			update = Updates.set(User::preferredCurrency.name, currency),
 			options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
 		)
+
+	override suspend fun setLogOptIn(userId: String, optIn: Boolean): User? =
+		collection.findOneAndUpdate(
+			filter = eq("_id", userId),
+			update = Updates.set(User::sendLogs.name, optIn),
+			options = FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+		)
 }

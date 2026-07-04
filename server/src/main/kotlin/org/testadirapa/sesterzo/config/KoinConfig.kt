@@ -19,6 +19,7 @@ import org.testadirapa.sesterzo.dao.AttachmentDAO
 import org.testadirapa.sesterzo.dao.BudgetDAO
 import org.testadirapa.sesterzo.dao.BudgetElementDAO
 import org.testadirapa.sesterzo.dao.EntryDAO
+import org.testadirapa.sesterzo.dao.ErrorReportDAO
 import org.testadirapa.sesterzo.dao.RecoveryDAO
 import org.testadirapa.sesterzo.dao.SpaceDAO
 import org.testadirapa.sesterzo.dao.UserDAO
@@ -26,6 +27,7 @@ import org.testadirapa.sesterzo.dao.impl.AttachmentDAOImpl
 import org.testadirapa.sesterzo.dao.impl.BudgetDAOImpl
 import org.testadirapa.sesterzo.dao.impl.BudgetElementDAOImpl
 import org.testadirapa.sesterzo.dao.impl.EntryDAOImpl
+import org.testadirapa.sesterzo.dao.impl.ErrorReportDAOImpl
 import org.testadirapa.sesterzo.dao.impl.RecoveryDAOImpl
 import org.testadirapa.sesterzo.dao.impl.SpaceDAOImpl
 import org.testadirapa.sesterzo.dao.impl.UserDAOImpl
@@ -35,6 +37,7 @@ import org.testadirapa.sesterzo.logic.BudgetElementLogic
 import org.testadirapa.sesterzo.logic.BudgetLogic
 import org.testadirapa.sesterzo.logic.CaptchaLogic
 import org.testadirapa.sesterzo.logic.EntryLogic
+import org.testadirapa.sesterzo.logic.ErrorReportLogic
 import org.testadirapa.sesterzo.logic.RecoveryLogic
 import org.testadirapa.sesterzo.logic.SpaceLogic
 import org.testadirapa.sesterzo.logic.UserLogic
@@ -44,6 +47,7 @@ import org.testadirapa.sesterzo.logic.impl.BudgetElementLogicImpl
 import org.testadirapa.sesterzo.logic.impl.BudgetLogicImpl
 import org.testadirapa.sesterzo.logic.impl.CaptchaLogicImpl
 import org.testadirapa.sesterzo.logic.impl.EntryLogicImpl
+import org.testadirapa.sesterzo.logic.impl.ErrorReportLogicImpl
 import org.testadirapa.sesterzo.logic.impl.RecoveryLogicImpl
 import org.testadirapa.sesterzo.logic.impl.SpaceLogicImpl
 import org.testadirapa.sesterzo.logic.impl.UserLogicImpl
@@ -70,6 +74,7 @@ fun applicationModules(
 	single<BudgetDAO> { BudgetDAOImpl(client = get()) }
 	single<BudgetElementDAO> { BudgetElementDAOImpl(client = get()) }
 	single<EntryDAO> { EntryDAOImpl(client = get()) }
+	single<ErrorReportDAO> { ErrorReportDAOImpl(client = get()) }
 	single<RecoveryDAO> { RecoveryDAOImpl(client = get()) }
 	single<SpaceDAO> { SpaceDAOImpl(client = get()) }
 	single<UserDAO> { UserDAOImpl(client = get()) }
@@ -91,6 +96,7 @@ fun applicationModules(
 	single<BudgetElementLogic> { BudgetElementLogicImpl(budgetElementDAO = get()) }
 	single<CaptchaLogic> { CaptchaLogicImpl(config = CaptchaLogic.Config.fromConfig(config)) }
 	single<EntryLogic> { EntryLogicImpl(entryDAO = get()) }
+	single<ErrorReportLogic> { ErrorReportLogicImpl(errorReportDAO = get()) }
 	single<RecoveryLogic> { RecoveryLogicImpl(recoveryDAO = get()) }
 	single<SpaceLogic> {
 		SpaceLogicImpl(

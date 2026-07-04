@@ -9,6 +9,7 @@ import org.testadirapa.sesterzo.controllers.attachmentController
 import org.testadirapa.sesterzo.controllers.authController
 import org.testadirapa.sesterzo.controllers.budgetController
 import org.testadirapa.sesterzo.controllers.budgetElementController
+import org.testadirapa.sesterzo.controllers.errorReportController
 import org.testadirapa.sesterzo.controllers.expenseController
 import org.testadirapa.sesterzo.controllers.recoveryController
 import org.testadirapa.sesterzo.controllers.spaceController
@@ -24,6 +25,7 @@ fun Application.configureControllers() {
 		budgetController()
 		budgetElementController()
 		expenseController()
+		errorReportController()
 		recoveryController()
 		spaceController()
 		userController()

@@ -64,6 +64,13 @@ class UserLogicImpl(
 		) ?: throw EntityUpdateFailedException(currentUserId, ExceptionLabel.UserUpdateFailed)
 	}
 
+	override suspend fun setLogOptIn(optIn: Boolean): User = withSecurityContext {
+		userDAO.setLogOptIn(
+			userId = currentUserId,
+			optIn = optIn
+		) ?: throw EntityUpdateFailedException(currentUserId, ExceptionLabel.UserUpdateFailed)
+	}
+
 	override fun getUsers(userIds: Set<String>): Flow<User> = flowOnSecurityContext { ctx ->
 		val userSpaces = spaceDAO.getByIds(ctx.spaces.keys)
 		val allowedUserIds = userIds.filter { userId ->

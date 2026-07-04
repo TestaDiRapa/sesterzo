@@ -30,7 +30,9 @@ fun MainScreen(
 	onCreateSpace: (Space) -> Unit,
 ) {
 	LaunchedEffect(Unit) {
-		AppCtx.currency = AppCtx.api.user.getCurrentUser().preferredCurrency
+		val currentUser = AppCtx.api.user.getCurrentUser()
+		AppCtx.currency = currentUser.preferredCurrency
+		AppCtx.sendErrors = currentUser.sendLogs
 	}
 
 	var space by remember { mutableStateOf(initialSpace) }

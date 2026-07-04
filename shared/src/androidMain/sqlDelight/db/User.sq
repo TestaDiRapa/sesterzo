@@ -6,6 +6,7 @@ CREATE TABLE CachedUser (
     publicKey                   TEXT,              -- nullable Base64String
     preferredCurrency           TEXT    NOT NULL,
     hasBackup                   INTEGER    NOT NULL,
+    sendLogs                    INTEGER    NOT NULL,
     inserted_at                 INTEGER NOT NULL   -- Unix timestamp ms, added by us
 );
 
@@ -26,9 +27,9 @@ upsert:
 INSERT OR REPLACE INTO CachedUser(
     id, name, email,
     authenticationTokens, publicKey, preferredCurrency,
-    hasBackup, inserted_at
+    hasBackup, sendLogs, inserted_at
 )
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 deleteOne:
 DELETE FROM CachedUser

@@ -11,6 +11,7 @@ import org.testadirapa.sesterzo.model.dto.PublicKeyPayload
 import org.testadirapa.sesterzo.security.authenticatedGet
 import org.testadirapa.sesterzo.security.authenticatedPost
 import org.testadirapa.sesterzo.security.authenticatedPut
+import org.testadirapa.sesterzo.utils.getBooleanPathParameter
 import org.testadirapa.sesterzo.utils.getPathParameter
 
 fun Routing.userController() = route("/user") {
@@ -44,6 +45,11 @@ fun Routing.userController() = route("/user") {
 	authenticatedPut("/current/currency/{currency}") {
 		val currency = Currency.valueOf(call.getPathParameter("currency"))
 		call.respond(userLogic.setCurrency(currency))
+	}
+
+	authenticatedPut("/current/logsOptIn/{optIn}") {
+		val optIn = call.getBooleanPathParameter("optIn")
+		call.respond(userLogic.setLogOptIn(optIn))
 	}
 
 }

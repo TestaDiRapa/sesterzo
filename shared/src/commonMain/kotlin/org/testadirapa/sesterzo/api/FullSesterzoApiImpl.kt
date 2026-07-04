@@ -4,6 +4,7 @@ import org.testadirapa.sesterzo.api.impl.AttachmentApiImpl
 import org.testadirapa.sesterzo.api.impl.BudgetApiImpl
 import org.testadirapa.sesterzo.api.impl.BudgetElementApiImpl
 import org.testadirapa.sesterzo.api.impl.EntryApiImpl
+import org.testadirapa.sesterzo.api.impl.ErrorReportApiImpl
 import org.testadirapa.sesterzo.api.impl.FullRecoveryApiImpl
 import org.testadirapa.sesterzo.api.impl.SpaceApiImpl
 import org.testadirapa.sesterzo.api.impl.UserApiImpl
@@ -66,6 +67,13 @@ class FullSesterzoApiImpl(
 			authService = authService,
 			cryptoService = cryptoService,
 			userApi = user,
+		)
+	}
+
+	override val errorReport: ErrorReportApi by lazy {
+		ErrorReportApiImpl(
+			httpConfig = httpConfig,
+			authService = authService,
 		)
 	}
 

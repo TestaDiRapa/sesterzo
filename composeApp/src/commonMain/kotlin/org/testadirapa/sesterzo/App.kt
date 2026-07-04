@@ -58,9 +58,9 @@ fun App() {
 					is AuthenticateState -> AuthScreen(
 						isLoading = loadingState.value,
 						isMobile = isMobile,
-						onStartRegistration = { email, name ->
+						onStartRegistration = { email, name, optIn ->
 							appViewModel.acceptIntent(
-								AppIntent.StartRegistration(email, name)
+								AppIntent.StartRegistration(email, name, optIn)
 							)
 						},
 						onStartLogin = { email ->

@@ -65,11 +65,10 @@ class BudgetElementApiImpl(
 	private suspend fun retrieveBudgetElementByIds(
 		spaceId: String,
 		budgetElementsIds: List<String>,
-	): HttpResponse<List<EncryptedBudgetElement>> = get {
+	): HttpResponse<List<EncryptedBudgetElement>> = post {
 		url {
 			takeFrom(baseUrl)
 			appendPathSegments(baseSegment, "inSpace", spaceId, "byIds")
-			parameter("ts", GMTDate().timestamp)
 		}
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
@@ -110,7 +109,7 @@ class BudgetElementApiImpl(
 		cryptoService.decrypt(it)
 	}
 
-	override suspend fun getBugetElements(
+	override suspend fun getBudgetElements(
 		spaceId: String,
 		budgetElementReferences: List<VersionableReference>
 	): List<DecryptedBudgetElement> = cachedAndGetMissing(

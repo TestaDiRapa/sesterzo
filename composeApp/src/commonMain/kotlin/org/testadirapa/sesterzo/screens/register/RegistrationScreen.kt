@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.input.EmailField
 import org.testadirapa.sesterzo.components.input.FormButton
+import org.testadirapa.sesterzo.components.input.LabeledSwitch
 import org.testadirapa.sesterzo.components.input.TextField
 import org.testadirapa.sesterzo.components.input.ValidationCodeField
 import org.testadirapa.sesterzo.components.text.TitleAndSubtitle
@@ -34,25 +35,28 @@ import org.testadirapa.sesterzo.validators.OttValidator
 import org.testadirapa.sesterzo.validators.defaultNameValidator
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.auth_code_label
+import sesterzo.composeapp.generated.resources.backup_key_confirm_text
 import sesterzo.composeapp.generated.resources.button_login
 import sesterzo.composeapp.generated.resources.register_button
 import sesterzo.composeapp.generated.resources.register_complete_button
 import sesterzo.composeapp.generated.resources.register_name
 import sesterzo.composeapp.generated.resources.register_name_error
 import sesterzo.composeapp.generated.resources.register_name_placeholder
+import sesterzo.composeapp.generated.resources.register_opt_in_logs
 import sesterzo.composeapp.generated.resources.register_subtitle
 import sesterzo.composeapp.generated.resources.register_title
 
 @Composable
 fun RegistrationScreen(
 	isLoading: Boolean,
-	onStartRegistration: (email: String, name: String) -> Unit,
+	onStartRegistration: (email: String, name: String, optIn: Boolean) -> Unit,
 	onCompleteRegistration: (ott: String) -> Unit,
 	switchToLogin: () -> Unit,
 	captchaProgressState: StateFlow<MutableStateFlowCaptchaProgressHandler.CaptchaProgress>
 ) {
 	var email by remember { mutableStateOf(FormValue(validator = EmailValidator)) }
 	var name by remember { mutableStateOf(FormValue(validator = defaultNameValidator,)) }
+	var logsOptIn by remember { mutableStateOf(true) }
 	var ott by remember { mutableStateOf(FormValue(validator = OttValidator)) }
 	val captchaProgress by captchaProgressState.collectAsState()
 	Scaffold { innerPadding ->
@@ -86,6 +90,11 @@ fun RegistrationScreen(
 					name = name.update(it)
 				},
 			)
+			LabeledSwitch(
+				label = stringResource(Res.string.register_opt_in_logs),
+				initialValue = logsOptIn,
+				onCheckedChange = { logsOptIn = it },
+			)
 			captchaProgress.loadingValue?.also { progress ->
 				LinearProgressIndicator(
 					progress = { progress.toFloat()},
@@ -95,7 +104,7 @@ fun RegistrationScreen(
 			captchaProgress.takeIf { !it.isComplete }?.also { captcha ->
 				FormButton(
 					onClick = {
-						onStartRegistration(email.validValue, name.validValue)
+						onStartRegistration(email.validValue, name.validValue, logsOptIn)
 					},
 					isLoading = isLoading,
 					enabled = captcha.isUninitialised && email.isValid && name.isValid,

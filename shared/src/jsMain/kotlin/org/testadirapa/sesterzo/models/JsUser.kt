@@ -18,6 +18,7 @@ external interface JsUser : JsAny {
 	var hasBackup: Boolean
 	var preferredCurrency: String
 	var insertedAt: Double
+	var sendLogs: Boolean
 }
 
 fun User.toJs(insertedAt: Double = currentTimeMillis()): JsUser {
@@ -30,6 +31,7 @@ fun User.toJs(insertedAt: Double = currentTimeMillis()): JsUser {
 	js.hasBackup = hasBackup
 	js.preferredCurrency = preferredCurrency.name
 	js.insertedAt = insertedAt
+	js.sendLogs = sendLogs
 	return js
 }
 
@@ -42,7 +44,8 @@ fun JsUser.toKt(): CachedUser = CachedUser(
 		authenticationTokens = objectToMap(authenticationTokens) { it.toKt() },
 		publicKey = publicKey,
 		preferredCurrency = Currency.valueOf(preferredCurrency),
-		hasBackup = hasBackup
+		hasBackup = hasBackup,
+		sendLogs = sendLogs,
 	),
 	insertedAt = insertedAt.toLong()
 )

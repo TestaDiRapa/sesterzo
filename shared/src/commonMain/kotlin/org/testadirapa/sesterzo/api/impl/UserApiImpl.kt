@@ -52,7 +52,6 @@ class UserApiImpl(
 		url {
 			takeFrom(baseUrl)
 			appendPathSegments(baseSegment, "byIds")
-			parameter("ts", GMTDate().timestamp)
 		}
 		bearerAuth(authService.getJwt())
 		accept(Application.Json)
@@ -102,6 +101,16 @@ class UserApiImpl(
 			accept(Application.Json)
 		}.wrap()
 
+	private suspend fun setLogsOptInForCurrentUser(optIn: Boolean): HttpResponse<User> =
+		put {
+			url {
+				takeFrom(baseUrl)
+				appendPathSegments(baseSegment, "current", "logsOptIn", "$optIn")
+			}
+			bearerAuth(authService.getJwt())
+			accept(Application.Json)
+		}.wrap()
+
 	override suspend fun getCurrentUser(): User {
 		val currentUserId = localStorage.getItem(CURRENT_USER_ID_KEY)
 		return if (currentUserId != null) {
@@ -121,6 +130,11 @@ class UserApiImpl(
 
 	override suspend fun setBackupConfirmation(): User =
 		updateBackupConfirmation().bodyOrThrow().also {
+			putInCache(it)
+		}
+
+	override suspend fun setLogsOptIn(optIn: Boolean): User =
+		setLogsOptInForCurrentUser(optIn).bodyOrThrow().also {
 			putInCache(it)
 		}
 

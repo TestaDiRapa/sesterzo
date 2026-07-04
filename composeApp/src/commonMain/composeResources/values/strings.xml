@@ -146,6 +146,7 @@
     <string name="register_name_error">Invalid name</string>
     <string name="register_button">Register</string>
     <string name="register_complete_button">Complete Registration</string>
+    <string name="register_opt_in_logs">Enable anonymous error reporting.</string>
 
     <!--  Settings page  -->
     <string name="settings_page_space_settings">Budget settings</string>
@@ -163,6 +164,10 @@
     <string name="settings_page_recovery_qr">Generate recovery QR</string>
     <string name="settings_page_recovery_qr_subtitle">To access on another device.</string>
     <string name="settings_page_desktop_title">Update your settings</string>
+    <string name="settings_page_enable_report">Enable anonymous error reporting</string>
+    <string name="settings_page_enable_report_subtitle">You are currently NOT ing reports.</string>
+    <string name="settings_page_disable_report">Disable anonymous error reporting</string>
+    <string name="settings_page_disable_report_subtitle">You are currently sending reports.</string>
 
     <!--  Login page  -->
     <string name="login_title">Welcome back!</string>

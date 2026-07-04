@@ -12,4 +12,5 @@ data class User(
 	val publicKey: Base64String? = null,
 	val hasBackup: Boolean = false,
 	val preferredCurrency: Currency = Currency.EUR,
+	val sendLogs: Boolean = false,
 ) : Identifiable

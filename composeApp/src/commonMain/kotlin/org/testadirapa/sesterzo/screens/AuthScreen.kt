@@ -30,7 +30,7 @@ enum class AuthVariant { Login, Register}
 fun AuthScreen(
 	isLoading: Boolean,
 	isMobile: Boolean,
-	onStartRegistration: (email: String, name: String) -> Unit,
+	onStartRegistration: (email: String, name: String, optIn: Boolean) -> Unit,
 	onStartLogin: (email: String) -> Unit,
 	onCompleteAuth: (ott: String) -> Unit,
 	captchaProgressState: StateFlow<MutableStateFlowCaptchaProgressHandler.CaptchaProgress>
@@ -57,7 +57,7 @@ fun AuthScreen(
 @Composable
 fun MobileAuthScreen(
 	isLoading: Boolean,
-	onStartRegistration: (email: String, name: String) -> Unit,
+	onStartRegistration: (email: String, name: String, optIn: Boolean) -> Unit,
 	onStartLogin: (email: String) -> Unit,
 	onCompleteAuth: (ott: String) -> Unit,
 	captchaProgressState: StateFlow<MutableStateFlowCaptchaProgressHandler.CaptchaProgress>

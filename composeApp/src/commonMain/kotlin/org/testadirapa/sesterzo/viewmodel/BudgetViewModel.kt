@@ -232,7 +232,7 @@ class BudgetViewModel(
 		val templateReferences = budgets.flatMap {
 			listOf(it.savingsReference, it.incomeReference, it.expensesReference)
 		}
-		val templates = AppCtx.api.budgetElement.getBugetElements(
+		val templates = AppCtx.api.budgetElement.getBudgetElements(
 			spaceId = spaceId,
 			budgetElementReferences = templateReferences,
 		).associateBy { it.id }

@@ -14,6 +14,7 @@ import org.testadirapa.sesterzo.api.RecoverableSesterzoApi
 import org.testadirapa.sesterzo.api.SesterzoApi
 import org.testadirapa.sesterzo.config.PlatformContext
 import org.testadirapa.sesterzo.exceptions.ResponseStatusException
+import org.testadirapa.sesterzo.model.toErrorReport
 import org.testadirapa.sesterzo.repository.PropertyRepository
 import org.testadirapa.sesterzo.security.JwtPayload.Companion.isJwtExpiredOrInvalid
 import org.testadirapa.sesterzo.utils.expectStateAs
@@ -48,7 +49,7 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 		when (intent) {
 			is AppIntent.StartRegistration -> {
 				expectStateAs<AuthenticateState>(appState.value) {
-					it.startRegistrationProcess(email = intent.email, name = intent.name)
+					it.startRegistrationProcess(email = intent.email, name = intent.name, optIn = intent.logsOptIn)
 				}
 			}
 			is AppIntent.StartLogin -> {
@@ -135,6 +136,9 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 				AppCtx.api.authService.invalidateToken()
 			}
 			_errorState.update { error.toErrorState() }
+			if (AppCtx.sendErrors) {
+				AppCtx.api.errorReport.sendErrorReport(error.toErrorReport())
+			}
 		}
 	}
 

@@ -25,4 +25,5 @@ interface UserLogic {
 	fun getUsers(userIds: Set<String>): Flow<User>
 	suspend fun setName(name: String): User
 	suspend fun setCurrency(currency: Currency): User
+	suspend fun setLogOptIn(optIn: Boolean): User
 }

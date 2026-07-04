@@ -18,11 +18,12 @@ class AuthenticateState : AppState {
 		MutableStateFlowCaptchaProgressHandler.CaptchaProgress.Uninitialized
 	)
 
-	suspend fun startRegistrationProcess(email: String, name: String) {
+	suspend fun startRegistrationProcess(email: String, name: String, optIn: Boolean) {
 		process = SesterzoApi.initializeRegistrationProcess(
 			baseUrl = BuildKonfig.apiUrl,
 			email = email,
 			name = name,
+			optIn = optIn,
 			captchaHandler = MutableStateFlowCaptchaProgressHandler(captchaStateFlow)
 		)
 	}

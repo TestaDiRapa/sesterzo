@@ -22,4 +22,5 @@ abstract class UserDAO(client: DBClient) : GenericSingleCollectionDAO<User>(clie
 	abstract suspend fun setBackupConfirmation(userId: String): User?
 	abstract suspend fun setName(userId: String, name: String): User?
 	abstract suspend fun setCurrency(userId: String, currency: Currency): User?
+	abstract suspend fun setLogOptIn(userId: String, optIn: Boolean): User?
 }

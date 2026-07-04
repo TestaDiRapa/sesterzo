@@ -10,4 +10,5 @@ object AppCtx {
 	lateinit var propertyRepository: PropertyRepository
 	lateinit var api: FullSesterzoApi
 	var currency: Currency = Currency.EUR
+	var sendErrors: Boolean = false
 }

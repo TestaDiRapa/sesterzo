@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.icure.kryptom.utils.base64Decode
 import org.jetbrains.compose.resources.stringResource
+import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.desktop.settings.SettingsRow
 import org.testadirapa.sesterzo.components.desktop.settings.SettingsSection
 import org.testadirapa.sesterzo.components.settings.KeyOverlay
@@ -78,7 +79,13 @@ fun SettingsMobilePage(
 				user = user,
 				onEditName = { showNameUpdateSheet = true },
 				onEditCurrency = { showCurrencyUpdateSheet = true },
-				onChooseOverlay = { overlayContentType = it }
+				onChooseOverlay = { overlayContentType = it },
+				onErrorOptIn = {
+					viewModel.acceptIntent(
+						SettingsPageViewModel.SettingsIntents.ErrorsOptIn(!user.sendLogs)
+					)
+					AppCtx.sendErrors = !user.sendLogs
+				}
 			)
 
 			if (showCurrencyUpdateSheet) {

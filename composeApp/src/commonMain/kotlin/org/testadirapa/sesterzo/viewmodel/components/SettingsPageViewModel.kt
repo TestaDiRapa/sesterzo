@@ -35,6 +35,7 @@ class SettingsPageViewModel(
 			val color: RGBColor,
 			val onSpaceUpdate: (space: Space, thumbnail: Base64String?) -> Unit,
 		) : SettingsIntents
+		data class ErrorsOptIn(val optIn: Boolean) : SettingsIntents
 	}
 
 	init {
@@ -65,6 +66,11 @@ class SettingsPageViewModel(
 					color = intent.color
 				)
 				intent.onSpaceUpdate(result, intent.image?.let { base64Encode(it) })
+			}
+			is SettingsIntents.ErrorsOptIn -> {
+				_currentUserState.update {
+					AppCtx.api.user.setLogsOptIn(optIn = intent.optIn)
+				}
 			}
 		}
 	}

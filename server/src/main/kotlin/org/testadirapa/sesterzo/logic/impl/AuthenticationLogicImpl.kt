@@ -76,21 +76,30 @@ class AuthenticationLogicImpl(
 			.map { it.token }
 			.any { passwordEncoder.checkHash(token = token, hash = it) }
 
-	override suspend fun startRegistration(email: String, name: String, solution: Solution): String {
+	override suspend fun startRegistration(
+		email: String,
+		name: String,
+		logsOptIn: Boolean,
+		solution: Solution
+	): String {
 		if (!captchaLogic.validateChallenge(solution)) {
 			throw InvalidCaptchaException()
 		}
 		if (!EmailValidator.isValid(email) || !defaultNameValidator.isValid(name)) {
 			throw InvalidRegistrationParametersException()
 		}
-		val token = generateShortToken(tokenLength)
-		val processId = defaultCryptoService.strongRandom.randomUUID()
-		registrationCache.put(
-			processId,
-			AuthenticationLogic.RegistrationProcess(processId, email.trim(), name.trim(), token)
-		)
-		mailer.sendRegistrationEmail(email.trim(), name.trim(), token)
-		return processId
+		return if (userDAO.getByEmail(email) == null) {
+			val token = generateShortToken(tokenLength)
+			val processId = defaultCryptoService.strongRandom.randomUUID()
+			registrationCache.put(
+				processId,
+				AuthenticationLogic.RegistrationProcess(processId, email.trim(), name.trim(), logsOptIn, token)
+			)
+			mailer.sendRegistrationEmail(email.trim(), name.trim(), token)
+			processId
+		} else {
+			defaultCryptoService.strongRandom.randomUUID()
+		}
 	}
 
 	override suspend fun completeRegistration(processId: String, token: String): AuthResponse {
@@ -104,7 +113,8 @@ class AuthenticationLogicImpl(
 			User(
 				id = defaultCryptoService.strongRandom.randomUUID(),
 				email = process.email,
-				name = process.name
+				name = process.name,
+				sendLogs = process.logsOptIn
 			)
 		).id
 		return buildAuthResponse(createdUserId)

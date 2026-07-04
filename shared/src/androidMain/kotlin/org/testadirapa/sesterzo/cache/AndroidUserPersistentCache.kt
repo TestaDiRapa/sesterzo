@@ -26,6 +26,7 @@ class AndroidUserPersistentCache(
 			publicKey = user.publicKey,
 			hasBackup = if (user.hasBackup) 1 else 0,
 			preferredCurrency = user.preferredCurrency.name,
+			sendLogs = if (user.sendLogs) 1 else 0,
 			inserted_at = System.currentTimeMillis()
 		)
 	}
@@ -40,6 +41,7 @@ class AndroidUserPersistentCache(
 			preferredCurrency = Currency.valueOf(row.preferredCurrency),
 			publicKey = row.publicKey,
 			hasBackup = row.hasBackup == 1L,
+			sendLogs = row.sendLogs == 1L,
 		),
 		insertedAt = row.inserted_at
 	)

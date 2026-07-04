@@ -9,9 +9,13 @@ import org.testadirapa.sesterzo.components.desktop.settings.SettingsSection
 import org.testadirapa.sesterzo.model.User
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.settings_page_current
+import sesterzo.composeapp.generated.resources.settings_page_disable_report
+import sesterzo.composeapp.generated.resources.settings_page_disable_report_subtitle
 import sesterzo.composeapp.generated.resources.settings_page_display_private_key
 import sesterzo.composeapp.generated.resources.settings_page_edit_currency
 import sesterzo.composeapp.generated.resources.settings_page_edit_user_name
+import sesterzo.composeapp.generated.resources.settings_page_enable_report
+import sesterzo.composeapp.generated.resources.settings_page_enable_report_subtitle
 import sesterzo.composeapp.generated.resources.settings_page_recovery_private_key_subtitle
 import sesterzo.composeapp.generated.resources.settings_page_recovery_qr
 import sesterzo.composeapp.generated.resources.settings_page_recovery_qr_subtitle
@@ -25,6 +29,7 @@ fun UserSettingsSection(
 	onEditName: () -> Unit,
 	onEditCurrency: () -> Unit,
 	onChooseOverlay: (OverlayContentType) -> Unit,
+	onErrorOptIn: () -> Unit,
 ) {
 	SettingsSection(
 		title = title
@@ -57,6 +62,21 @@ fun UserSettingsSection(
 			label = stringResource(Res.string.settings_page_display_private_key),
 			subtitle = stringResource(Res.string.settings_page_recovery_private_key_subtitle),
 			onClick = { onChooseOverlay(OverlayContentType.PrivateKey) }
+		)
+		HorizontalDivider(color = colorScheme.outline)
+		SettingsRow(
+			label = if (user.sendLogs) {
+					stringResource(Res.string.settings_page_disable_report)
+				} else {
+					stringResource(Res.string.settings_page_disable_report_subtitle)
+				},
+			subtitle = if (user.sendLogs) {
+				stringResource(Res.string.settings_page_enable_report)
+			} else {
+				stringResource(Res.string.settings_page_enable_report_subtitle)
+			},
+			onClick = onErrorOptIn,
+			showIcon = false
 		)
 	}
 }

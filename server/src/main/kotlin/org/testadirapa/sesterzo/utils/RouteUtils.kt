@@ -8,3 +8,7 @@ fun RoutingCall.getPathParameter(parameter: String): String =
 fun RoutingCall.getIntPathParameter(parameter: String): Int =
 	checkNotNull(parameters[parameter]) { "Parameter $parameter is required" }
 		.toIntOrNull() ?: throw IllegalArgumentException("Parameter $parameter is not an integer")
+
+fun RoutingCall.getBooleanPathParameter(parameter: String): Boolean =
+	checkNotNull(parameters[parameter]) { "Parameter $parameter is required" }
+		.toBooleanStrictOrNull() ?: throw IllegalArgumentException("Parameter $parameter is not a boolean")

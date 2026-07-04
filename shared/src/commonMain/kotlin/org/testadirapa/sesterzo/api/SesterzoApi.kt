@@ -70,6 +70,7 @@ interface SesterzoApi {
 			baseUrl: String,
 			email: String,
 			name: String,
+			optIn: Boolean,
 			captchaHandler: CaptchaProgressHandler
 		): RegistrationProcess = coroutineScope {
 			val httpConfig = getHttpConfig(baseUrl)
@@ -79,6 +80,7 @@ interface SesterzoApi {
 				registrationData = StartRegistrationData(
 					email = email,
 					name = name,
+					logsOptIn = optIn,
 					captchaSolution = captchaSolution,
 				)
 			).bodyOrThrow()
@@ -192,6 +194,7 @@ interface FullSesterzoApi : SesterzoApi {
 	val budget: BudgetApi
 	val budgetElement: BudgetElementApi
 	val entry: EntryApi
+	val errorReport: ErrorReportApi
 	override val recovery: FullRecoveryApi
 	val space: SpaceApi
 }

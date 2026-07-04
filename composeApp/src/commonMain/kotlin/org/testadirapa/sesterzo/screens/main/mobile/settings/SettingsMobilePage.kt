@@ -27,19 +27,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.icure.kryptom.utils.base64Decode
-import com.icure.kryptom.utils.base64Encode
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
@@ -54,9 +53,9 @@ import org.testadirapa.sesterzo.components.user.UserNameUpdateForm
 import org.testadirapa.sesterzo.model.Base64String
 import org.testadirapa.sesterzo.model.Bip39RecoveryKey
 import org.testadirapa.sesterzo.model.Space
-import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.serialization.Serialization
 import org.testadirapa.sesterzo.styles.colors.colorOrDefault
+import org.testadirapa.sesterzo.viewmodel.components.SettingsPageViewModel
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.arrow_right
 import sesterzo.composeapp.generated.resources.backup_key_private_key
@@ -88,9 +87,13 @@ fun SettingsMobilePage(
 	onSpaceUpdate: (space: Space, thumbnail: Base64String?) -> Unit,
 	onError: (e: Throwable) -> Unit
 ) {
-	val scope = rememberCoroutineScope()
-	var isLoading by remember { mutableStateOf(false) }
-	var currentUser by remember { mutableStateOf<User?>(null) }
+	val viewModel = viewModel(key = space.id) {
+		SettingsPageViewModel(errorHandler = onError)
+	}
+
+	val isLoading = viewModel.loadingState.collectAsState()
+	val currentUser = viewModel.currentUserState.collectAsState()
+
 	var showSpaceUpdateSheet by remember { mutableStateOf(false) }
 	val spaceUpdateSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 	var showNameUpdateSheet by remember { mutableStateOf(false) }
@@ -98,10 +101,6 @@ fun SettingsMobilePage(
 	var showCurrencyUpdateSheet by remember { mutableStateOf(false) }
 	val currencyUpdateSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 	var overlayContentType by remember { mutableStateOf<OverlayContentType?>(null) }
-
-	LaunchedEffect(Unit) {
-		runCatching { currentUser = AppCtx.api.user.getCurrentUser() }.onFailure(onError)
-	}
 
 	Column {
 		SettingsSection(
@@ -114,7 +113,7 @@ fun SettingsMobilePage(
 			)
 		}
 		Spacer(modifier = Modifier.height(16.dp))
-		currentUser?.let { user ->
+		currentUser.value?.let { user ->
 			SettingsSection(
 				title = stringResource(Res.string.settings_page_user_settings)
 			) {
@@ -161,17 +160,10 @@ fun SettingsMobilePage(
 						UserCurrencyUpdateForm(
 							user = user,
 							buttonLabel = stringResource(Res.string.settings_page_confirm_update),
-							isLoading = isLoading,
+							isLoading = isLoading.value,
 							onSubmit = { currency ->
-								scope.launch {
-									isLoading = true
-									runCatching {
-										currentUser = AppCtx.api.user.setCurrency(currency = currency)
-										AppCtx.currency = currency
-									}.onFailure(onError)
-									isLoading = false
-									showCurrencyUpdateSheet = false
-								}
+								viewModel.acceptIntent(SettingsPageViewModel.SettingsIntents.SetCurrency(currency))
+								showCurrencyUpdateSheet = false
 							}
 						)
 					}
@@ -189,16 +181,10 @@ fun SettingsMobilePage(
 						UserNameUpdateForm(
 							user = user,
 							buttonLabel = stringResource(Res.string.settings_page_confirm_update),
-							isLoading = isLoading,
+							isLoading = isLoading.value,
 							onSubmit = { name ->
-								scope.launch {
-									isLoading = true
-									runCatching {
-										currentUser = AppCtx.api.user.setName(name = name)
-									}.onFailure(onError)
-									isLoading = false
-									showNameUpdateSheet = false
-								}
+								viewModel.acceptIntent(SettingsPageViewModel.SettingsIntents.SetUserName(name))
+								showNameUpdateSheet = false
 							}
 						)
 					}
@@ -217,27 +203,23 @@ fun SettingsMobilePage(
 				modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
 			) {
 				SpaceCreateOrUpdateForm(
-					isLoading = isLoading,
+					isLoading = isLoading.value,
 					buttonLabel = stringResource(Res.string.settings_page_confirm_update),
 					onError = onError,
 					name = space.name,
 					color = space.colorOrDefault(),
 					imageBytes = spaceThumbnail?.let { base64Decode(it) },
 					onSubmit = { name, image, color ->
-						scope.launch {
-							isLoading = true
-							runCatching {
-								val result = AppCtx.api.space.updateSpace(
-									spaceId = space.id,
-									name = name,
-									picture = image,
-									color = color.rgbColor
-								)
-								onSpaceUpdate(result, image?.let { base64Encode(it) })
-							}.onFailure(onError)
-							isLoading = false
-							showSpaceUpdateSheet = false
-						}
+						viewModel.acceptIntent(
+							SettingsPageViewModel.SettingsIntents.UpdateSpace(
+								spaceId = space.id,
+								name = name,
+								image = image,
+								color = color.rgbColor,
+								onSpaceUpdate = onSpaceUpdate,
+							)
+						)
+						showSpaceUpdateSheet = false
 					}
 				)
 			}

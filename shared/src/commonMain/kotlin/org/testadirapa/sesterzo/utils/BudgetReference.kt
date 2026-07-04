@@ -3,14 +3,11 @@ package org.testadirapa.sesterzo.utils
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
 import kotlinx.datetime.minus
 import kotlinx.datetime.number
 import kotlinx.datetime.plus
-import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import org.testadirapa.sesterzo.model.Budget
-import org.testadirapa.sesterzo.model.Timestamp
 import kotlin.time.Clock
 
 typealias BudgetReference = LocalDate
@@ -40,6 +37,3 @@ fun BudgetReference.daysToEndOfValidity(): Int =
 	} else {
 		0
 	}
-
-fun BudgetReference.toTimestampOfStartValidity(): Timestamp =
-	atTime(0, 1).toInstant(TimeZone.currentSystemDefault()).toEpochMilliseconds()

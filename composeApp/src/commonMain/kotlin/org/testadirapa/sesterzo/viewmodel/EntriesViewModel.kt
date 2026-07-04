@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
@@ -38,6 +39,7 @@ class EntriesViewModel(
 		when(intent) {
 			is EntryIntent.CreateEntry -> createEntry(
 				budgetReference = intent.budgetReference,
+				date = intent.date,
 				type = intent.type,
 				label = intent.label,
 				amount = intent.amount,
@@ -63,6 +65,7 @@ class EntriesViewModel(
 
 	private suspend fun createEntry(
 		budgetReference: BudgetReference,
+		date: LocalDate,
 		type: Entry.EntryType,
 		label: String,
 		amount: Amount,
@@ -71,6 +74,7 @@ class EntriesViewModel(
 		AppCtx.api.entry.createEntryAndRetrieve(
 			spaceId = spaceId,
 			budgetReference = budgetReference,
+			date = date,
 			type = type,
 			label = label,
 			amount = amount,

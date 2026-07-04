@@ -73,6 +73,9 @@
     <string name="add_entry_form_type_description_invalid_error">Description cannot be longer than 300 characters</string>
     <string name="add_entry_form_type_add_button">Add</string>
     <string name="add_entry_form_type_add_button_desktop">Add entry</string>
+    <string name="add_entry_form_type_date_label">DATE</string>
+    <string name="add_entry_form_date_confirm">Confirm</string>
+    <string name="add_entry_form_date_cancel">Cancel</string>
 
     <!--  Budget page desktop  -->
     <string name="budget_page_desktop_expected_label">Scheduled</string>
@@ -116,6 +119,7 @@
     <string name="entry_list_page_yesterday">Yesterday</string>
     <string name="entry_list_page_created_by">Created by</string>
     <string name="entry_list_page_when">When</string>
+    <string name="entry_list_page_created">Created</string>
     <string name="entry_list_page_delete_emtry">Delete entry</string>
 
     <!--  Main page  -->

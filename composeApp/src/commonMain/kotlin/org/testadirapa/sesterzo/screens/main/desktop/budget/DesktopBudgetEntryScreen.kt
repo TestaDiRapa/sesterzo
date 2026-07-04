@@ -33,7 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.budget.BudgetSelector
-import org.testadirapa.sesterzo.components.mobile.entries.AddEntryForm
+import org.testadirapa.sesterzo.components.entries.AddEntryForm
 import org.testadirapa.sesterzo.components.scaffold.DesktopTopBarScaffold
 import org.testadirapa.sesterzo.components.template.SourceUpdateForm
 import org.testadirapa.sesterzo.model.Amount
@@ -134,10 +134,11 @@ fun DesktopBudgetEntryScreen(
 				AddEntryForm(
 					space = space,
 					currentBudgetReference = budget.budget.toReference(),
-					onCreate = { budgetReference, type, label, amount, description ->
+					onCreate = { budgetReference, date, type, label, amount, description ->
 						viewModel.acceptIntent(
 							EntryIntent.CreateEntry(
 								budgetReference = budgetReference,
+								date = date,
 								type = type,
 								label = label,
 								amount = amount,

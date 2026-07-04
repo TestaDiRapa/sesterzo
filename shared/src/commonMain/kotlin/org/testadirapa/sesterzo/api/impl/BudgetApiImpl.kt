@@ -36,7 +36,7 @@ import org.testadirapa.sesterzo.services.CryptoService
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.toBudgetId
 import org.testadirapa.sesterzo.utils.toReference
-import org.testadirapa.sesterzo.utils.toTimestampOfStartValidity
+import kotlin.time.Clock
 import kotlin.time.Duration
 
 class BudgetApiImpl(
@@ -184,11 +184,12 @@ class BudgetApiImpl(
 		val builtInEntries = incomeElement.elements.map { (label, amount) ->
 			DecryptedEntry(
 				id = defaultCryptoService.strongRandom.randomUUID(),
-				updated = budgetReference.toTimestampOfStartValidity(),
+				updated = Clock.System.now().toEpochMilliseconds(),
 				deleted = false,
 				budgetId = budgetReference.toBudgetId(),
 				createdBy = userApi.getCurrentUser().id,
 				deletedBy = null,
+				date = budgetReference,
 				type = Entry.EntryType.Income,
 				label = label,
 				amount = amount,

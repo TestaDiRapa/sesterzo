@@ -54,7 +54,6 @@ import org.testadirapa.sesterzo.utils.currentLocalDate
 import org.testadirapa.sesterzo.utils.entryTypeColor
 import org.testadirapa.sesterzo.utils.groupActiveByDay
 import org.testadirapa.sesterzo.utils.toLocalDate
-import org.testadirapa.sesterzo.utils.toLocalDateTime
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.trash
 
@@ -79,9 +78,8 @@ fun MobileEntriesScreen(
 	) {
 		Spacer(Modifier.height(8.dp))
 		entries.groupActiveByDay().forEach { (_, entriesInDay) ->
-			val date = entriesInDay.first().updated.toLocalDateTime().date
 			EntrySectionDateDivider(
-				date = date,
+				date = entriesInDay.first().date,
 				numEntries = null,
 			)
 			entriesInDay.forEach { entry ->

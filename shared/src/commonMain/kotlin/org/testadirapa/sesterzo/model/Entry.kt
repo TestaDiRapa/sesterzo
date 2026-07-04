@@ -1,12 +1,16 @@
 package org.testadirapa.sesterzo.model
 
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
@@ -27,6 +31,7 @@ data class DecryptedEntry(
 	override val deleted: Boolean,
 	override val budgetId: String,
 	override val spaceId: String,
+	val date: LocalDate,
 	val createdBy: String,
 	val deletedBy: String?,
 	val type: Entry.EntryType,
@@ -45,6 +50,9 @@ data class DecryptedEntry(
 			DecryptedEntry::type.name to JsonPrimitive(type.name),
 			DecryptedEntry::description.name to JsonPrimitive(description),
 			DecryptedEntry::automation.name to JsonPrimitive(automation),
+			DecryptedEntry::date.name to JsonArray(
+				listOf(date.day, date.month.number, date.year).map { JsonPrimitive(it) }
+			)
 		)
 	)
 
@@ -81,6 +89,13 @@ data class EncryptedEntry(
 		type = Entry.EntryType.valueOf(decryptedFields.getValue(DecryptedEntry::type.name).jsonPrimitive.content),
 		label = decryptedFields.getValue(DecryptedEntry::label.name).jsonPrimitive.content,
 		amount = decryptedFields.getValue(DecryptedEntry::amount.name).jsonPrimitive.long,
+		date = decryptedFields.getValue(DecryptedEntry::date.name).jsonArray.let {
+			LocalDate(
+				day = it[0].jsonPrimitive.int,
+				month = it[1].jsonPrimitive.int,
+				year = it[2].jsonPrimitive.int
+			)
+		},
 		description = decryptedFields[DecryptedEntry::description.name]?.jsonPrimitive?.contentOrNull,
 		automation =  decryptedFields[DecryptedEntry::automation.name]?.jsonPrimitive?.boolean ?: false,
 		spaceId = spaceId

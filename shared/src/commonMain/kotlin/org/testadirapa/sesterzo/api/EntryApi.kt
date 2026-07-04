@@ -1,5 +1,6 @@
 package org.testadirapa.sesterzo.api
 
+import kotlinx.datetime.LocalDate
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.model.Entry
@@ -27,6 +28,7 @@ interface EntryApi {
 	suspend fun createEntryAndRetrieve(
 		spaceId: String,
 		budgetReference: BudgetReference,
+		date: LocalDate,
 		type: Entry.EntryType,
 		label: String,
 		amount: Amount,

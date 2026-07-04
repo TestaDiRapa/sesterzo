@@ -56,6 +56,7 @@ import org.testadirapa.sesterzo.utils.toLocalDate
 import org.testadirapa.sesterzo.utils.toLocalDateTime
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.arrow_right
+import sesterzo.composeapp.generated.resources.entry_list_page_created
 import sesterzo.composeapp.generated.resources.entry_list_page_created_by
 import sesterzo.composeapp.generated.resources.entry_list_page_delete_emtry
 import sesterzo.composeapp.generated.resources.entry_list_page_when
@@ -84,9 +85,8 @@ fun DesktopEntryScreen(
 		) {
 			Spacer(Modifier.height(8.dp))
 			entries.groupActiveByDay().forEach { (_, entriesInDay) ->
-				val date = entriesInDay.first().updated.toLocalDateTime().date
 				EntrySectionDateDivider(
-					date = date,
+					date = entriesInDay.first().date,
 					numEntries = entriesInDay.size,
 					modifier = Modifier.padding(horizontal = 16.dp)
 				)
@@ -132,7 +132,7 @@ private fun EntryDisplay(
 	user: User?,
 	onDelete: () -> Unit,
 ) {
-	val entryDateTime = entry.updated.toLocalDateTime()
+	val entryUpdateDateTime = entry.updated.toLocalDateTime()
 	Column {
 		Row(
 			modifier = Modifier.fillMaxWidth(),
@@ -183,11 +183,19 @@ private fun EntryDisplay(
 		EntryDisplayDetailsRow(
 			key = stringResource(Res.string.entry_list_page_when),
 			value = buildString {
-				append(dayName(entryDateTime.dayOfWeek, abbreviated = true))
+				append(dayName(entry.date.dayOfWeek, abbreviated = true))
 				append(" ")
-				append(entryDateTime.day)
+				append(entry.date.day)
+			}
+		)
+		EntryDisplayDetailsRow(
+			key = stringResource(Res.string.entry_list_page_created),
+			value = buildString {
+				append(dayName(entryUpdateDateTime.dayOfWeek, abbreviated = true))
+				append(" ")
+				append(entryUpdateDateTime.day)
 				append(", ")
-				append("${entryDateTime.hour}:${entryDateTime.minute}")
+				append("${entryUpdateDateTime.hour}:${entryUpdateDateTime.minute}")
 			}
 		)
 		Spacer(Modifier.height(16.dp))

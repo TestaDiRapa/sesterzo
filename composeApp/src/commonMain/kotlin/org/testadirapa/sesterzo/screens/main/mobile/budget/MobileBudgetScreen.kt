@@ -63,10 +63,11 @@ fun MobileBudgetScreen(
 				space = space,
 				currentBudget = budget.budget.toReference(),
 				loadingState = loadingState.value,
-				onCreate = { budgetReference, type, label, amount, description ->
+				onCreate = { budgetReference, date, type, label, amount, description ->
 					viewModel.acceptIntent(
 						EntryIntent.CreateEntry(
 							budgetReference = budgetReference,
+							date = date,
 							type = type,
 							label = label,
 							amount = amount,
@@ -88,10 +89,11 @@ fun MobileBudgetScreen(
 						budget = budget,
 						budgetLoadingState = budgetLoadingState,
 						loadingState = loadingState.value,
-						onCreateEntry = { budgetReference, type, label, amount, description ->
+						onCreateEntry = { budgetReference, date, type, label, amount, description ->
 							viewModel.acceptIntent(
 								EntryIntent.CreateEntry(
 									budgetReference = budgetReference,
+									date = date,
 									type = type,
 									label = label,
 									amount = amount,

@@ -30,11 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.budget.BudgetSummaryCard
 import org.testadirapa.sesterzo.components.budget.BudgetSummaryStatsCard
-import org.testadirapa.sesterzo.components.mobile.entries.AddEntryForm
+import org.testadirapa.sesterzo.components.entries.AddEntryForm
 import org.testadirapa.sesterzo.components.template.SourceUpdateForm
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.DecryptedBudget
@@ -68,7 +69,7 @@ fun BudgetComponent(
 	entries: List<DecryptedEntry>,
 	loadingState: Boolean,
 	budgetLoadingState: Boolean,
-	onCreateEntry: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
+	onCreateEntry: (budgetReference: BudgetReference, day: LocalDate, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
 	onBudgetUpdate: (budget: DecryptedBudget, newAmounts: Map<String, Amount>, type: Entry.EntryType) -> Unit,
 ) {
 	var showTemplateUpdateFormSheet by remember { mutableStateOf(false) }
@@ -133,8 +134,8 @@ fun BudgetComponent(
 			AddEntryForm(
 				space = space,
 				currentBudgetReference = budget.budget.toReference(),
-				onCreate = { budgetReference, type, label, amount, description ->
-					onCreateEntry(budgetReference, type, label, amount, description)
+				onCreate = { budgetReference, day, type, label, amount, description ->
+					onCreateEntry(budgetReference, day, type, label, amount, description)
 					addEntryFormInfo = null
 				},
 				loadingState = loadingState,

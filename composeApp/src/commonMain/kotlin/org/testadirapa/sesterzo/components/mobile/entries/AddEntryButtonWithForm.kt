@@ -17,7 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.painterResource
+import org.testadirapa.sesterzo.components.entries.AddEntryForm
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.Space
@@ -30,7 +32,7 @@ import sesterzo.composeapp.generated.resources.plus
 fun AddEntryButtonWithForm(
 	space: Space,
 	currentBudget: BudgetReference,
-	onCreate: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
+	onCreate: (budgetReference: BudgetReference, date: LocalDate, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
 	loadingState: Boolean,
 ) {
 	var showDialog by remember { mutableStateOf(false) }
@@ -66,8 +68,8 @@ fun AddEntryButtonWithForm(
 			AddEntryForm(
 				space = space,
 				currentBudgetReference = currentBudget,
-				onCreate = { budgetReference, type, label, amount, description ->
-					onCreate(budgetReference, type, label, amount, description)
+				onCreate = { budgetReference, date, type, label, amount, description ->
+					onCreate(budgetReference, date, type, label, amount, description)
 					showDialog = false
 				},
 				loadingState = loadingState,

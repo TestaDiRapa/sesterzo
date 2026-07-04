@@ -1,4 +1,4 @@
-package org.testadirapa.sesterzo.components.mobile.entries
+package org.testadirapa.sesterzo.components.entries
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -15,10 +15,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +36,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.components.input.AmountField
@@ -45,14 +56,18 @@ import org.testadirapa.sesterzo.styles.colors.LocalFinanceColors
 import org.testadirapa.sesterzo.styles.typography.amountTextStyleLarge
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.currentBudgetReference
+import org.testadirapa.sesterzo.utils.currentLocalDate
 import org.testadirapa.sesterzo.utils.monthName
 import org.testadirapa.sesterzo.validators.MaxLengthOrNullValidator
 import org.testadirapa.sesterzo.validators.NonNegativeValidator
 import org.testadirapa.sesterzo.validators.defaultNameValidator
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.add_entry_form_title
+import sesterzo.composeapp.generated.resources.add_entry_form_date_cancel
+import sesterzo.composeapp.generated.resources.add_entry_form_date_confirm
 import sesterzo.composeapp.generated.resources.add_entry_form_type_add_button
 import sesterzo.composeapp.generated.resources.add_entry_form_type_amount_label
+import sesterzo.composeapp.generated.resources.add_entry_form_type_date_label
 import sesterzo.composeapp.generated.resources.add_entry_form_type_description_invalid_error
 import sesterzo.composeapp.generated.resources.add_entry_form_type_description_label
 import sesterzo.composeapp.generated.resources.add_entry_form_type_description_placeholder
@@ -66,12 +81,13 @@ import sesterzo.composeapp.generated.resources.add_entry_form_type_saving
 import sesterzo.composeapp.generated.resources.arrow_back
 import sesterzo.composeapp.generated.resources.arrow_forward
 import sesterzo.composeapp.generated.resources.banknotes
+import kotlin.time.Instant
 
 @Composable
 fun AddEntryForm(
 	space: Space,
 	currentBudgetReference: BudgetReference,
-	onCreate: (budgetReference: BudgetReference, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
+	onCreate: (budgetReference: BudgetReference, date: LocalDate, type: Entry.EntryType, label: String, amount: Amount, description: String?) -> Unit,
 	loadingState: Boolean,
 	entryType: Entry.EntryType = Entry.EntryType.Expense,
 	label: String? = null,
@@ -93,6 +109,12 @@ fun AddEntryForm(
 			)
 		)
 	}
+	var selectedDate by remember(currentBudgetReference) {
+		mutableStateOf(currentLocalDate().let {
+			if (it.year == currentBudgetReference.year && it.month == currentBudgetReference.month) it
+			else currentBudgetReference
+		})
+	}
 	Column(
 		modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
 	) {
@@ -100,6 +122,12 @@ fun AddEntryForm(
 		TypeSelector(
 			entryType = entryTypeState,
 			onEntryTypeChange = { entryTypeState = it },
+		)
+		Spacer(modifier = Modifier.height(16.dp))
+		DateInput(
+			selectedDate = selectedDate,
+			budgetReference = currentBudgetReference,
+			onDateSelected = { selectedDate = it },
 		)
 		Spacer(modifier = Modifier.height(16.dp))
 		AmountInput(
@@ -121,6 +149,7 @@ fun AddEntryForm(
 			onClick = {
 				onCreate(
 					currentBudgetReference,
+					selectedDate,
 					entryTypeState,
 					label.validValue,
 					amount.validValue,
@@ -213,6 +242,80 @@ fun AmountInput(
 		)
 	}
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DateInput(
+	selectedDate: LocalDate,
+	budgetReference: BudgetReference,
+	onDateSelected: (LocalDate) -> Unit,
+) {
+	var showPicker by remember { mutableStateOf(false) }
+	Column {
+		Text(
+			text = stringResource(Res.string.add_entry_form_type_date_label),
+			style = MaterialTheme.typography.labelLarge,
+			color = colorScheme.onSurfaceVariant,
+		)
+		Spacer(Modifier.height(4.dp))
+		Card(
+			border = BorderStroke(width = 1.dp, color = colorScheme.outline),
+			colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceVariant),
+			modifier = Modifier
+				.fillMaxWidth()
+				.clickable { showPicker = true },
+		) {
+			Text(
+				text = "${selectedDate.day} ${monthName(selectedDate.month, abbreviated = false)} ${selectedDate.year}",
+				style = MaterialTheme.typography.bodyLarge,
+				color = colorScheme.onSurface,
+				modifier = Modifier.padding(vertical = 18.dp, horizontal = 16.dp),
+			)
+		}
+	}
+	if (showPicker) {
+		val selectableDates = remember(budgetReference) {
+			object : SelectableDates {
+				override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+					val date = utcTimeMillis.utcMillisToLocalDate()
+					return date.year == budgetReference.year && date.month == budgetReference.month
+				}
+
+				override fun isSelectableYear(year: Int): Boolean = year == budgetReference.year
+			}
+		}
+		val pickerState = rememberDatePickerState(
+			initialSelectedDateMillis = selectedDate.toUtcMillis(),
+			initialDisplayedMonthMillis = budgetReference.toUtcMillis(),
+			yearRange = budgetReference.year..budgetReference.year,
+			selectableDates = selectableDates,
+		)
+		DatePickerDialog(
+			onDismissRequest = { showPicker = false },
+			confirmButton = {
+				TextButton(
+					onClick = {
+						pickerState.selectedDateMillis?.let { onDateSelected(it.utcMillisToLocalDate()) }
+						showPicker = false
+					}
+				) { Text(stringResource(Res.string.add_entry_form_date_confirm)) }
+			},
+			dismissButton = {
+				TextButton(onClick = { showPicker = false }) {
+					Text(stringResource(Res.string.add_entry_form_date_cancel))
+				}
+			},
+		) {
+			DatePicker(state = pickerState)
+		}
+	}
+}
+
+private fun LocalDate.toUtcMillis(): Long =
+	atTime(0, 0).toInstant(TimeZone.UTC).toEpochMilliseconds()
+
+private fun Long.utcMillisToLocalDate(): LocalDate =
+	Instant.fromEpochMilliseconds(this).toLocalDateTime(TimeZone.UTC).date
 
 @Composable
 private fun TypeSelector(

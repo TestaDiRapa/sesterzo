@@ -10,6 +10,7 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.date.GMTDate
+import kotlinx.datetime.LocalDate
 import org.testadirapa.sesterzo.api.CachedApi
 import org.testadirapa.sesterzo.api.EntryApi
 import org.testadirapa.sesterzo.api.UserApi
@@ -27,7 +28,6 @@ import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.utils.toBudgetId
-import org.testadirapa.sesterzo.utils.toTimestampOfStartValidity
 import kotlin.collections.map
 import kotlin.time.Clock
 
@@ -133,6 +133,7 @@ class EntryApiImpl(
 	override suspend fun createEntryAndRetrieve(
 		spaceId: String,
 		budgetReference: BudgetReference,
+		date: LocalDate,
 		type: Entry.EntryType,
 		label: String,
 		amount: Amount,
@@ -145,6 +146,7 @@ class EntryApiImpl(
 			budgetId = budgetReference.toBudgetId(),
 			createdBy = userApi.getCurrentUser().id,
 			deletedBy = null,
+			date = date,
 			type = type,
 			label = label,
 			amount = amount,
@@ -189,14 +191,14 @@ class EntryApiImpl(
 		val entriesToCreate = mutableListOf<DecryptedEntry>()
 		val entryIdsToDelete = mutableListOf<String>()
 		val currentEntriesByLabel = currentEntries.filter { !it.deleted && it.type == type }.associateBy { it.label }
-		val budgetTimestamp = budgetReference.toTimestampOfStartValidity()
 		val now = Clock.System.now().toEpochMilliseconds()
 		entries.forEach { (label, amount) ->
 			when {
 				!currentEntriesByLabel.containsKey(label) -> {
 					val entry = DecryptedEntry(
 						id = defaultCryptoService.strongRandom.randomUUID(),
-						updated = now.coerceAtLeast(budgetTimestamp),
+						updated = now,
+						date = budgetReference,
 						deleted = false,
 						budgetId = budgetReference.toBudgetId(),
 						createdBy = userApi.getCurrentUser().id,
@@ -217,8 +219,9 @@ class EntryApiImpl(
 						entriesToCreate.add(
 							existingEntry.copy(
 								id = defaultCryptoService.strongRandom.randomUUID(),
-								updated = now.coerceAtLeast(budgetTimestamp),
+								updated = now,
 								amount = amount,
+								date = budgetReference,
 							)
 						)
 						entryIdsToDelete.add(existingEntry.id)

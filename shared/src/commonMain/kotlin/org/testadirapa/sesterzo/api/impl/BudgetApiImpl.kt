@@ -10,6 +10,8 @@ import io.ktor.http.appendPathSegments
 import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import io.ktor.util.date.GMTDate
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.number
 import org.testadirapa.sesterzo.api.BudgetApi
 import org.testadirapa.sesterzo.api.BudgetElementApi
@@ -28,16 +30,19 @@ import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.DecryptedEntry
 import org.testadirapa.sesterzo.model.EncryptedBudget
 import org.testadirapa.sesterzo.model.Entry
+import org.testadirapa.sesterzo.model.Timestamp
 import org.testadirapa.sesterzo.model.VersionableReference
 import org.testadirapa.sesterzo.model.dto.BulkOperationElementResult
 import org.testadirapa.sesterzo.model.toReference
 import org.testadirapa.sesterzo.services.AuthService
 import org.testadirapa.sesterzo.services.CryptoService
 import org.testadirapa.sesterzo.utils.BudgetReference
+import org.testadirapa.sesterzo.utils.previousReference
 import org.testadirapa.sesterzo.utils.toBudgetId
 import org.testadirapa.sesterzo.utils.toReference
 import kotlin.time.Clock
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 class BudgetApiImpl(
 	httpConfig: HttpConfig,
@@ -52,6 +57,12 @@ class BudgetApiImpl(
 ) : TemporizedCachedApi<EncryptedBudget, CachedBudget, BudgetPersistentCache>(httpConfig, cache, ttl), BudgetApi {
 
 	override val baseSegment: String = "budget"
+
+	private val missCacheDuration = 2.minutes.inWholeMilliseconds
+	private val missingPreviousBudget = mutableMapOf<String, Timestamp>()
+	private val missingPreviousBudgetMutex = Mutex()
+	private val missingFollowingBudget = mutableMapOf<String, Timestamp>()
+	private val missingFollowingBudgetMutex = Mutex()
 
 	private suspend fun retrieveBudgetInSpace(spaceId: String, budgetId: String): HttpResponse<EncryptedBudget> = get {
 		url {
@@ -181,6 +192,9 @@ class BudgetApiImpl(
 			putInCache(encryptedBudget)
 			cryptoService.decrypt(encryptedBudget)
 		}
+		missingFollowingBudgetMutex.withLock {
+			missingFollowingBudget.remove("$spaceId-${budgetReference.previousReference()}")
+		}
 		val builtInEntries = incomeElement.elements.map { (label, amount) ->
 			DecryptedEntry(
 				id = defaultCryptoService.strongRandom.randomUUID(),
@@ -220,25 +234,65 @@ class BudgetApiImpl(
 		spaceId: String,
 		budgetReference: BudgetReference,
 		bypassCache: Boolean
-	): DecryptedBudget? = cachedOrGetIfPresent(
-		getFromCache = {
-			cache.getFirstBudgetAfter(spaceId = spaceId, year = budgetReference.year, month = budgetReference.month.number)
-		},
-		bypassCache = bypassCache,
-		getFromNetwork = { retrieveFirstBudgetAfter(spaceId = spaceId, budgetReference = budgetReference) }
-	)?.let { cryptoService.decrypt(it) }
+	): DecryptedBudget? {
+		val cachedMissing = missingFollowingBudgetMutex.withLock {
+			missingFollowingBudget["$spaceId-$budgetReference"]?.takeIf {
+				Clock.System.now().toEpochMilliseconds() - it < missCacheDuration
+			}
+		}
+		return if (cachedMissing == null) {
+			cachedOrGetIfPresent(
+				getFromCache = {
+					cache.getFirstBudgetAfter(spaceId = spaceId, year = budgetReference.year, month = budgetReference.month.number)
+				},
+				bypassCache = bypassCache,
+				getFromNetwork = {
+					retrieveFirstBudgetAfter(spaceId = spaceId, budgetReference = budgetReference)
+				}
+			).also {
+				if (it == null) {
+					missingFollowingBudgetMutex.withLock {
+						missingFollowingBudget["$spaceId-$budgetReference"] = Clock.System.now().toEpochMilliseconds()
+					}
+				}
+			}?.let { cryptoService.decrypt(it) }
+		} else {
+			null
+		}
+	}
 
 	override suspend fun getFirstBudgetBefore(
 		spaceId: String,
 		budgetReference: BudgetReference,
 		bypassCache: Boolean
-	): DecryptedBudget? = cachedOrGetIfPresent(
-		getFromCache = {
-			cache.getFirstBudgetBefore(spaceId = spaceId, year = budgetReference.year, month = budgetReference.month.number)
-		},
-		bypassCache = bypassCache,
-		getFromNetwork = { retrieveFirstBudgetBefore(spaceId = spaceId, budgetReference = budgetReference) }
-	)?.let { cryptoService.decrypt(it) }
+	): DecryptedBudget? {
+		val cachedMissing = missingPreviousBudgetMutex.withLock {
+			missingPreviousBudget["$spaceId-$budgetReference"]?.takeIf {
+				Clock.System.now().toEpochMilliseconds() - it < missCacheDuration
+			}
+		}
+		return if (cachedMissing == null) {
+			cachedOrGetIfPresent(
+				getFromCache = {
+					cache.getFirstBudgetBefore(
+						spaceId = spaceId,
+						year = budgetReference.year,
+						month = budgetReference.month.number
+					)
+				},
+				bypassCache = bypassCache,
+				getFromNetwork = { retrieveFirstBudgetBefore(spaceId = spaceId, budgetReference = budgetReference) }
+			).also {
+				if (it == null) {
+					missingPreviousBudgetMutex.withLock {
+						missingPreviousBudget["$spaceId-$budgetReference"] = Clock.System.now().toEpochMilliseconds()
+					}
+				}
+			}?.let { cryptoService.decrypt(it) }
+		} else {
+			null
+		}
+	}
 
 	override suspend fun updateBudgetsTemplate(
 		spaceId: String,

@@ -15,6 +15,7 @@ import org.testadirapa.sesterzo.model.DecryptedBudgetElement
 import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.screens.main.desktop.budget.DesktopBudgetEntryScreen
+import org.testadirapa.sesterzo.screens.main.desktop.settings.DesktopSettingsScreen
 import org.testadirapa.sesterzo.screens.main.desktop.template.DesktopTemplateScreen
 import org.testadirapa.sesterzo.screens.main.mobile.Page
 import org.testadirapa.sesterzo.utils.BudgetReference
@@ -77,7 +78,12 @@ fun DesktopMainScreen(
 						)
 					}
 					Page.Settings -> {
-
+						DesktopSettingsScreen(
+							space = space,
+							spaceThumbnail = spaceThumbnail,
+							onError = onError,
+							onSpaceUpdate = onSpaceUpdate,
+						)
 					}
 				}
 			}

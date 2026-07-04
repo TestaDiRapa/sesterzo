@@ -1,28 +1,23 @@
-package org.testadirapa.sesterzo.components.desktop.budget
+package org.testadirapa.sesterzo.components.desktop.settings
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.painterResource
-import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.ui.DesktopSelector
 import org.testadirapa.sesterzo.components.ui.DesktopSelectorIcon
-import org.testadirapa.sesterzo.model.Amount
-import org.testadirapa.sesterzo.styles.typography.amountTextStyleLarge
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.arrow_right
 
 @Composable
-fun BudgetSectionSelector(
+fun SettingsSectionSelector(
 	label: String,
 	isSelected: Boolean,
-	totalAmount: Amount,
 	painter: Painter,
 	color: Color,
 	onClick: () -> Unit,
@@ -34,11 +29,6 @@ fun BudgetSectionSelector(
 			DesktopSelectorIcon(label, painter, color)
 		},
 		endContent = {
-			Text(
-				text = AppCtx.currency.writer(totalAmount),
-				color = colorScheme.onSurface,
-				style = amountTextStyleLarge()
-			)
 			Icon(
 				modifier = Modifier.size(24.dp),
 				painter = painterResource(Res.drawable.arrow_right),

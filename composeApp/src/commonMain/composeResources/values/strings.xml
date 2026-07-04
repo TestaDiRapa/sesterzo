@@ -148,8 +148,8 @@
     <string name="register_complete_button">Complete Registration</string>
 
     <!--  Settings page  -->
-    <string name="settings_page_space_settings">Space settings</string>
-    <string name="settings_page_edit_space">Edit space</string>
+    <string name="settings_page_space_settings">Budget settings</string>
+    <string name="settings_page_edit_space">Edit budget</string>
     <string name="settings_page_edit_space_subtitle">Edit name, thumbnail, or color.</string>
     <string name="settings_page_confirm_update">Update</string>
     <string name="settings_page_user_settings">User settings</string>
@@ -162,6 +162,7 @@
     <string name="settings_page_recovery_private_key_subtitle">You can use it to access on another device.</string>
     <string name="settings_page_recovery_qr">Generate recovery QR</string>
     <string name="settings_page_recovery_qr_subtitle">To access on another device.</string>
+    <string name="settings_page_desktop_title">Update your settings</string>
 
     <!--  Login page  -->
     <string name="login_title">Welcome back!</string>

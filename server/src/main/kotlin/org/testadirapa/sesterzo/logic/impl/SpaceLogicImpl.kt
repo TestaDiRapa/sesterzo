@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.emitAll
 import org.testadirapa.sesterzo.dao.AttachmentDAO
 import org.testadirapa.sesterzo.dao.BudgetElementDAO
 import org.testadirapa.sesterzo.dao.SpaceDAO
+import org.testadirapa.sesterzo.dao.UserDAO
 import org.testadirapa.sesterzo.exceptions.EntityNotFoundException
 import org.testadirapa.sesterzo.exceptions.ExceptionLabel
 import org.testadirapa.sesterzo.exceptions.ImageTooLargeException
@@ -20,6 +21,7 @@ import org.testadirapa.sesterzo.model.EncryptedBudgetElement
 import org.testadirapa.sesterzo.model.RGBColor
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.SpaceStub
+import org.testadirapa.sesterzo.model.User
 import org.testadirapa.sesterzo.security.SecurityContext.Companion.flowOnSecurityContext
 import org.testadirapa.sesterzo.security.SecurityContext.Companion.withSecurityContext
 import org.testadirapa.sesterzo.utils.isSizeUnderThreshold
@@ -28,7 +30,8 @@ import org.testadirapa.sesterzo.validators.defaultNameValidator
 class SpaceLogicImpl(
 	private val attachmentDAO: AttachmentDAO,
 	private val budgetElementDAO: BudgetElementDAO,
-	private val spaceDAO: SpaceDAO
+	private val spaceDAO: SpaceDAO,
+	private val userDAO: UserDAO,
 ) : SpaceLogic {
 
 	override fun getSpaces(): Flow<Space> = flowOnSecurityContext {
@@ -70,40 +73,43 @@ class SpaceLogicImpl(
 		if (!defaultNameValidator.isValid(spaceStub.name)) {
 			throw IllegalArgumentException("Invalid space name: ${spaceStub.name}")
 		}
+		val user = userDAO.getById(currentUserId)
+			?: throw EntityNotFoundException(entityId = currentUserId, label = ExceptionLabel.UserNotFound)
+		val spaceId = "${user.getEmailFingerprint()}-${spaceStub.id}"
 		val savingsId = budgetElementDAO.save(
-			spaceId = spaceStub.id,
+			spaceId = spaceId,
 			entity = EncryptedBudgetElement(
 				budgetElementId = defaultCryptoService.strongRandom.randomUUID(),
 				version = 0,
-				spaceId = spaceStub.id,
+				spaceId = spaceId,
 				type = BudgetElement.BudgetElementType.Savings,
 				encryptedSelf = null
 			)
 		).budgetElementId
 		val incomeId = budgetElementDAO.save(
-			spaceId = spaceStub.id,
+			spaceId = spaceId,
 			entity = EncryptedBudgetElement(
 				budgetElementId = defaultCryptoService.strongRandom.randomUUID(),
 				version = 0,
-				spaceId = spaceStub.id,
+				spaceId = spaceId,
 				type = BudgetElement.BudgetElementType.Income,
 				encryptedSelf = null
 			)
 		).budgetElementId
 		val expensesId = budgetElementDAO.save(
-			spaceId = spaceStub.id,
+			spaceId = spaceId,
 			entity = EncryptedBudgetElement(
 				budgetElementId = defaultCryptoService.strongRandom.randomUUID(),
 				version = 0,
-				spaceId = spaceStub.id,
+				spaceId = spaceId,
 				type = BudgetElement.BudgetElementType.FixedExpenses,
 				encryptedSelf = null
 			)
 		).budgetElementId
-		budgetElementDAO.initIndexes(spaceId = spaceStub.id)
+		budgetElementDAO.initIndexes(spaceId = spaceId)
 		spaceDAO.save(
 			Space(
-				id = spaceStub.id,
+				id = spaceId,
 				version = 0,
 				name = spaceStub.name,
 				owner = currentUserId,
@@ -116,6 +122,11 @@ class SpaceLogicImpl(
 			)
 		)
 	}
+
+	private fun User.getEmailFingerprint(): String =
+		email.split('@').first().filter {
+			it in 'a'..'z' || it in 'A'..'Z' || it in '0'..'9'
+		}.take(10).lowercase()
 
 	override suspend fun setSpaceNameAndColor(spaceId: String, name: String, color: RGBColor): Space = withSecurityContext {
 		if (spaceId !in spaces.keys) {

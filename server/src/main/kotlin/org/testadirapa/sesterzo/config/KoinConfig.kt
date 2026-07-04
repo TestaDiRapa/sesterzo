@@ -102,7 +102,8 @@ fun applicationModules(
 		SpaceLogicImpl(
 			attachmentDAO = get(),
 			budgetElementDAO = get(),
-			spaceDAO = get()
+			spaceDAO = get(),
+			userDAO = get(),
 		)
 	}
 	single<UserLogic> { UserLogicImpl(userDAO = get(), spaceDAO = get()) }

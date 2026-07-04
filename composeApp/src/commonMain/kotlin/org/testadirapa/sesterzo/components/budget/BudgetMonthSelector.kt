@@ -69,7 +69,7 @@ fun BudgetMonthSelector(
 				onClick = onPrev ?: {},
 				enabled = onPrev != null,
 				colors = iconButtonColors(),
-				shape = RoundedCornerShape(8.dp)
+				shape = RoundedCornerShape(8.dp),
 			) {
 				Icon(
 					modifier = iconButtonsModifier,
@@ -168,7 +168,8 @@ private fun BudgetTitleWithButton(
 
 @Composable
 private fun iconButtonColors(): IconButtonColors = IconButtonDefaults.iconButtonColors(
-	containerColor = colorScheme.surfaceVariant,
-	contentColor = colorScheme.onSurfaceVariant,
-	disabledContainerColor = colorScheme.surfaceContainerHigh,
+	containerColor = colorScheme.surfaceContainerHigh,
+	contentColor = colorScheme.onSurface,
+	disabledContainerColor = colorScheme.surfaceVariant,
+	disabledContentColor = colorScheme.onTertiary,
 )

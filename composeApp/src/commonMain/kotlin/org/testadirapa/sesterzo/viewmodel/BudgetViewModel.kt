@@ -69,7 +69,7 @@ class BudgetViewModel(
 			spaceId = spaceId,
 			budgetReference = reference,
 		)
-		initBudgetView(currentBudgetReference())
+		initBudgetView(reference)
 	}
 
 	private suspend fun navigateToNextBudget() {

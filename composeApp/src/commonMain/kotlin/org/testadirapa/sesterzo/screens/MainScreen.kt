@@ -20,6 +20,7 @@ import org.testadirapa.sesterzo.model.Entry
 import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.screens.main.desktop.DesktopMainScreen
 import org.testadirapa.sesterzo.screens.main.mobile.MobileMainScreen
+import org.testadirapa.sesterzo.screens.main.mobile.Page
 import org.testadirapa.sesterzo.utils.BudgetReference
 import org.testadirapa.sesterzo.viewmodel.BudgetViewModel
 import org.testadirapa.sesterzo.viewmodel.intents.BudgetIntent
@@ -28,6 +29,7 @@ import org.testadirapa.sesterzo.viewmodel.intents.BudgetIntent
 fun MainScreen(
 	isMobile: Boolean,
 	initialSpace: Space,
+	initialPage: Page,
 	onError: (e: Throwable) -> Unit,
 	onCreateSpace: (Space) -> Unit,
 ) {
@@ -89,6 +91,7 @@ fun MainScreen(
 	if (isMobile) {
 		MobileMainScreen(
 			space = space,
+			initialPage = initialPage,
 			spaceThumbnail = spaceThumbnail,
 			budgetView = budgetView.value,
 			loadingState = loadingState.value,
@@ -106,6 +109,7 @@ fun MainScreen(
 	} else {
 		DesktopMainScreen(
 			space = space,
+			initialPage = initialPage,
 			spaceThumbnail = spaceThumbnail,
 			budgetView = budgetView.value,
 			loadingState = loadingState.value,

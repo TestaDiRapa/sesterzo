@@ -106,6 +106,7 @@ fun App() {
 					is MainScreenState -> MainScreen(
 						isMobile = isMobile,
 						initialSpace = currentState.initialSpace,
+						initialPage = currentState.initialPage,
 						onError = appViewModel::onError,
 						onCreateSpace = {
 							appViewModel.acceptIntent(AppIntent.NavigateToSpaceCreationIntent(it))

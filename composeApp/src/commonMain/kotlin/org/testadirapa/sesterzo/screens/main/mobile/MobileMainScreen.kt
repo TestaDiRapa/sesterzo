@@ -31,6 +31,7 @@ enum class Page { Budget, Entries, Template, Settings }
 @Composable
 fun MobileMainScreen(
 	space: Space,
+	initialPage: Page,
 	spaceThumbnail: Base64String?,
 	budgetView: BudgetViewModel.BudgetView?,
 	loadingState: Boolean,
@@ -45,7 +46,7 @@ fun MobileMainScreen(
 	onCreateSpace: (Space) -> Unit,
 	onSwitchSpace: (Space, Base64String?) -> Unit,
 ) {
-	var currentPage by remember { mutableStateOf(Page.Budget) }
+	var currentPage by remember { mutableStateOf(initialPage) }
 
 	Scaffold(
 		topBar = {

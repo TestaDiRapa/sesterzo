@@ -14,8 +14,10 @@ import org.testadirapa.sesterzo.api.RecoverableSesterzoApi
 import org.testadirapa.sesterzo.api.SesterzoApi
 import org.testadirapa.sesterzo.config.PlatformContext
 import org.testadirapa.sesterzo.exceptions.ResponseStatusException
+import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.model.toErrorReport
 import org.testadirapa.sesterzo.repository.PropertyRepository
+import org.testadirapa.sesterzo.screens.main.mobile.Page
 import org.testadirapa.sesterzo.security.JwtPayload.Companion.isJwtExpiredOrInvalid
 import org.testadirapa.sesterzo.utils.expectStateAs
 import org.testadirapa.sesterzo.viewmodel.errors.ErrorState
@@ -113,7 +115,7 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 					fallbackColor = intent.color.rgbColor
 				)
 				AppCtx.propertyRepository.setDefaultSpace(space.id)
-				_appState.update { MainScreenState(initialSpace = space) }
+				_appState.update { MainScreenState(initialSpace = space, initialPage = Page.Template) }
 			}
 			is AppIntent.NavigateToSpaceCreationIntent -> {
 				_appState.update {
@@ -121,9 +123,11 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 				}
 			}
 			is AppIntent.NavigateToMainScreen -> {
+				val hasTemplate = spaceHasNonBlankTemplate(intent.space)
 				_appState.update {
 					MainScreenState(
-						initialSpace = intent.space
+						initialSpace = intent.space,
+						initialPage = if (hasTemplate) Page.Budget else Page.Template
 					)
 				}
 			}
@@ -216,13 +220,28 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 		return if (spaces.isEmpty()) {
 			CreateSpaceState(currentSpace = null)
 		} else {
+			val initialSpace = AppCtx.propertyRepository.getDefaultSpace()?.let {
+				AppCtx.api.space.getSpace(spaceId = it, bypassCache = false)
+			} ?: spaces.first()
+			val hasTemplate = spaceHasNonBlankTemplate(initialSpace)
 			MainScreenState(
-				initialSpace = AppCtx.propertyRepository.getDefaultSpace()?.let {
-					AppCtx.api.space.getSpace(spaceId = it, bypassCache = false)
-				} ?: spaces.first(),
+				initialSpace = initialSpace,
+				initialPage = if (hasTemplate) Page.Budget else Page.Template
 			)
 		}
+	}
 
+	private suspend fun spaceHasNonBlankTemplate(space: Space): Boolean = listOf(
+		space.fixedExpensesTemplateId,
+		space.incomeSourcesTemplateId,
+		space.incomeSourcesTemplateId,
+	).any {
+		AppCtx.api.budgetElement.getLatestBudgetElementById(
+			spaceId = space.id,
+			budgetElementId = it
+		).also {
+			println(it)
+		}.version > 0
 	}
 
 }

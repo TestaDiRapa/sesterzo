@@ -6,8 +6,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.model.Base64String
@@ -29,6 +31,7 @@ fun MainScreen(
 	onError: (e: Throwable) -> Unit,
 	onCreateSpace: (Space) -> Unit,
 ) {
+	val scope = rememberCoroutineScope()
 	LaunchedEffect(Unit) {
 		val currentUser = AppCtx.api.user.getCurrentUser()
 		AppCtx.currency = currentUser.preferredCurrency
@@ -75,7 +78,12 @@ fun MainScreen(
 		space = updatedSpace
 		spaceThumbnail = updatedThumbnail
 	}
-	val onSwitchSpace = { it: Space -> space = it }
+	val onSwitchSpace = { it: Space ->
+		scope.launch {
+			AppCtx.propertyRepository.setDefaultSpace(it.id)
+		}
+		space = it
+	}
 
 	if (isMobile) {
 		MobileMainScreen(

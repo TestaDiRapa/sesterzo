@@ -78,11 +78,12 @@ fun MainScreen(
 		space = updatedSpace
 		spaceThumbnail = updatedThumbnail
 	}
-	val onSwitchSpace = { it: Space ->
+	val onSwitchSpace = { it: Space, thumbnail: Base64String? ->
 		scope.launch {
 			AppCtx.propertyRepository.setDefaultSpace(it.id)
 		}
 		space = it
+		spaceThumbnail = thumbnail
 	}
 
 	if (isMobile) {

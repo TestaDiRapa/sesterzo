@@ -46,7 +46,7 @@ fun DesktopNavBar(
 	spaceThumbnail: Base64String?,
 	currentPage: Page,
 	onCreateSpace: (currentSpace: Space) -> Unit,
-	onSwitchSpace: (Space) -> Unit,
+	onSwitchSpace: (Space, Base64String?) -> Unit,
 	onPageChange: (newPage: Page) -> Unit,
 	onError: (error: Throwable) -> Unit,
 ) {

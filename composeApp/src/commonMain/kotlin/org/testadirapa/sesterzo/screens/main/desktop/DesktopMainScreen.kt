@@ -36,7 +36,7 @@ fun DesktopMainScreen(
 	onSpaceUpdate: (space: Space, thumbnail: Base64String?) -> Unit,
 	onError: (e: Throwable) -> Unit,
 	onCreateSpace: (currentSpace: Space) -> Unit,
-	onSwitchSpace: (Space) -> Unit,
+	onSwitchSpace: (Space, Base64String?) -> Unit,
 ) {
 
 	var currentPage by remember { mutableStateOf(Page.Budget) }

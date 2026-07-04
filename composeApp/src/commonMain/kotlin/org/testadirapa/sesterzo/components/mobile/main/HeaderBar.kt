@@ -27,7 +27,7 @@ fun HeaderBar(
 	space: Space,
 	spaceThumbnail: Base64String?,
 	onCreateSpace: (currentSpace: Space) -> Unit,
-	onSwitchSpace: (Space) -> Unit,
+	onSwitchSpace: (Space, Base64String?) -> Unit,
 	onError: (Throwable) -> Unit
 ) {
 	val viewModel = viewModel { SpaceSwitcherViewModel(errorHandler = onError) }
@@ -61,8 +61,8 @@ fun HeaderBar(
 				isLoading = isLoading.value,
 				spaces = spaces.value,
 				spaceThumbnails = spaceThumbnails.value,
-				onSelect = {
-					onSwitchSpace(it)
+				onSelect = { space, thumbnail ->
+					onSwitchSpace(space, thumbnail)
 					sheetOpen = false
 				},
 				onCreate = {

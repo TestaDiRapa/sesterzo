@@ -37,7 +37,7 @@ fun MobileSpaceSwitcher(
 	spaces: List<Space>,
 	spaceThumbnails: Map<String, Base64String>,
 	isLoading: Boolean,
-	onSelect: (Space) -> Unit,
+	onSelect: (Space, Base64String?) -> Unit,
 	onCreate: () -> Unit,
 	onJoin: () -> Unit,
 	onDismiss: () -> Unit,
@@ -64,7 +64,7 @@ fun MobileSpaceSwitcher(
 							space = space,
 							picture = spaceThumbnails[space.id],
 							active = space.id == activeId,
-							onClick = { onSelect(space) },
+							onClick = { onSelect(space, spaceThumbnails[space.id]) },
 						)
 					}
 				}

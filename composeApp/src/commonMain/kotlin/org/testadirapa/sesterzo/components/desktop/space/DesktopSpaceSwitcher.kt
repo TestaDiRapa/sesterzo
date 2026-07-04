@@ -60,7 +60,7 @@ private val MENU_WIDTH = 320.dp
 fun DesktopSpaceSwitcher(
 	space: Space,
 	spaceThumbnail: Base64String?,
-	onSelect: (Space) -> Unit,
+	onSelect: (Space, Base64String?) -> Unit,
 	onCreate: () -> Unit,
 	onJoin: () -> Unit,
 	onError: (Throwable) -> Unit
@@ -144,7 +144,7 @@ fun DesktopSpaceSwitcher(
 							picture = spaceThumbnails.value[item.id],
 							active = item.id == space.id,
 							onClick = {
-								onSelect(item)
+								onSelect(item, spaceThumbnails.value[item.id])
 								expanded = false
 							},
 						)

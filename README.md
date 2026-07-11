@@ -1,5 +1,9 @@
 This is a Kotlin Multiplatform project targeting Android, Web, Server.
 
+Sesterzo is a free, open-source budgeting app: financial data is end-to-end encrypted, and
+email addresses are used only for registration and authentication. See the
+[Privacy Policy](./PRIVACY_POLICY.md) and the [Terms of Service](./TERMS_OF_SERVICE.md).
+
 * [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
   It contains several subfolders:
   - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.

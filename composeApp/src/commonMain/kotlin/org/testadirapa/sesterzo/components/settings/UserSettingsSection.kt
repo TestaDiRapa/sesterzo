@@ -30,6 +30,7 @@ fun UserSettingsSection(
 	onEditCurrency: () -> Unit,
 	onChooseOverlay: (OverlayContentType) -> Unit,
 	onErrorOptIn: () -> Unit,
+	showEndIcon: Boolean = true
 ) {
 	SettingsSection(
 		title = title
@@ -37,31 +38,36 @@ fun UserSettingsSection(
 		SettingsRow(
 			label = stringResource(Res.string.settings_page_edit_user_name),
 			subtitle = "${stringResource(Res.string.settings_page_current)}: ${user.name}",
-			onClick = onEditName
+			onClick = onEditName,
+			showIcon = showEndIcon
 		)
 		HorizontalDivider(color = colorScheme.outline)
 		SettingsRow(
 			label = stringResource(Res.string.settings_page_edit_currency),
 			subtitle = "${stringResource(Res.string.settings_page_current)}: ${user.preferredCurrency.name}",
-			onClick = onEditCurrency
+			onClick = onEditCurrency,
+			showIcon = showEndIcon
 		)
 		HorizontalDivider(color = colorScheme.outline)
 		SettingsRow(
 			label = stringResource(Res.string.settings_page_recovery_qr),
 			subtitle = stringResource(Res.string.settings_page_recovery_qr_subtitle),
-			onClick = { onChooseOverlay(OverlayContentType.QR) }
+			onClick = { onChooseOverlay(OverlayContentType.QR) },
+			showIcon = showEndIcon
 		)
 		HorizontalDivider(color = colorScheme.outline)
 		SettingsRow(
 			label = stringResource(Res.string.settings_page_recovery_sentence),
 			subtitle = stringResource(Res.string.settings_page_recovery_sentence_subtitle),
-			onClick = { onChooseOverlay(OverlayContentType.RecoveryKey) }
+			onClick = { onChooseOverlay(OverlayContentType.RecoveryKey) },
+			showIcon = showEndIcon
 		)
 		HorizontalDivider(color = colorScheme.outline)
 		SettingsRow(
 			label = stringResource(Res.string.settings_page_display_private_key),
 			subtitle = stringResource(Res.string.settings_page_recovery_private_key_subtitle),
-			onClick = { onChooseOverlay(OverlayContentType.PrivateKey) }
+			onClick = { onChooseOverlay(OverlayContentType.PrivateKey) },
+			showIcon = showEndIcon
 		)
 		HorizontalDivider(color = colorScheme.outline)
 		SettingsRow(

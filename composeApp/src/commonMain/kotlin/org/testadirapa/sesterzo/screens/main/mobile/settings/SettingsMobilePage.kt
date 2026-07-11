@@ -22,6 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.components.desktop.settings.SettingsRow
 import org.testadirapa.sesterzo.components.desktop.settings.SettingsSection
+import org.testadirapa.sesterzo.components.settings.AboutSection
 import org.testadirapa.sesterzo.components.settings.KeyOverlay
 import org.testadirapa.sesterzo.components.settings.OverlayContentType
 import org.testadirapa.sesterzo.components.settings.UserSettingsSection
@@ -33,6 +34,7 @@ import org.testadirapa.sesterzo.model.Space
 import org.testadirapa.sesterzo.styles.colors.colorOrDefault
 import org.testadirapa.sesterzo.viewmodel.components.SettingsPageViewModel
 import sesterzo.composeapp.generated.resources.Res
+import sesterzo.composeapp.generated.resources.settings_page_about
 import sesterzo.composeapp.generated.resources.settings_page_confirm_update
 import sesterzo.composeapp.generated.resources.settings_page_edit_space
 import sesterzo.composeapp.generated.resources.settings_page_edit_space_subtitle
@@ -131,6 +133,10 @@ fun SettingsMobilePage(
 				}
 			}
 		}
+		Spacer(modifier = Modifier.height(16.dp))
+		AboutSection(
+			title = stringResource(Res.string.settings_page_about)
+		)
 	}
 
 	if (showSpaceUpdateSheet) {

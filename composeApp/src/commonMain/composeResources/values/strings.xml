@@ -184,6 +184,16 @@
     <string name="settings_page_disable_report">Disable anonymous error reporting</string>
     <string name="settings_page_disable_report_subtitle">You are currently sending reports.</string>
 
+    <!--  Legal  -->
+    <string name="legal_privacy_policy">Privacy Policy</string>
+    <string name="legal_terms_of_service">Terms of Service</string>
+    <string name="legal_github">GitHub</string>
+    <string name="legal_close">Close</string>
+    <string name="settings_page_about">About</string>
+    <string name="settings_page_privacy_subtitle">How your data is protected.</string>
+    <string name="settings_page_terms_subtitle">The conditions for using Sesterzo.</string>
+    <string name="settings_page_github_subtitle">Sesterzo is open source (GPL-3.0).</string>
+
     <!--  Login page  -->
     <string name="login_title">Welcome back!</string>
     <string name="login_subtitle">Log in</string>

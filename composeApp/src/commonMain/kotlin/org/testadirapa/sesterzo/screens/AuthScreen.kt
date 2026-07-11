@@ -1,6 +1,7 @@
 package org.testadirapa.sesterzo.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.StateFlow
+import org.testadirapa.sesterzo.components.legal.LegalFooter
 import org.testadirapa.sesterzo.components.ui.OrDivider
 import org.testadirapa.sesterzo.handlers.MutableStateFlowCaptchaProgressHandler
 import org.testadirapa.sesterzo.screens.login.LoginScreen
@@ -64,21 +66,26 @@ fun MobileAuthScreen(
 	captchaProgressState: StateFlow<MutableStateFlowCaptchaProgressHandler.CaptchaProgress>
 ) {
 	var variant by remember { mutableStateOf(AuthVariant.Login) }
-	when (variant) {
-		AuthVariant.Login -> LoginScreen(
-			isLoading = isLoading,
-			onStartLogin = onStartLogin,
-			onCompleteLogin = onCompleteAuth,
-			captchaProgressState = captchaProgressState,
-			switchToRegister = { variant = AuthVariant.Register }
-		)
-		AuthVariant.Register -> RegistrationScreen(
-			isLoading = isLoading,
-			onStartRegistration = onStartRegistration,
-			onCompleteRegistration = onCompleteAuth,
-			captchaProgressState = captchaProgressState,
-			switchToLogin = { variant = AuthVariant.Login }
-		)
+	Column(modifier = Modifier.fillMaxSize()) {
+		Box(modifier = Modifier.weight(1f)) {
+			when (variant) {
+				AuthVariant.Login -> LoginScreen(
+					isLoading = isLoading,
+					onStartLogin = onStartLogin,
+					onCompleteLogin = onCompleteAuth,
+					captchaProgressState = captchaProgressState,
+					switchToRegister = { variant = AuthVariant.Register }
+				)
+				AuthVariant.Register -> RegistrationScreen(
+					isLoading = isLoading,
+					onStartRegistration = onStartRegistration,
+					onCompleteRegistration = onCompleteAuth,
+					captchaProgressState = captchaProgressState,
+					switchToLogin = { variant = AuthVariant.Login }
+				)
+			}
+		}
+		LegalFooter()
 	}
 }
 

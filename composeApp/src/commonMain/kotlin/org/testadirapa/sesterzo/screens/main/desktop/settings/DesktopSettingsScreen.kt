@@ -35,6 +35,7 @@ import org.testadirapa.sesterzo.components.desktop.settings.SettingsRow
 import org.testadirapa.sesterzo.components.desktop.settings.SettingsSection
 import org.testadirapa.sesterzo.components.desktop.settings.SettingsSectionSelector
 import org.testadirapa.sesterzo.components.scaffold.DesktopTopBarScaffold
+import org.testadirapa.sesterzo.components.settings.AboutSection
 import org.testadirapa.sesterzo.components.settings.KeyOverlay
 import org.testadirapa.sesterzo.components.settings.OverlayContentType
 import org.testadirapa.sesterzo.components.settings.UserSettingsSection
@@ -47,7 +48,9 @@ import org.testadirapa.sesterzo.styles.colors.colorOrDefault
 import org.testadirapa.sesterzo.viewmodel.components.SettingsPageViewModel
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.bank
+import sesterzo.composeapp.generated.resources.info
 import sesterzo.composeapp.generated.resources.person
+import sesterzo.composeapp.generated.resources.settings_page_about
 import sesterzo.composeapp.generated.resources.settings_page_confirm_update
 import sesterzo.composeapp.generated.resources.settings_page_desktop_title
 import sesterzo.composeapp.generated.resources.settings_page_edit_space
@@ -55,7 +58,7 @@ import sesterzo.composeapp.generated.resources.settings_page_edit_space_subtitle
 import sesterzo.composeapp.generated.resources.settings_page_space_settings
 import sesterzo.composeapp.generated.resources.settings_page_user_settings
 
-private enum class SettingsPage { Space, User }
+private enum class SettingsPage { Space, User, About }
 
 @Composable
 fun DesktopSettingsScreen(
@@ -103,6 +106,14 @@ fun DesktopSettingsScreen(
 					color = colorScheme.primary,
 					onClick = { currentPage = SettingsPage.User }
 				)
+				Spacer(modifier = Modifier.height(16.dp))
+				SettingsSectionSelector(
+					label = stringResource(Res.string.settings_page_about),
+					isSelected = currentPage == SettingsPage.About,
+					painter = painterResource(Res.drawable.info),
+					color = colorScheme.primary,
+					onClick = { currentPage = SettingsPage.About }
+				)
 			}
 			VerticalDivider()
 			Column(
@@ -114,7 +125,8 @@ fun DesktopSettingsScreen(
 							SettingsRow(
 								label = stringResource(Res.string.settings_page_edit_space),
 								subtitle = stringResource(Res.string.settings_page_edit_space_subtitle),
-								onClick = { showSpaceUpdateModal = true }
+								onClick = { showSpaceUpdateModal = true },
+								showIcon = false
 							)
 						}
 					}
@@ -130,7 +142,8 @@ fun DesktopSettingsScreen(
 										SettingsPageViewModel.SettingsIntents.ErrorsOptIn(!user.sendLogs)
 									)
 									AppCtx.sendErrors = !user.sendLogs
-								}
+								},
+								showEndIcon = false
 							)
 
 							if (showCurrencyUpdateModal) {
@@ -182,6 +195,11 @@ fun DesktopSettingsScreen(
 								}
 							}
 						}
+					}
+					SettingsPage.About -> {
+						AboutSection(
+							showEndIcon = false
+						)
 					}
 					null -> {}
 				}

@@ -3,6 +3,8 @@ package org.testadirapa.sesterzo.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,10 +42,9 @@ fun AuthScreen(
 	} else {
 		Row {
 			Column(
-				modifier = Modifier.weight(1f),
+				modifier = Modifier.weight(1f).fillMaxSize(),
 			) {
-				LoadingScreen()
-				Text("Temporary test")
+				PresentationScreen()
 			}
 			Scaffold(
 				modifier = Modifier.weight(1f),
@@ -91,12 +92,11 @@ fun SwitchAuthButton(
 		onClick = onClick,
 		modifier = Modifier.fillMaxWidth().height(48.dp),
 		shape = RoundedCornerShape(8.dp),
-		border = BorderStroke(width = 2.dp, color = colorScheme.onBackground),
 		colors = ButtonColors(
-			containerColor = colorScheme.background,
-			contentColor = colorScheme.onBackground,
-			disabledContainerColor = colorScheme.background,
-			disabledContentColor = colorScheme.onBackground,
+			containerColor = colorScheme.primary,
+			contentColor = colorScheme.onPrimary,
+			disabledContainerColor = colorScheme.surfaceContainerHigh,
+			disabledContentColor = colorScheme.onTertiary,
 		)
 	) {
 		Text(text)

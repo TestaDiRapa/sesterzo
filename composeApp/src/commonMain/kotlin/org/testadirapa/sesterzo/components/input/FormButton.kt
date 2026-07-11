@@ -37,7 +37,7 @@ fun FormButton(
 		if (isLoading) {
 			CircularProgressIndicator(
 				modifier = Modifier.size(20.dp),
-				color = MaterialTheme.colorScheme.onSurfaceVariant,
+				color = colorScheme.onSurfaceVariant,
 				strokeWidth = 2.dp,
 			)
 		} else {

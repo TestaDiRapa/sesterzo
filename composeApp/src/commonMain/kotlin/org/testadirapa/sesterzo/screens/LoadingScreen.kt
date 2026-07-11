@@ -1,5 +1,6 @@
 package org.testadirapa.sesterzo.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -7,8 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.Image
 import org.jetbrains.compose.resources.painterResource
+import org.testadirapa.sesterzo.styles.colors.sesterzoGlow
 import sesterzo.composeapp.generated.resources.Res
 import sesterzo.composeapp.generated.resources.sesterzo
 
@@ -16,7 +17,9 @@ import sesterzo.composeapp.generated.resources.sesterzo
 fun LoadingScreen() {
 	Box(
 		contentAlignment = Alignment.Center,
-		modifier = Modifier.fillMaxSize()
+		modifier = Modifier
+			.fillMaxSize()
+			.sesterzoGlow()
 	) {
 		Image(
 			painter = painterResource(Res.drawable.sesterzo),

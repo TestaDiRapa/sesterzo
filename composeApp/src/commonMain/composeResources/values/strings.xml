@@ -129,6 +129,17 @@
     <string name="main_page_template_form_subtitle">CURRENT MONTH</string>
     <string name="main_page_template_form_warning">This will only update the current month. Go to the template page to update the template.</string>
 
+    <!--  Presentation page  -->
+    <string name="presentation_page_title_1">Every euro,</string>
+    <string name="presentation_page_title_2">accounted for.</string>
+    <string name="presentation_page_subtitle">Track your income, your expenses, your levies in a simple tool you can share.</string>
+    <string name="presentation_page_point_free">Free</string>
+    <string name="presentation_page_point_free_subtitle">It's a tool I made for myself to begin with. If it's free, other can use it.</string>
+    <string name="presentation_page_point_secure">Private</string>
+    <string name="presentation_page_point_secure_subtitle">All data are end-to-end encrypted, only you (and the people you choose) will be the only one able to see them.</string>
+    <string name="presentation_page_point_oss">Open Source</string>
+    <string name="presentation_page_point_oss_subtitle">Feel free to explore the code, and even contribute if you so like.</string>
+
     <!--  Recover private key screen  -->
     <string name="recover_key_title">Your private key was not found on the device</string>
     <string name="recover_key_description_1">Recover your key using one of the following options:</string>

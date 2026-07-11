@@ -239,9 +239,7 @@ class AppViewModel : AbstractViewModel<AppIntent>() {
 		AppCtx.api.budgetElement.getLatestBudgetElementById(
 			spaceId = space.id,
 			budgetElementId = it
-		).also {
-			println(it)
-		}.version > 0
+		).version > 0
 	}
 
 }

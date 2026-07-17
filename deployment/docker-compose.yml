@@ -33,7 +33,44 @@ services:
             MAIL_CONFIGS_FOLDER: /hermes/config/mails
             TEMPLATES_FOLDER: /hermes/config/templates
 
+    sesterzo-backend:
+        image: sesterzo-backend:${GIT_COMMIT}
+        build:
+            context: ..
+            dockerfile: sesterzo-backend/Dockerfile
+        depends_on:
+            - hermes
+            - mongodb
+        restart: always
+        networks:
+            - mongo-network
+        environment:
+            AUTH_PRIVATE_KEY: ${AUTH_PRIVATE_KEY}
+            AUTH_PUBLIC_KEY: ${AUTH_PUBLIC_KEY}
+            REFRESH_PRIVATE_KEY: ${REFRESH_PRIVATE_KEY}
+            REFRESH_PUBLIC_KEY: ${REFRESH_PUBLIC_KEY}
+            MONGODB_DATABASE: sesterzo
+            MONGODB_IP: mongodb
+            MONGODB_PORT: 27017
+            MONGODB_USERNAME: ${MONGODB_USERNAME}
+            MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+            SESTERZO_URL: "https://sesterzo.eu"
+            HERMES_URL: "http://hermes:8081"
+            REGISTRATION_TEMPLATE_ID: "authentication_email"
+            TOKEN_TEMPLATE_ID: "authentication_email"
 
+    sesterzo-frontend:
+        image: sesterzo-frontend:${GIT_COMMIT}
+        build:
+            context: ..
+            dockerfile: sesterzo-frontend/Dockerfile
+        depends_on:
+            - sesterzo-backend
+        restart: always
+        networks:
+            - mongo-network
+        ports:
+            - "8083:80"
 
 networks:
     mongo-network:

@@ -1,0 +1,40 @@
+services:
+    mongodb:
+        image: mongo:6.0
+        restart: always
+        command: [--auth, --replSet, repl0, --bind_ip_all, "--keyFile", "/data/key.key"]
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ADMIN_USR}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ADMIN_PWD}
+            MONGO_INITDB_DATABASE: ${HOMUNCULUS_DB}
+        ports:
+            - "27017:27017"
+        networks:
+            - mongo-network
+        volumes:
+            - ./seed/data/key.key:/data/key.key
+        healthcheck:
+            test: mongosh --username ${MONGODB_ADMIN_USR} --password ${MONGODB_ADMIN_PWD} --authenticationDatabase admin
+            interval: 15s
+            timeout: 5s
+            retries: 5
+
+    hermes:
+        image: lotuxpunk/hermes:latest
+        restart: always
+        networks:
+            - mongo-network
+        volumes:
+            - ${HERMES_FOLDER}/forms:/hermes/config/forms
+            - ${HERMES_FOLDER}/mails:/hermes/config/mails
+            - ${HERMES_FOLDER}/templates:/hermes/config/templates
+        environment:
+            CONTACT_FORM_CONFIGS_FOLDER: /hermes/config/forms
+            MAIL_CONFIGS_FOLDER: /hermes/config/mails
+            TEMPLATES_FOLDER: /hermes/config/templates
+
+
+
+networks:
+    mongo-network:
+        driver: bridge

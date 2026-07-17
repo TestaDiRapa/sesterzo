@@ -17,3 +17,8 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+deployment/*
+!deployment/hermes
+!deployment/sesterzo-backend
+!deployment/sesterzo-frontend
+!deployment/docker-compose.yml

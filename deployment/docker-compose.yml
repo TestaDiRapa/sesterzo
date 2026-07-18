@@ -37,7 +37,7 @@ services:
         image: sesterzo-backend:${GIT_COMMIT}
         build:
             context: ..
-            dockerfile: sesterzo-backend/Dockerfile
+            dockerfile: deployment/sesterzo-backend/Dockerfile
         depends_on:
             - hermes
             - mongodb
@@ -63,7 +63,7 @@ services:
         image: sesterzo-frontend:${GIT_COMMIT}
         build:
             context: ..
-            dockerfile: sesterzo-frontend/Dockerfile
+            dockerfile: deployment/sesterzo-frontend/Dockerfile
         depends_on:
             - sesterzo-backend
         restart: always

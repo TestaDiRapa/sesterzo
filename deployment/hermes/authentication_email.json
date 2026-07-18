@@ -1,6 +1,0 @@
-{
-  "id": "authentication_email",
-  "sender": "noreply@sesterzo.eu",
-  "subjectTemplate": "Complete your Sesterzo authentication",
-  <MAIL_CREDENTIALS>
-}

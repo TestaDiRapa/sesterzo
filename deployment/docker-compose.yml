@@ -6,9 +6,9 @@ services:
         environment:
             MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ADMIN_USR}
             MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ADMIN_PWD}
-            MONGO_INITDB_DATABASE: ${HOMUNCULUS_DB}
+            MONGO_INITDB_DATABASE: sesterzo
         ports:
-            - "27017:27017"
+            - "27018:27017"
         networks:
             - mongo-network
         volumes:
@@ -52,8 +52,8 @@ services:
             MONGODB_DATABASE: sesterzo
             MONGODB_IP: mongodb
             MONGODB_PORT: 27017
-            MONGODB_USERNAME: ${MONGODB_USERNAME}
-            MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+            MONGODB_USERNAME: ${MONGODB_ADMIN_USR}
+            MONGODB_PASSWORD: ${MONGODB_ADMIN_PWD}
             SESTERZO_URL: "https://sesterzo.eu"
             HERMES_URL: "http://hermes:8081"
             REGISTRATION_TEMPLATE_ID: "authentication_email"

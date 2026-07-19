@@ -1,6 +1,6 @@
 services:
     mongodb:
-        image: mongo:8.0.17
+        image: mongo:8.2
         restart: always
         command: [--auth, --replSet, repl0, --bind_ip_all, "--keyFile", "/data/key.key"]
         environment:

@@ -1,3 +1,5 @@
+name: sesterzo
+
 services:
     mongodb:
         image: mongo:8.2

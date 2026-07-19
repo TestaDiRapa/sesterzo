@@ -1,12 +1,17 @@
 services:
     mongodb:
-        image: mongo:6.0
+        image: mongo:8.0.17
         restart: always
         command: [--auth, --replSet, repl0, --bind_ip_all, "--keyFile", "/data/key.key"]
         environment:
             MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ADMIN_USR}
             MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ADMIN_PWD}
             MONGO_INITDB_DATABASE: sesterzo
+        logging:
+            driver: "json-file"
+            options:
+                max-file: 5
+                max-size: 15m
         ports:
             - "27018:27017"
         networks:

@@ -20,6 +20,7 @@ services:
             - mongo-network
         volumes:
             - ${MONGODB_FOLDER}/seed/data/key.key:/data/key.key
+            - ${MONGODB_FOLDER}/db:/data/db
         healthcheck:
             test: mongosh --username ${MONGODB_ADMIN_USR} --password ${MONGODB_ADMIN_PWD} --authenticationDatabase admin
             interval: 15s

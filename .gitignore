@@ -21,4 +21,5 @@ deployment/*
 !deployment/hermes
 !deployment/sesterzo-backend
 !deployment/sesterzo-frontend
+!deployment/mongoinit
 !deployment/docker-compose.yml

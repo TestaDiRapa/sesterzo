@@ -13,12 +13,12 @@ else
   echo "Replica set already initiated"
 fi
 
-mongosh --host $MONGODB_HOST --port 27017 --username $MONGODB_ADMIN_USR --password $MONGODB_ADMIN_PWD --authenticationDatabase $HOMUNCULUS_DB
+mongosh --host $MONGODB_HOST --port 27017 --username $MONGODB_ADMIN_USR --password $MONGODB_ADMIN_PWD --authenticationDatabase sesterzo
 
 if [ $? -ne 0 ]; then
   # Creates the user in the Homunculus database
-  create_user_cmd="db.createUser({user: \"$MONGODB_ADMIN_USR\", pwd: \"$MONGODB_ADMIN_PWD\",roles: [{role: \"dbOwner\",db: \"$HOMUNCULUS_DB\"}]});"
-  mongosh --host $MONGODB_HOST --port 27017 --username $MONGODB_ADMIN_USR --password $MONGODB_ADMIN_PWD --authenticationDatabase admin --eval "use $HOMUNCULUS_DB" --eval "$create_user_cmd"
+  create_user_cmd="db.createUser({user: \"$MONGODB_ADMIN_USR\", pwd: \"$MONGODB_ADMIN_PWD\",roles: [{role: \"dbOwner\",db: \"sesterzo\"}]});"
+  mongosh --host $MONGODB_HOST --port 27017 --username $MONGODB_ADMIN_USR --password $MONGODB_ADMIN_PWD --authenticationDatabase admin --eval "use sesterzo" --eval "$create_user_cmd"
 else
   echo "User already created"
 fi

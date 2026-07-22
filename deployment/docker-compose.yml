@@ -32,6 +32,8 @@ services:
         restart: always
         networks:
             - mongo-network
+        ports:
+            - "8084:8081"
         volumes:
             - ${HERMES_FOLDER}/forms:/hermes/config/forms
             - ${HERMES_FOLDER}/mails:/hermes/config/mails

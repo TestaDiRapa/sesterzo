@@ -9,4 +9,9 @@ RUN gradle :composeApp:jsBrowserDistribution
 FROM nginx:alpine
 COPY deployment/sesterzo-frontend/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /home/gradle/src/composeApp/build/dist/js/productionExecutable /usr/share/nginx/html
+# Precompress the static assets so nginx can serve them via gzip_static at no CPU cost.
+RUN find /usr/share/nginx/html -type f \
+        \( -name '*.js' -o -name '*.mjs' -o -name '*.wasm' -o -name '*.css' \
+           -o -name '*.html' -o -name '*.ttf' -o -name '*.json' -o -name '*.cvr' \) \
+        -exec gzip -9 -k {} +
 EXPOSE 80

@@ -13,7 +13,7 @@ kotlin {
 		freeCompilerArgs.add("-Xexpect-actual-classes")
 	}
 
-	androidLibrary {
+	android {
 		namespace = "org.testadirapa.sesterzo.shared"
 		compileSdk = libs.versions.android.compileSdk.get().toInt()
 

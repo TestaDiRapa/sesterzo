@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 import java.util.Properties
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
@@ -31,7 +32,7 @@ buildkonfig {
 
 kotlin {
 
-	androidLibrary {
+	android {
 		namespace = "org.testadirapa.sesterzo.compose"
 		compileSdk = libs.versions.android.compileSdk.get().toInt()
 
@@ -87,4 +88,16 @@ kotlin {
 //dependencies {
 //	androidRuntimeClasspath(libs.compose.uiTooling)
 //}
+
+// Keep the production JS distribution small: no source maps shipped to the browser.
+tasks.named<KotlinWebpack>("jsBrowserProductionWebpack") {
+	sourceMaps = false
+}
+
+// The emscripten glue and the skiko wasm are already bundled into composeApp.js (webpack
+// emits the wasm as a content-hashed asset), so the standalone copies pulled in from the
+// skiko klib resources are never fetched at runtime - ~9.6 MB of dead weight.
+tasks.named<Sync>("jsBrowserDistribution") {
+	exclude("skiko.mjs", "skikod8.mjs", "skiko.wasm")
+}
 

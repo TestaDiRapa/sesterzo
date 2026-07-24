@@ -80,17 +80,14 @@ fun DesktopTemplateScreen(
 			) {
 				templateToUpdate?.let { (title, template) ->
 					val templates = templatesOrNull.value
-					when {
-						template.budgetElementId == templates?.savingsTemplate?.budgetElementId &&
-							template.version != templates.savingsTemplate.version -> {
-								templateToUpdate = title to templates.savingsTemplate
-							}
-						template.budgetElementId == templates?.expensesTemplate?.budgetElementId &&
-							template.version != templates.expensesTemplate.version -> {
+					when (template.budgetElementId) {
+						templates?.savingsTemplate?.budgetElementId if template.version != templates.savingsTemplate.version -> {
+							templateToUpdate = title to templates.savingsTemplate
+						}
+						templates?.expensesTemplate?.budgetElementId if template.version != templates.expensesTemplate.version -> {
 							templateToUpdate = title to templates.expensesTemplate
 						}
-						template.budgetElementId == templates?.incomesTemplate?.budgetElementId &&
-							template.version != templates.incomesTemplate.version -> {
+						templates?.incomesTemplate?.budgetElementId if template.version != templates.incomesTemplate.version -> {
 							templateToUpdate = title to templates.incomesTemplate
 						}
 					}

@@ -1,5 +1,5 @@
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.INT
 
@@ -11,7 +11,12 @@ plugins {
 	alias(libs.plugins.buildkonfig)
 }
 
-val localProps = gradleLocalProperties(rootDir, providers)
+val localProps = Properties().apply {
+	val localPropsFile = rootProject.file("local.properties")
+	if (localPropsFile.exists()) {
+		localPropsFile.inputStream().use { load(it) }
+	}
+}
 
 buildkonfig {
 	packageName = "org.testadirapa.sesterzo"

@@ -14,7 +14,7 @@ kotlin {
 	}
 
 	androidLibrary {
-		namespace = "org.testadirapa.sesterzo.compose"
+		namespace = "org.testadirapa.sesterzo.shared"
 		compileSdk = libs.versions.android.compileSdk.get().toInt()
 
 		compilerOptions {

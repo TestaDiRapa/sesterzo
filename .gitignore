@@ -23,3 +23,5 @@ deployment/*
 !deployment/sesterzo-frontend
 !deployment/mongoinit
 !deployment/docker-compose.yml
+
+kotlin-js-store

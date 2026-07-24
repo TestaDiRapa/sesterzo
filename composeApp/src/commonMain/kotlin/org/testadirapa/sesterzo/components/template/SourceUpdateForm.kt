@@ -80,7 +80,7 @@ fun <T> SourceUpdateForm(
 ) {
 	var updateCurrentBudget by remember { mutableStateOf(true) }
 	val newSource = stringResource(Res.string.add_source_page_new_source)
-	var updatedSources by remember {
+	var updatedSources by remember(entity) {
 		mutableStateOf(
 			sources.map { (k, v) ->
 				FormValue(

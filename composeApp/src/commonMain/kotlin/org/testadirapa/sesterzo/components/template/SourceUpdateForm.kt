@@ -282,6 +282,7 @@ private fun SourceRow(
 			onValueChange = { newValue ->
 				onAmountChange(newValue)
 			},
+			hasPlaceholder = true,
 			textStyle = amountTextStyleMedium(),
 			backgroundColor = colorScheme.surfaceVariant,
 			modifier = Modifier

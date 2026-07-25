@@ -233,6 +233,7 @@ fun AmountInput(
 			onValueChange = { newValue ->
 				onAmountChange(newValue)
 			},
+			hasPlaceholder = true,
 			textStyle = amountTextStyleLarge(),
 			backgroundColor = colorScheme.surfaceVariant,
 			symbolOffset = 0.dp,
@@ -393,7 +394,7 @@ private fun TypeCard(
 			horizontalArrangement = Arrangement.Center,
 			modifier = Modifier
 				.fillMaxWidth()
-				.padding(vertical = 12.dp, horizontal = 12.dp)
+				.padding(vertical = 12.dp, horizontal = 10.dp)
 		) {
 			Icon(
 				modifier = Modifier.size(18.dp),
@@ -401,7 +402,7 @@ private fun TypeCard(
 				contentDescription = null,
 				tint = if (isSelected) iconColor else colorScheme.onSurfaceVariant,
 			)
-			Spacer(Modifier.width(8.dp))
+			Spacer(Modifier.width(6.dp))
 			Text(
 				text = text,
 				style = MaterialTheme.typography.labelLarge,

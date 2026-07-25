@@ -20,15 +20,20 @@ private fun String.toLenientLong(): Long =
 		.toLongOrNull() ?: 0
 
 private val decimalReader: (String) -> Amount = { input ->
+	println(input)
 	val clean = input.trim()
 	val negative = clean.startsWith("-")
 	val digits = clean.removePrefix("-").replace(",", ".")
 
-	val (intPart, fracPart) = if ('.' in digits) {
-		val split = digits.split(".")
-		split[0] to split[1].take(2).padEnd(2, '0')
-	} else {
-		digits to "00"
+	val (intPart, fracPart) = when {
+		'.' in digits -> {
+			val split = digits.split(".")
+			split[0] to split[1].take(2).padEnd(2, '0')
+		}
+		digits.endsWith("00") -> {
+			digits.removeSuffix("00") to "00"
+		}
+		else -> digits to "00"
 	}
 
 	val result = (intPart.toLenientLong() * 100L) + fracPart.toLenientLong()

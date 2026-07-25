@@ -25,31 +25,39 @@ import androidx.compose.ui.unit.dp
 import org.testadirapa.sesterzo.AppCtx
 import org.testadirapa.sesterzo.model.Amount
 import org.testadirapa.sesterzo.models.FormValue
+import org.testadirapa.sesterzo.models.Optional
 import org.testadirapa.sesterzo.styles.colors.components.outlinedTextFieldColors
 
 @Composable
 fun AmountField(
 	value: FormValue<Amount>,
+	modifier: Modifier = Modifier,
 	enabled: Boolean = true,
 	hasPlaceholder: Boolean = false,
 	onValueChange: (Amount) -> Unit,
 	textStyle: TextStyle,
 	symbolOffset: Dp = 2.dp,
-	modifier: Modifier = Modifier.fillMaxWidth(),
 	backgroundColor: Color? = null,
 ) {
+
 	val focusManager = LocalFocusManager.current
 	Row(
 		verticalAlignment = Alignment.CenterVertically,
 	) {
 		OutlinedTextField(
-			value = AppCtx.currency.formWriter(value.value.orNull ?: 0),
+			value = value.value.orNull?.takeIf { it > 0 }?.let {
+				AppCtx.currency.formWriter(it)
+			} ?: "",
 			enabled = enabled,
 			prefix = {
 				Row {
 					Text(
 						text = AppCtx.currency.symbol,
-						color = colorScheme.onSurface,
+						color = if (value.value !is Optional.Absent) {
+							colorScheme.onSurface
+						} else {
+							colorScheme.onSurfaceVariant
+						},
 						style = textStyle,
 						modifier = Modifier.offset(y = symbolOffset)
 					)
@@ -63,20 +71,20 @@ fun AmountField(
 				{
 					Text(
 						text = AppCtx.currency.formWriter(0),
-						color = colorScheme.onSurface,
+						color = colorScheme.onSurfaceVariant,
 						style = textStyle
 					)
 				}
 			} else null,
 			singleLine = true,
 			keyboardOptions = KeyboardOptions(
-				keyboardType = KeyboardType.NumberPassword,
+				keyboardType = KeyboardType.Decimal,
 				imeAction = ImeAction.Next
 			),
 			keyboardActions = KeyboardActions(
 				onNext = { focusManager.moveFocus(FocusDirection.Down) }
 			),
-			modifier = modifier,
+			modifier = modifier.fillMaxWidth(),
 			textStyle = textStyle,
 			shape = RoundedCornerShape(8.dp),
 			colors = outlinedTextFieldColors().let {

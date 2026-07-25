@@ -49,8 +49,10 @@ services:
             context: ..
             dockerfile: deployment/sesterzo-backend/Dockerfile
         depends_on:
-            - hermes
-            - mongodb
+            hermes:
+                condition: service_started
+            mongodb:
+                condition: service_healthy
         restart: always
         networks:
             - mongo-network

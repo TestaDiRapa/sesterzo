@@ -1,4 +1,17 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val localProps = Properties().apply {
+	val localPropsFile = rootProject.file("local.properties")
+	if (localPropsFile.exists()) {
+		localPropsFile.inputStream().use { load(it) }
+	}
+}
+
+// Signing credentials come from local.properties (which is gitignored) and fall back to
+// environment variables so CI and the Docker build can inject them.
+fun signingProp(key: String, env: String): String? =
+	localProps.getProperty(key) ?: System.getenv(env)
 
 plugins {
 	alias(libs.plugins.androidApplication)
@@ -32,9 +45,22 @@ android {
 			excludes += "/META-INF/{AL2.0,LGPL2.1}"
 		}
 	}
+	signingConfigs {
+		create("release") {
+			signingProp("release.keystore.path", "RELEASE_KEYSTORE_PATH")?.let { path ->
+				storeFile = rootProject.file(path)
+				storePassword = signingProp("release.keystore.password", "RELEASE_KEYSTORE_PASSWORD")
+				keyAlias = signingProp("release.key.alias", "RELEASE_KEY_ALIAS")
+				keyPassword = signingProp("release.key.password", "RELEASE_KEY_PASSWORD")
+			}
+		}
+	}
 	buildTypes {
 		getByName("release") {
 			isMinifyEnabled = false
+			// Sign only when the keystore is configured; without it the build still
+			// produces the (uninstallable) unsigned APK instead of failing outright.
+			signingConfig = signingConfigs.getByName("release").takeIf { it.storeFile != null }
 		}
 	}
 	compileOptions {

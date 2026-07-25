@@ -1,4 +1,4 @@
-FROM gradle:9.2.1-jdk25-noble AS build
+FROM gradle:9.6.1-jdk26-corretto AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 # Needed to build even if not used by the backend

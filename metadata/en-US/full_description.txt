@@ -1,8 +1,6 @@
-## Sesterzo
-
 Sesterzo is a simple budgeting app meant to be simple to use, secure, and totally free and open source.
 
-It allows you to create (and soon, be part of) up to 5 budgets. For each budget, you can set your 
+It allows you to create (and soon, be part of) up to 5 budgets. For each budget, you can set your
 recurring incomes, savings, and expenses that happen each month but also the ones that are specific
 for a single month.
 
@@ -11,14 +9,3 @@ the label you assign, and the app will show you a summary of your finances based
 
 All data concerning your expenses and your budgets are end-to-end encrypted, so only you have access to them.
 No data whatsoever about the user are collected.
-
-You can use it for free:
-- on the web: https://sesterzo.eu
-- on Android (soon, hopefully)
-
-### Roadmap
-[ ] Allow for multiple people to use the same budget.
-
-### "But how will you make money from it?"
-I will not. It's a personal project I made for myself and everyone that finds it useful is welcome to use it and contribute 
-to it.

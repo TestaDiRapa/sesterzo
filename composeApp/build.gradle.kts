@@ -23,9 +23,11 @@ buildkonfig {
 	packageName = "org.testadirapa.sesterzo"
 
 	defaultConfigs {
-		buildConfigField(STRING, "apiUrl", localProps.getProperty("api.url"))
-		buildConfigField(INT, "cacheTtl", localProps.getProperty("api.cache.ttl"))
-		buildConfigField(INT, "spaceLimit", localProps.getProperty("space.limit"))
+		// Defaults keep a bare checkout buildable (F-Droid's builder writes a
+		// local.properties containing only sdk.dir). Override in local.properties.
+		buildConfigField(STRING, "apiUrl", localProps.getProperty("api.url") ?: "https://sesterzo.eu/api")
+		buildConfigField(INT, "cacheTtl", localProps.getProperty("api.cache.ttl") ?: "15")
+		buildConfigField(INT, "spaceLimit", localProps.getProperty("space.limit") ?: "5")
 	}
 }
 

@@ -4,9 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
@@ -17,8 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -26,11 +24,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.google.mlkit.vision.barcode.BarcodeScanner
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.common.InputImage
+import zxingcpp.BarcodeReader
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -63,18 +58,22 @@ private fun CameraPreview(onResult: (String) -> Unit) {
 	val lifecycleOwner = LocalLifecycleOwner.current
 	val analysisExecutor = remember { Executors.newSingleThreadExecutor() }
 	val handled = remember { AtomicBoolean(false) }
-	val scanner = remember {
-		BarcodeScanning.getClient(
-			BarcodeScannerOptions.Builder()
-				.setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-				.build()
+	val reader = remember {
+		BarcodeReader(
+			BarcodeReader.Options(
+				formats = setOf(BarcodeReader.Format.QR_CODE),
+				tryHarder = true,
+				tryRotate = true,
+				tryInvert = true,
+				tryDownscale = true,
+				maxNumberOfSymbols = 1,
+			)
 		)
 	}
 
 	DisposableEffect(Unit) {
 		onDispose {
 			analysisExecutor.shutdown()
-			scanner.close()
 		}
 	}
 
@@ -84,6 +83,7 @@ private fun CameraPreview(onResult: (String) -> Unit) {
 			.aspectRatio(1f),
 		factory = { ctx ->
 			val previewView = PreviewView(ctx)
+			val mainExecutor = ContextCompat.getMainExecutor(ctx)
 			val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
 			cameraProviderFuture.addListener({
 				val cameraProvider = cameraProviderFuture.get()
@@ -95,7 +95,7 @@ private fun CameraPreview(onResult: (String) -> Unit) {
 					.build()
 					.also { imageAnalysis ->
 						imageAnalysis.setAnalyzer(analysisExecutor) { imageProxy ->
-							processImage(imageProxy, scanner, handled, onResult)
+							processImage(imageProxy, reader, handled, mainExecutor, onResult)
 						}
 					}
 				cameraProvider.unbindAll()
@@ -105,31 +105,27 @@ private fun CameraPreview(onResult: (String) -> Unit) {
 					preview,
 					analysis,
 				)
-			}, ContextCompat.getMainExecutor(ctx))
+			}, mainExecutor)
 			previewView
 		},
 	)
 }
 
-@OptIn(ExperimentalGetImage::class)
 private fun processImage(
 	imageProxy: ImageProxy,
-	scanner: BarcodeScanner,
+	reader: BarcodeReader,
 	handled: AtomicBoolean,
+	callbackExecutor: Executor,
 	onResult: (String) -> Unit,
 ) {
-	val mediaImage = imageProxy.image
-	if (mediaImage == null || handled.get()) {
-		imageProxy.close()
-		return
-	}
-	val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-	scanner.process(image)
-		.addOnSuccessListener { barcodes ->
-			val value = barcodes.firstNotNullOfOrNull { it.rawValue }
-			if (value != null && handled.compareAndSet(false, true)) {
-				onResult(value)
-			}
+	imageProxy.use {
+		if (handled.get()) return
+		// zxing-cpp decodes synchronously on the analysis thread; hand the result back on the main
+		// thread so the callback can safely touch compose state.
+		val value = runCatching { reader.read(it) }.getOrNull()
+			?.firstNotNullOfOrNull { result -> result.text?.takeIf(String::isNotEmpty) }
+		if (value != null && handled.compareAndSet(false, true)) {
+			callbackExecutor.execute { onResult(value) }
 		}
-		.addOnCompleteListener { imageProxy.close() }
+	}
 }

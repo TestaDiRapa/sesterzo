@@ -5,6 +5,7 @@
 xcuserdata
 !src/**/build/
 local.properties
+local.properties.bak
 *.jks
 *.keystore
 .idea

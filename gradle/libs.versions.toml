@@ -28,7 +28,7 @@ mongo = "5.9.1"
 indexedDb = "0.12.0"
 qrose = "1.1.2"
 camerax = "1.6.1"
-mlkit-barcode = "17.3.0"
+zxingcpp = "3.1.0"
 
 [libraries]
 # Ktor server
@@ -105,7 +105,7 @@ androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax" }
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax" }
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "camerax" }
-mlkit-barcodeScanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkit-barcode" }
+zxingcpp = { module = "io.github.zxing-cpp:android", version.ref = "zxingcpp" }
 
 #Test
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }

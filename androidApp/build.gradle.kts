@@ -60,7 +60,9 @@ android {
 			isMinifyEnabled = false
 			// Sign only when the keystore is configured; without it the build still
 			// produces the (uninstallable) unsigned APK instead of failing outright.
-			signingConfig = signingConfigs.getByName("release").takeIf { it.storeFile != null }
+			// findByName, not getByName: F-Droid's builder strips the signingConfigs
+			// block entirely, and this must stay valid when the config is absent.
+			signingConfig = signingConfigs.findByName("release")?.takeIf { it.storeFile != null }
 		}
 	}
 	compileOptions {

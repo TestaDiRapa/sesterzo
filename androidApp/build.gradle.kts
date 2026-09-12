@@ -43,6 +43,9 @@ android {
 	packaging {
 		resources {
 			excludes += "/META-INF/{AL2.0,LGPL2.1}"
+			// BouncyCastle's legacy Picnic tables are ~1.1 MB of lookup data for a
+			// post-quantum signature scheme nothing in this app uses.
+			excludes += "/org/bouncycastle/pqc/legacy/picnic/**"
 		}
 	}
 	signingConfigs {
@@ -57,7 +60,12 @@ android {
 	}
 	buildTypes {
 		getByName("release") {
-			isMinifyEnabled = false
+			isMinifyEnabled = true
+			isShrinkResources = true
+			proguardFiles(
+				getDefaultProguardFile("proguard-android-optimize.txt"),
+				"proguard-rules.pro",
+			)
 			// Sign only when the keystore is configured; without it the build still
 			// produces the (uninstallable) unsigned APK instead of failing outright.
 			// findByName, not getByName: F-Droid's builder strips the signingConfigs

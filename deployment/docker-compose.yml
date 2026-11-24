@@ -2,7 +2,7 @@ name: sesterzo
 
 services:
     mongodb:
-        image: mongo:8.2
+        image: mongo:8.3.17
         restart: always
         command: [--auth, --replSet, repl0, --bind_ip_all, "--keyFile", "/data/key.key"]
         environment:

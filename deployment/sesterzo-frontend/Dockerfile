@@ -7,6 +7,8 @@ RUN gradle kotlinUpgradeYarnLock
 RUN gradle :composeApp:jsBrowserDistribution
 
 FROM nginx:alpine
+# Pull in OS security fixes released after the base image was published.
+RUN apk upgrade --no-cache
 COPY deployment/sesterzo-frontend/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /home/gradle/src/composeApp/build/dist/js/productionExecutable /usr/share/nginx/html
 # Precompress the static assets so nginx can serve them via gzip_static at no CPU cost.

@@ -36,6 +36,13 @@ dependencies {
 	implementation(libs.jbcrypt)
 	implementation(libs.caffeine)
 
+	// Force patched versions of vulnerable transitive dependencies
+	implementation(platform(libs.netty.bom))
+	implementation(platform(libs.jackson.bom))
+	constraints {
+		implementation(libs.guava) { because("CVE-2026-102554") }
+	}
+
 	testImplementation(libs.ktor.serverTestHost)
 	testImplementation(libs.kotlin.testJunit)
 }

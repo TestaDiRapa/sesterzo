@@ -1,0 +1,9 @@
+deployment/deployment/mongodb/
+deployment/**/mongodb/db/
+deployment/**/hermes/
+
+**/.git
+**/node_modules
+**/build
+**/.gradle
+.env
